@@ -1263,5 +1263,100 @@ header nav a[href="#m4dMessages"]{display:none!important}
 })();
 </script>
 
+
+<!-- M4D Discord-inspired quick friends rail -->
+<style>
+#m4dFriendsRail{display:none;position:fixed;left:0;top:0;bottom:0;width:78px;z-index:90;background:#101116;border-right:1px solid #32343d;box-shadow:6px 0 28px #0004;flex-direction:column;align-items:center;gap:10px;padding:86px 7px 14px}
+#m4dFriendsRail .m4d-rail-heading{font-size:9px;font-weight:900;letter-spacing:1.2px;color:#aeb0be;text-align:center}
+#m4dFriendsRail .m4d-rail-list{width:100%;flex:1;min-height:0;overflow:auto;scrollbar-width:thin;display:flex;flex-direction:column;align-items:center;gap:10px;padding:3px 0}
+#m4dFriendsRail .m4d-rail-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
+#m4dFriendsRail .m4d-rail-avatar{position:relative;width:51px;height:51px;border-radius:16px;border:2px solid #484a55;background:#292a34;color:#fff;display:flex;align-items:center;justify-content:center;overflow:visible;transition:background .2s,border-radius .2s,border-color .2s;cursor:pointer;padding:0}
+#m4dFriendsRail .m4d-rail-avatar:hover,#m4dFriendsRail .m4d-rail-avatar:focus-visible{border-radius:50%;background:#a10e1c;border-color:#eb3a49;outline-offset:2px}
+#m4dFriendsRail .m4d-rail-avatar img{height:100%;width:100%;object-fit:cover;border-radius:inherit}
+#m4dFriendsRail .m4d-rail-avatar .m4d-rail-dot{position:absolute;right:-3px;bottom:-2px;width:15px;height:15px;border:3px solid #101116;border-radius:50%;background:#777a87}
+#m4dFriendsRail .m4d-rail-avatar .m4d-rail-dot.online{background:#3ed17b}
+#m4dFriendsRail .m4d-rail-name{border:0;background:none;cursor:pointer;padding:0;font-size:10px;max-width:65px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#bfc0cc}
+#m4dFriendsRail .m4d-rail-action{width:49px;height:44px;flex-shrink:0;background:#22242d;border:1px solid #3b3e49;border-radius:15px;color:#fff;font-size:21px;cursor:pointer}
+#m4dFriendsRail .m4d-rail-action:hover{background:#b20e1c}
+#m4dFriendsRail .m4d-rail-empty{color:#a6a8b3;font-size:10px;text-align:center;line-height:1.4;padding:8px}
+#m4dFriendsRail .m4d-rail-avatar:focus-visible,#m4dFriendsRail .m4d-rail-action:focus-visible{outline:2px solid #fff}
+#m4dFriendsRail .m4d-rail-status{font-size:10px;color:#9c9eac;text-align:center;line-height:1.3}
+#m4dFriendsRail.m4d-rail-visible{display:flex}
+@media(min-width:1000px){body:has(#m4dFriendsRail.m4d-rail-visible){padding-left:78px}body:has(#m4dFriendsRail.m4d-rail-visible) header{left:78px;width:calc(100% - 78px)} }
+@media(max-width:999px){#m4dFriendsRail.m4d-rail-visible{top:auto;bottom:0;left:0;right:0;width:100%;height:71px;flex-direction:row;padding:6px 82px 5px 12px;border-right:0;border-top:1px solid #41434d;box-shadow:0 -5px 24px #0007;gap:10px}#m4dFriendsRail .m4d-rail-heading{display:none}#m4dFriendsRail .m4d-rail-list{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:0;gap:10px}#m4dFriendsRail .m4d-rail-item{width:55px;flex:0 0 55px;gap:0}#m4dFriendsRail .m4d-rail-name{display:none}#m4dFriendsRail .m4d-rail-avatar{width:49px;height:49px}#m4dFriendsRail .m4d-rail-action{width:44px;height:44px}#m4dFriendsRail .m4d-rail-status{display:none}body:has(#m4dFriendsRail.m4d-rail-visible){padding-bottom:75px}body:has(#m4dFriendsRail.m4d-rail-visible) #m4dFloatingChatButton{bottom:82px}body:has(#m4dFriendsRail.m4d-rail-visible) #m4dMessages.m4d-floating-open{bottom:150px;height:min(65vh,630px)} }
+</style>
+<aside id="m4dFriendsRail" aria-label="Quick access to friends">
+ <button type="button" id="m4dRailFriendsButton" class="m4d-rail-action" title="Open Friends & Requests" aria-label="Open Friends & Requests">♧</button>
+ <div class="m4d-rail-heading">FRIENDS</div>
+ <div class="m4d-rail-list" id="m4dRailFriendsList"><div class="m4d-rail-empty">Loading…</div></div>
+ <div class="m4d-rail-status" id="m4dRailStatus" aria-live="polite"></div>
+</aside>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const rail=document.getElementById('m4dFriendsRail');
+ const list=document.getElementById('m4dRailFriendsList');
+ const status=document.getElementById('m4dRailStatus');
+ if(!client||!rail||!list)return;
+ let currentUser=null, runId=0, members=[], isLoading=false;
+ const button=document.getElementById('m4dRailFriendsButton');
+ button.addEventListener('click',()=>{document.getElementById('m4dFriends')?.scrollIntoView({behavior:'smooth'});});
+ function empty(msg){list.replaceChildren();const p=document.createElement('div');p.className='m4d-rail-empty';p.textContent=msg;list.appendChild(p)}
+ function openFriendChat(friendId){
+   const launcher=document.getElementById('m4dFloatingChatButton');
+   const panel=document.getElementById('m4dMessages');
+   if(!panel?.classList.contains('m4d-floating-open'))launcher?.click();
+   const contactHost=document.getElementById('m4dChatContacts');
+   let tries=0;
+   const pick=()=>{
+    const contact=Array.from(contactHost?.querySelectorAll('[data-m4d-friend-id]')||[]).find(el=>el.dataset.m4dFriendId===friendId);
+    if(contact){contact.click();return}
+    if(++tries<25)setTimeout(pick,180);
+    else status.textContent='Open the chat bubble and select your friend.';
+   };
+   pick();
+ }
+ function draw(online){
+   list.replaceChildren();
+   if(!members.length){empty('No friends yet');return}
+   for(const member of members){
+    const id=member.other_user_id;
+    const item=document.createElement('div');item.className='m4d-rail-item';
+    const avatar=document.createElement('button');avatar.type='button';avatar.className='m4d-rail-avatar';
+    avatar.setAttribute('aria-label','Message '+(member.other_username||'Member'));
+    avatar.title='Message '+(member.other_username||'Member');
+    if(member.other_avatar_url){const img=document.createElement('img');img.alt='';img.referrerPolicy='no-referrer';img.src=member.other_avatar_url;img.onerror=()=>img.replaceWith(document.createTextNode('👤'));avatar.appendChild(img)}
+    else avatar.textContent='👤';
+    const dot=document.createElement('span');dot.className='m4d-rail-dot'+(online.get(id)?' online':'');dot.setAttribute('aria-label',online.get(id)?'Online':'Offline');avatar.appendChild(dot);
+    avatar.addEventListener('click',()=>openFriendChat(id));
+    const name=document.createElement('button');name.type='button';name.className='m4d-rail-name';name.textContent=member.other_username||'Member';name.title='View '+(member.other_username||'Member')+' profile';name.setAttribute('aria-label','View '+(member.other_username||'Member')+' profile');name.addEventListener('click',()=>window.m4dOpenPublicProfile?.(id));
+    item.append(avatar,name);
+    list.appendChild(item);
+   }
+ }
+ async function refresh(){
+  if(!currentUser||isLoading||document.visibilityState==='hidden')return;
+  isLoading=true;const token=runId;
+  try{
+   const {data,error}=await client.rpc('get_m4d_friendships');if(error)throw error;
+   if(token!==runId)return;
+   members=(data||[]).filter(x=>x.request_status==='accepted');
+   const availability=await client.rpc('m4d_friend_online_status');
+   if(availability.error)console.warn('Friends rail presence:',availability.error.message);
+   if(token!==runId)return;
+   const online=new Map((availability.data||[]).map(r=>[r.friend_id,r.is_online]));
+   draw(online);status.textContent='';
+  }catch(err){if(token===runId){status.textContent='Friends unavailable';console.warn('Friends rail:',err.message||err)}}
+  finally{isLoading=false}
+ }
+ function setUser(user){const id=user?.id||null;if(id===currentUser)return;currentUser=id;runId++;members=[];rail.classList.toggle('m4d-rail-visible',!!id);if(id){empty('Loading…');refresh()}else{list.replaceChildren();status.textContent=''}}
+ client.auth.getUser().then(({data})=>setUser(data?.user)).catch(()=>{});
+ client.auth.onAuthStateChange((_event,session)=>setTimeout(()=>setUser(session?.user),0));
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+ setInterval(refresh,30000);
+})();
+</script>
+
 </body>
 </html>
