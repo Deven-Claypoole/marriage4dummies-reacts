@@ -491,5 +491,102 @@ checkM4DLive();
 })();
 </script>
 
+
+<!-- M4D Friends: incoming requests, sent requests, accepted friends -->
+<style>
+#m4dFriends{background:#101115;border-top:1px solid #2d2e35}
+.m4d-friends-panel{max-width:1050px}
+.m4d-request-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:20px}
+.m4d-request-block{background:#191a20;border:1px solid #33343c;border-radius:12px;padding:20px;min-width:0}
+.m4d-request-block h3{margin:0 0 15px;font-size:19px}
+.m4d-request-list{display:grid;gap:10px}
+.m4d-request-card{display:flex;align-items:center;gap:12px;background:#22232b;border:1px solid #33353d;padding:12px;border-radius:9px;flex-wrap:wrap}
+.m4d-request-card .m4d-member-details{min-width:130px}
+.m4d-request-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.m4d-request-actions button{border:0;border-radius:6px;padding:9px 11px;font-weight:750;color:white;background:#e50914;cursor:pointer;font-size:12px}
+.m4d-request-actions button.alt{background:#3b3d47}
+.m4d-request-actions button:disabled{opacity:.5;cursor:wait}
+.m4d-friend-empty{color:#b1b3be;font-size:13px;line-height:1.5}
+#m4dFriendsStatus{color:#bdc0cb;font-size:13px;margin:14px 0;min-height:18px}
+@media(max-width:750px){.m4d-request-columns{grid-template-columns:1fr}}
+</style>
+<section id="m4dFriends"><div class="wrap m4d-friends-panel">
+ <div class="eyebrow">M4D COMMUNITY</div><h2>Friends &amp; Requests</h2>
+ <p class="lead">Accept or decline incoming requests and see who you've added. Private messages will be available after the messaging feature launches.</p>
+ <button id="m4dRefreshFriends" class="m4d-friends-action" type="button">↻ Refresh Requests</button>
+ <p id="m4dFriendsStatus" role="status" aria-live="polite">Sign in to see your friend requests.</p>
+ <div class="m4d-request-columns">
+  <div class="m4d-request-block"><h3>📩 Incoming requests</h3><div id="m4dIncomingRequests" class="m4d-request-list"></div></div>
+  <div class="m4d-request-block"><h3>✓ My friends</h3><div id="m4dAcceptedFriends" class="m4d-request-list"></div></div>
+  <div class="m4d-request-block"><h3>↗ Requests sent</h3><div id="m4dOutgoingRequests" class="m4d-request-list"></div></div>
+ </div>
+</div></section>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const incoming=document.getElementById('m4dIncomingRequests');
+ const accepted=document.getElementById('m4dAcceptedFriends');
+ const outgoing=document.getElementById('m4dOutgoingRequests');
+ const status=document.getElementById('m4dFriendsStatus');
+ const refresh=document.getElementById('m4dRefreshFriends');
+ const nav=document.querySelector('header nav');
+ if(nav){const link=document.createElement('a');link.href='#m4dFriends';link.textContent='Friends';nav.appendChild(link)}
+ let userId=null, generation=0;
+ function empty(el,text){el.replaceChildren();const p=document.createElement('p');p.className='m4d-friend-empty';p.textContent=text;el.appendChild(p)}
+ function reset(){empty(incoming,'No incoming requests.');empty(accepted,'No friends yet.');empty(outgoing,'No pending sent requests.')}
+ function button(label,kind,handler){const b=document.createElement('button');b.type='button';b.textContent=label;if(kind==='alt')b.className='alt';b.addEventListener('click',handler);return b}
+ function card(record,actions){
+  const el=document.createElement('div');el.className='m4d-request-card';
+  const avatar=document.createElement('div');avatar.className='m4d-member-avatar';
+  if(record.other_avatar_url){const img=document.createElement('img');img.alt='';img.referrerPolicy='no-referrer';img.src=record.other_avatar_url;img.onerror=()=>avatar.replaceChildren(document.createTextNode('👤'));avatar.appendChild(img)}else avatar.textContent='👤';
+  const details=document.createElement('div');details.className='m4d-member-details';
+  const name=document.createElement('div');name.className='m4d-member-name';name.textContent=record.other_username||'Member';details.appendChild(name);
+  if(record.other_bio){const bio=document.createElement('div');bio.className='m4d-member-bio';bio.textContent=record.other_bio;details.appendChild(bio)}
+  el.append(avatar,details);
+  if(actions){const group=document.createElement('div');group.className='m4d-request-actions';actions(group);el.appendChild(group)}
+  return el;
+ }
+ async function respond(id,choice,buttons){
+  for(const b of buttons)b.disabled=true;
+  status.textContent=choice==='accepted'?'Accepting friend request…':'Declining friend request…';
+  const {error}=await client.rpc('respond_to_friend_request',{request_id:id,new_status:choice});
+  if(error){status.textContent='Could not respond: '+error.message;for(const b of buttons)b.disabled=false;return}
+  status.textContent=choice==='accepted'?'Friend request accepted!':'Friend request declined.';
+  await load();
+ }
+ async function load(){
+  const token=++generation;reset();
+  if(!client||!userId){status.textContent='Sign in to view your friends and requests.';return}
+  refresh.disabled=true;status.textContent='Loading friends and requests…';
+  try{
+   const {data,error}=await client.rpc('get_m4d_friendships');
+   if(error)throw error;
+   if(token!==generation)return;
+   const rows=data||[];
+   const pendingIn=rows.filter(r=>r.request_status==='pending'&&r.is_incoming);
+   const pendingOut=rows.filter(r=>r.request_status==='pending'&&!r.is_incoming);
+   const friends=rows.filter(r=>r.request_status==='accepted');
+   if(pendingIn.length)incoming.replaceChildren();
+   if(pendingOut.length)outgoing.replaceChildren();
+   if(friends.length)accepted.replaceChildren();
+   for(const r of pendingIn)incoming.appendChild(card(r,group=>{
+     const a=button('Accept','',()=>respond(r.friendship_id,'accepted',[a,d]));
+     const d=button('Decline','alt',()=>respond(r.friendship_id,'declined',[a,d]));
+     group.append(a,d);
+   }));
+   for(const r of pendingOut)outgoing.appendChild(card(r,null));
+   for(const r of friends)accepted.appendChild(card(r,null));
+   status.textContent=pendingIn.length+' incoming request(s) · '+friends.length+' friend(s).';
+  }catch(e){if(token===generation)status.textContent='Could not load friends: '+(e.message||'Try again.')}
+  finally{if(token===generation)refresh.disabled=false}
+ }
+ refresh.addEventListener('click',load);
+ if(!client){reset();refresh.disabled=true;return}
+ client.auth.getUser().then(({data})=>{userId=data?.user?.id||null;load()}).catch(()=>{reset();status.textContent='Unable to check sign-in status.'});
+ client.auth.onAuthStateChange((_event,session)=>{const newId=session?.user?.id||null;if(userId!==newId){userId=newId;load()}});
+})();
+</script>
+
 </body>
 </html>
