@@ -16,7 +16,10 @@ export default async function handler(request){
   if(!userResponse.ok)return reply(401,{error:'Session expired. Sign in again.'});
   const user=await userResponse.json();if(!uuid.test(user?.id||'')||user.id===body.friendId)return reply(403,{error:'Invalid friend'});
   // Authenticate as the caller and reuse the site's existing friend/block rules.
-  const permission=await fetch(url+'/rest/v1/rpc/m4d_can_message',{method:'POST',headers:{apikey:anon,authorization:'Bearer '+jwt,'content-type':'application/json'},body:JSON.stringify({recipient_id:body.friendId})});
+  const permission=await fetch(url+'/rest/v1/rpc/m4d_can_message',{method:'POST',headers:{apikey:anon,authorization:'Bearer '+jwt,'content-type':'application/json'},body:JSON.stringify({other_member_id:body.friendId})
+
+
+
  
 if (!permission.ok) {
   console.error(
