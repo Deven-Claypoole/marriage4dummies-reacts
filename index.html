@@ -1779,13 +1779,31 @@ updateComposer();
 #m4dVoiceButtons button{background:#363947;color:#fff;border:1px solid #616270;border-radius:40px;padding:12px 17px;font-weight:800;cursor:pointer}
 #m4dVoiceButtons #m4dVoiceHangup{background:#c22138;border-color:#c22138}
 #m4dVoiceParticipants{margin:12px 0;color:#b9e8ce;font-size:13px}
+#m4dVoiceMinimize{position:absolute;right:16px;top:15px;background:#393e51;border:1px solid #81879a;border-radius:9px;color:white;font-size:14px;padding:8px 11px;cursor:pointer;font-weight:800}
+#m4dVoiceCard{position:relative;padding-top:56px}
+#m4dVoiceOverlay.m4d-voice-minimized{display:none!important}
+#m4dVoiceMiniBar[hidden]{display:none!important}
+#m4dVoiceMiniBar{position:fixed;right:18px;bottom:92px;z-index:3001;max-width:min(370px,calc(100vw - 24px));background:#1b202b;border:1px solid #716f87;border-left:4px solid #4fd692;color:#fff;border-radius:14px;padding:12px;box-shadow:0 12px 40px #000b;display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-family:inherit}
+#m4dVoiceMiniBar .m4d-mini-label{flex:1 1 130px;min-width:0}
+#m4dVoiceMiniBar .m4d-mini-label strong{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#m4dVoiceMiniBar .m4d-mini-label small{display:block;color:#b7ebc9;font-size:11px}
+#m4dVoiceMiniBar button{background:#353a49;border:1px solid #6d7283;color:white;border-radius:9px;padding:8px 10px;font-weight:700;cursor:pointer;min-height:38px}
+#m4dVoiceMiniBar #m4dMiniLeave{background:#a9233a;border-color:#a9233a}
+#m4dVoiceMinimize:focus-visible,#m4dVoiceMiniBar button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media(max-width:600px){#m4dVoiceMiniBar{left:12px;right:12px;bottom:78px;max-width:none}}
 </style>
 <div id="m4dVoiceOverlay" hidden role="dialog" aria-modal="true" aria-label="Voice call">
-  <div id="m4dVoiceCard"><h2>🎙️ Private voice call</h2><p id="m4dVoiceTitle">Select a friend to call.</p>
+  <div id="m4dVoiceCard"><button type="button" id="m4dVoiceMinimize" aria-label="Minimize voice call">— Minimize</button><h2>🎙️ Private voice call</h2><p id="m4dVoiceTitle">Select a friend to call.</p>
    <p id="m4dVoiceStatus" aria-live="polite">Ready</p><div id="m4dVoiceParticipants"></div>
    <div id="m4dVoiceAudio" hidden></div>
    <div id="m4dVoiceButtons"><button type="button" id="m4dVoiceMute" disabled>🎤 Mute</button><button type="button" id="m4dVoiceDeafen" disabled>🔊 Deafen</button><button type="button" id="m4dVoiceHangup">☎️ Leave call</button></div>
   </div>
+</div>
+<div id="m4dVoiceMiniBar" hidden role="region" aria-label="Ongoing voice call">
+ <span aria-hidden="true">🎙️</span><div class="m4d-mini-label"><strong id="m4dMiniTitle">Voice call</strong><small id="m4dMiniStatus">Connecting…</small></div>
+ <button type="button" id="m4dMiniRestore" title="Reopen call">↗ Open</button>
+ <button type="button" id="m4dMiniMute" title="Toggle microphone" disabled>🎤 Mute</button>
+ <button type="button" id="m4dMiniLeave" title="Leave voice call">☎️ Leave</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
 <script>
@@ -1793,22 +1811,25 @@ updateComposer();
  'use strict';
  const db=window.supabaseClient, title=document.getElementById('m4dChatTitle'),contacts=document.getElementById('m4dChatContacts');
  const overlay=document.getElementById('m4dVoiceOverlay'),status=document.getElementById('m4dVoiceStatus'),callTitle=document.getElementById('m4dVoiceTitle');
+ const miniBar=document.getElementById('m4dVoiceMiniBar'),miniTitle=document.getElementById('m4dMiniTitle'),miniStatus=document.getElementById('m4dMiniStatus'),miniMute=document.getElementById('m4dMiniMute'),miniRestore=document.getElementById('m4dMiniRestore'),miniLeave=document.getElementById('m4dMiniLeave'),minimize=document.getElementById('m4dVoiceMinimize');
  const mute=document.getElementById('m4dVoiceMute'),deafen=document.getElementById('m4dVoiceDeafen'),hangup=document.getElementById('m4dVoiceHangup'),audioHost=document.getElementById('m4dVoiceAudio'),people=document.getElementById('m4dVoiceParticipants');
  if(!db||!title||!contacts)return;
  const button=document.createElement('button');button.type='button';button.id='m4dVoiceCallButton';button.textContent='📞 Voice call';button.title='Join a private voice room with the selected friend';button.disabled=true;title.insertAdjacentElement('afterend',button);
  let room=null,muted=false,deafened=false,connecting=false;
- const setStatus=s=>status.textContent=s;
+ const setStatus=s=>{status.textContent=s;miniStatus.textContent=s.startsWith('Connected')?'● Connected':s};
+ const showCall=()=>{miniBar.hidden=true;overlay.classList.remove('m4d-voice-minimized');overlay.hidden=false};
+ const minimizeCall=()=>{if(!room&&!connecting)return;miniTitle.textContent=callTitle.textContent;overlay.classList.add('m4d-voice-minimized');miniBar.hidden=false};
  const activeFriend=()=>window.m4dGroupActive?null:contacts.querySelector('.m4d-chat-contact.active');
  const refresh=()=>{button.disabled=!activeFriend()||!!room||connecting};
  const observer=new MutationObserver(refresh);observer.observe(contacts,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
  function count(){if(room)people.textContent=(room.remoteParticipants.size+1)+' participant(s) connected';else people.textContent=''}
  function cleanAudio(){audioHost.replaceChildren()}
- async function leave(){const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}cleanAudio();overlay.hidden=true;mute.disabled=deafen.disabled=true;muted=deafened=false;refresh()}
+ async function leave(){const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}cleanAudio();overlay.hidden=true;overlay.classList.remove('m4d-voice-minimized');miniBar.hidden=true;mute.disabled=deafen.disabled=miniMute.disabled=true;muted=deafened=false;mute.textContent=miniMute.textContent='🎤 Mute';refresh()}
  button.addEventListener('click',async()=>{
    const friend=activeFriend();const id=friend?.dataset.m4dFriendId;
    if(!id||connecting||room)return;
    if(!window.LivekitClient){alert('Voice chat library failed to load. Try refreshing.');return}
-   connecting=true;overlay.hidden=false;refresh();callTitle.textContent='Call with '+(friend.innerText||'friend').trim();setStatus('Checking call permissions…');people.textContent='';
+   connecting=true;showCall();refresh();callTitle.textContent='Call with '+(friend.innerText||'friend').trim();setStatus('Checking call permissions…');people.textContent='';
    try{
     const {data:{session},error}=await db.auth.getSession();if(error||!session?.access_token)throw Error('Please sign in again.');
     const response=await fetch('/.netlify/functions/voice-token',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({type:'private',friendId:id})});
@@ -1822,11 +1843,12 @@ updateComposer();
     setStatus('Connecting to voice room…');await r.connect(result.url,result.token);
     await r.localParticipant.setMicrophoneEnabled(true);
     if(room!==r)return;
-    connecting=false;mute.disabled=deafen.disabled=false;count();setStatus('Connected. Your friend can join by opening your chat and pressing Voice call.');refresh();
+    connecting=false;mute.disabled=deafen.disabled=miniMute.disabled=false;count();setStatus('Connected. Your friend can join by opening your chat and pressing Voice call.');refresh();
    }catch(e){setStatus(e.message||'Voice connection failed');const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}refresh()}
  });
- mute.addEventListener('click',async()=>{if(!room)return;try{await room.localParticipant.setMicrophoneEnabled(muted);muted=!muted;mute.textContent=muted?'🔇 Unmute':'🎤 Mute'}catch(e){setStatus(e.message)}});
+ mute.addEventListener('click',async()=>{if(!room)return;try{await room.localParticipant.setMicrophoneEnabled(muted);muted=!muted;mute.textContent=miniMute.textContent=muted?'🔇 Unmute':'🎤 Mute'}catch(e){setStatus(e.message)}});
  deafen.addEventListener('click',()=>{deafened=!deafened;audioHost.querySelectorAll('audio').forEach(a=>a.muted=deafened);deafen.textContent=deafened?'🔇 Undeafen':'🔊 Deafen'});
+ minimize.addEventListener('click',minimizeCall);miniRestore.addEventListener('click',showCall);miniMute.addEventListener('click',()=>mute.click());miniLeave.addEventListener('click',leave);
  hangup.addEventListener('click',leave);window.addEventListener('beforeunload',()=>room?.disconnect());db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT')leave()});
  refresh();
 })();
