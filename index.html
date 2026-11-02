@@ -1322,9 +1322,14 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
 @media(max-width:760px){.hero .m4d-glow-one{width:125%;right:-70%}.hero .m4d-glow-two{width:110%;right:-35%}.hero .m4d-lightline{opacity:.12}}
 @media(prefers-reduced-motion:reduce){.hero .m4d-glow,.hero .m4d-lightline,.hero:before{animation:none!important;will-change:auto!important}}
 
+#m4dRailCommunityButton{background:#852434;border-color:#bf4657;font-weight:900;font-size:25px;line-height:1;color:white}
+#m4dRailCommunityButton:hover,#m4dRailCommunityButton:focus-visible{background:#c32c45}
+#m4dFriendsRail.m4d-rail-collapsed #m4dRailCommunityButton{width:42px;height:42px;min-height:42px;font-size:22px}
+@media(max-width:999px){#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed{height:103px;justify-content:flex-start}#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed #m4dRailCommunityButton{flex-shrink:0}}
 </style>
-<aside aria-label="Quick access to friends" id="m4dFriendsRail">
+<aside aria-label="Quick access to friends and community channels" id="m4dFriendsRail">
 <button aria-controls="m4dRailFriendsList" aria-expanded="true" aria-label="Collapse friends sidebar" id="m4dRailCollapse" title="Collapse friends sidebar" type="button">❮</button>
+<button aria-label="Open Community Channels" class="m4d-rail-action m4d-rail-community" id="m4dRailCommunityButton" title="Open Community Channels" type="button">#</button>
 <button aria-label="Open Friends &amp; Requests" class="m4d-rail-action" id="m4dRailFriendsButton" title="Open Friends &amp; Requests" type="button">♧</button>
 <div class="m4d-rail-heading">FRIENDS</div>
 <div class="m4d-rail-list" id="m4dRailFriendsList"><div class="m4d-rail-empty">Loading…</div></div>
@@ -1353,7 +1358,9 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
  collapseButton.addEventListener('click',()=>{isCollapsed=!isCollapsed;try{localStorage.setItem('m4dFriendsRailCollapsed',isCollapsed?'1':'0')}catch(e){}updateCollapse()});
  updateCollapse();
 
- button.addEventListener('click',()=>{document.getElementById('m4dFriends')?.scrollIntoView({behavior:'smooth'});});
+ const communityButton=document.getElementById('m4dRailCommunityButton');
+ communityButton?.addEventListener('click',()=>{location.hash='#m4dChannels';});
+ button.addEventListener('click',()=>{location.hash='#m4dFriends';});
  function empty(msg){list.replaceChildren();const p=document.createElement('div');p.className='m4d-rail-empty';p.textContent=msg;list.appendChild(p)}
  function openFriendChat(friendId){
    const launcher=document.getElementById('m4dFloatingChatButton');
@@ -1471,7 +1478,8 @@ form.addEventListener('submit',async e=>{e.preventDefault();if(!user||busy)retur
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
 async function setUser(next){if(user?.id===next?.id)return;user=next||null;seq++;knownProfiles.clear();previousSignature='';isAdmin=false;updateComposer();if(!user){resetFeed('Sign in to join community discussions.');tell('Public channels are available to signed-in members.');return}tell('Messages are public to signed-in members. Press Enter to send; Shift+Enter for a new line.');db.rpc('m4d_is_admin').then(({data})=>{if(user)isAdmin=data===true}).catch(()=>{});if(location.hash==='#m4dChannels')loadMessages(true)}
 db.auth.getUser().then(({data})=>setUser(data?.user)).catch(()=>{});db.auth.onAuthStateChange((_ev,s)=>setTimeout(()=>setUser(s?.user),0));window.addEventListener('hashchange',()=>{if(location.hash==='#m4dChannels')loadMessages(true)});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&location.hash==='#m4dChannels')loadMessages(true)});setInterval(()=>loadMessages(),12000);
-const nav=document.querySelector('header nav');if(nav&&!nav.querySelector('[href="#m4dChannels"]')){const link=document.createElement('a');link.href='#m4dChannels';link.textContent='Community';nav.append(link)}
+// Community is accessed from the friends rail rather than adding another top navigation link.
+ document.querySelectorAll('header nav a[href="#m4dChannels"]').forEach(link=>link.remove());
 updateComposer();
 })();</script>
 <script id="m4d-tabbed-pages-router">(()=>{
