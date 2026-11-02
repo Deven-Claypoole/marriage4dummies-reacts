@@ -385,6 +385,94 @@ checkM4DLive();
  if(client){client.auth.getUser().then(({data,error})=>{if(!error)setUser(data.user)}).catch(()=>{});client.auth.onAuthStateChange((_event,session)=>{setUser(session?.user||null);if(_event==='PASSWORD_RECOVERY'){overlay.classList.add('open');document.body.style.overflow='hidden';showMode('newpassword');message('Enter your new password below.')}})}else{console.warn('Supabase client is unavailable')}
 })();
 </script>
+<!-- M4D Personal Member Dashboard: isolated from existing site features -->
+<style>
+#m4dDashboard{display:none;background:radial-gradient(ellipse at 95% 5%,#5f142333,transparent 45%),#0d0e12;border-bottom:1px solid #292b31;padding:40px 0 55px;scroll-margin-top:95px}
+#m4dDashboard.is-visible{display:block}
+.m4d-dash-head{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.m4d-dash-kicker{font-size:11px;letter-spacing:2px;color:#fc6570;font-weight:850}
+.m4d-dash-head h2{margin:8px 0 5px;font-size:clamp(28px,3.5vw,46px)}
+.m4d-dash-head p{color:#b4b6c1;margin:0;font-size:14px}
+.m4d-dash-action{border:1px solid #4a3c43;background:#252329;color:#fff;padding:11px 15px;border-radius:8px;cursor:pointer;font-weight:750;font-size:13px}
+.m4d-dash-action:hover{border-color:#ec3547;background:#343039}
+.m4d-dash-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px}
+.m4d-dash-card{min-width:0;background:#191a20;border:1px solid #34353d;border-radius:14px;padding:22px;box-shadow:0 8px 30px #0003}
+.m4d-dash-card h3{font-size:16px;margin:0 0 12px;letter-spacing:-.2px}
+.m4d-dash-card p{color:#b5b6c1;font-size:13px;line-height:1.6;margin:8px 0}
+.m4d-dash-identity{display:flex;align-items:center;gap:14px;min-width:0}
+.m4d-dash-photo{width:76px;height:76px;flex-shrink:0;border-radius:50%;border:2px solid #e50914;background:#31252b;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:34px}
+.m4d-dash-photo img{width:100%;height:100%;object-fit:cover}
+.m4d-dash-name{font-size:21px;font-weight:900;overflow-wrap:anywhere}
+.m4d-dash-tagline{font-size:12px;color:#c6a1a7;margin-top:5px;overflow-wrap:anywhere}
+.m4d-dash-bio{margin:14px 0!important;overflow-wrap:anywhere;white-space:pre-wrap}
+.m4d-dash-stat{font-size:34px;font-weight:900;line-height:1;margin:13px 0 8px}
+.m4d-dash-muted{color:#aeb0bc;font-size:12px}
+.m4d-dash-friends{display:grid;gap:9px;max-height:210px;overflow:auto}
+.m4d-dash-friend{display:flex;align-items:center;gap:10px;font-size:13px;color:#ececf1}
+.m4d-dash-friend-avatar{display:flex;align-items:center;justify-content:center;width:31px;height:31px;border-radius:50%;background:#353640;overflow:hidden;flex-shrink:0}
+.m4d-dash-friend-avatar img{width:100%;height:100%;object-fit:cover}
+.m4d-dash-dot{height:8px;width:8px;border-radius:50%;background:#40d67a;flex-shrink:0}
+.m4d-dash-link{display:inline-block;margin-top:14px;font-size:13px;font-weight:800;color:#ff777f;text-decoration:none}
+.m4d-dash-link:hover{text-decoration:underline}
+.m4d-dash-shortcuts{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.m4d-dash-shortcuts a,.m4d-dash-shortcuts button{font:inherit;font-size:12px;padding:12px 15px;border:1px solid #42434c;border-radius:8px;background:#23242a;color:#fff;font-weight:750;text-decoration:none;cursor:pointer}
+.m4d-dash-shortcuts a:hover,.m4d-dash-shortcuts button:hover{background:#36323a;border-color:#d82938}
+#m4dDashNav{display:none}
+@media(max-width:1040px){.m4d-dash-grid{grid-template-columns:1fr 1fr}.m4d-dash-card:first-child{grid-column:1/-1}}
+@media(max-width:580px){#m4dDashboard{padding:30px 0}.m4d-dash-grid{grid-template-columns:1fr}.m4d-dash-card:first-child{grid-column:auto}.m4d-dash-card{padding:18px}.m4d-dash-photo{width:62px;height:62px}}
+</style>
+<section id="m4dDashboard" aria-labelledby="m4dDashTitle"><div class="wrap">
+ <div class="m4d-dash-head"><div><div class="m4d-dash-kicker">YOUR M4D HOME</div><h2 id="m4dDashTitle">Welcome back!</h2><p>Everything you love about Marriage4Dummies-Reacts, in one place.</p></div><button id="m4dDashRefresh" class="m4d-dash-action" type="button">↻ Refresh dashboard</button></div>
+ <div class="m4d-dash-grid">
+  <article class="m4d-dash-card"><h3>Your profile</h3><div class="m4d-dash-identity"><div class="m4d-dash-photo" id="m4dDashAvatar" aria-label="Profile photo">🎬</div><div><div class="m4d-dash-name" id="m4dDashName">Member</div><div class="m4d-dash-tagline" id="m4dDashTags">M4D Community Member</div></div></div><p class="m4d-dash-bio" id="m4dDashBio">Welcome to the reaction family.</p><button class="m4d-dash-action" id="m4dDashEditProfile" type="button">Edit Profile</button></article>
+  <article class="m4d-dash-card"><h3>My List</h3><div id="m4dDashSaved" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Reactions saved for later</div><a class="m4d-dash-link" href="#m4dMyList">View saved reactions →</a></article>
+  <article class="m4d-dash-card"><h3>Messages</h3><div id="m4dDashUnread" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Unread messages</div><button id="m4dDashOpenChat" class="m4d-dash-action" type="button" style="margin-top:15px">Open chat bubble →</button></article>
+  <article class="m4d-dash-card"><h3>Friends &amp; Requests</h3><div id="m4dDashFriendCount" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Accepted friends</div><p id="m4dDashRequestCount">Checking friend requests…</p><a href="#m4dFriends" class="m4d-dash-link">Manage friends →</a></article>
+  <article class="m4d-dash-card" style="grid-column:span 2"><h3>Friends online</h3><div id="m4dDashOnline" class="m4d-dash-friends"><p>Checking friend activity…</p></div></article>
+ </div>
+ <div class="m4d-dash-shortcuts"><a href="#latest">New &amp; Popular</a><a href="#video-search">Search Reactions</a><a href="#m4dMembers">Find Members</a><a href="#m4dSafety">Safety Center</a></div>
+ <p id="m4dDashStatus" role="status" aria-live="polite" style="font-size:12px;color:#a8aab5;margin-top:16px"></p>
+</div></section>
+<script>
+(function(){
+ 'use strict';
+ const db=window.supabaseClient;if(!db)return;
+ const el=id=>document.getElementById(id);
+ const section=el('m4dDashboard'),nav=document.querySelector('header nav');
+ if(nav){const a=document.createElement('a');a.id='m4dDashNav';a.href='#m4dDashboard';a.textContent='My Dashboard';nav.insertBefore(a,nav.firstChild)}
+ let userId=null,revision=0,loading=false;
+ function text(id,value){el(id).textContent=String(value)}
+ function safePhoto(url,container){container.replaceChildren();if(typeof url==='string'&&/^https:\/\//i.test(url)){const img=document.createElement('img');img.alt='Your profile picture';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.onerror=()=>container.textContent='🎬';container.append(img)}else container.textContent='🎬'}
+ function reset(){text('m4dDashTitle','Welcome back!');text('m4dDashSaved','—');text('m4dDashUnread','—');text('m4dDashFriendCount','—');text('m4dDashRequestCount','Checking friend requests…');text('m4dDashName','Member');text('m4dDashBio','Welcome to the reaction family.');text('m4dDashTags','M4D Community Member');el('m4dDashAvatar').textContent='🎬';el('m4dDashOnline').textContent='Checking friend activity…';text('m4dDashStatus','')}
+ function renderOnline(friends,online){const host=el('m4dDashOnline');host.replaceChildren();const active=friends.filter(f=>online.has(f.other_user_id));if(!active.length){const p=document.createElement('p');p.textContent='No friends online right now.';host.append(p);return}for(const f of active.slice(0,8)){const row=document.createElement('div');row.className='m4d-dash-friend';const avatar=document.createElement('span');avatar.className='m4d-dash-friend-avatar';avatar.textContent='👤';if(f.other_avatar_url&&/^https:\/\//i.test(f.other_avatar_url)){const image=document.createElement('img');image.alt='';image.src=f.other_avatar_url;image.onerror=()=>{avatar.textContent='👤'};avatar.replaceChildren(image)}const name=document.createElement('span');name.textContent=f.other_username||'Member';const dot=document.createElement('span');dot.className='m4d-dash-dot';dot.setAttribute('aria-label','Online');row.append(avatar,name,dot);host.append(row)}}
+ async function refresh(){if(!userId||loading)return;const version=revision;loading=true;text('m4dDashStatus','Updating your dashboard…');try{
+  const [profile,list,friendships,unread,presence]=await Promise.allSettled([
+   db.from('profiles').select('username,avatar_url,bio,tags').eq('id',userId).maybeSingle(),
+   db.from('my_list').select('video_id',{count:'exact',head:true}).eq('user_id',userId),
+   db.rpc('get_m4d_friendships'),db.rpc('m4d_unread_counts'),db.rpc('m4d_friend_online_status')
+  ]);
+  if(version!==revision)return;
+  const errors=[];
+  function result(p,label){if(p.status==='rejected'){errors.push(label);return null}if(p.value.error){errors.push(label);return null}return p.value}
+  const p=result(profile,'profile');if(p?.data){const d=p.data;text('m4dDashName',d.username||'Member');text('m4dDashTitle','Welcome back, '+(d.username||'Member')+'!');text('m4dDashBio',d.bio||'Welcome to the reaction family.');text('m4dDashTags',Array.isArray(d.tags)&&d.tags.length?d.tags.join(' · '):'M4D Community Member');safePhoto(d.avatar_url,el('m4dDashAvatar'))}
+  const l=result(list,'My List');if(l)text('m4dDashSaved',l.count??0);
+  const f=result(friendships,'friends');const rows=f?.data||[];const friends=rows.filter(x=>x.request_status==='accepted');if(f){text('m4dDashFriendCount',friends.length);const req=rows.filter(x=>x.request_status==='pending'&&x.is_incoming).length;text('m4dDashRequestCount',req?req+' incoming friend request'+(req===1?'':'s'):'No pending friend requests')}
+  const u=result(unread,'messages');if(u)text('m4dDashUnread',(u.data||[]).reduce((n,r)=>n+(Number(r.unread_count)||0),0));
+  const o=result(presence,'online status');if(f&&o){renderOnline(friends,new Set((o.data||[]).filter(x=>x.is_online).map(x=>x.friend_id)))}else if(!friends.length&&f){renderOnline([],new Set())}
+  text('m4dDashStatus',errors.length?'Some information could not be loaded: '+errors.join(', ')+'. Other features remain available.':'Dashboard updated.');
+ }catch(e){text('m4dDashStatus','Could not update your dashboard. Please try again.')}finally{loading=false}}
+ function setUser(user){const next=user?.id||null;if(userId===next)return;userId=next;revision++;section.classList.toggle('is-visible',!!next);if(el('m4dDashNav'))el('m4dDashNav').style.display=next?'inline-flex':'none';reset();if(next)refresh()}
+ el('m4dDashRefresh').addEventListener('click',refresh);
+ el('m4dDashEditProfile').addEventListener('click',()=>document.querySelector('.m4d-account-button')?.click());
+ el('m4dDashOpenChat').addEventListener('click',()=>el('m4dFloatingChatButton')?.click());
+ db.auth.getUser().then(({data})=>setUser(data?.user)).catch(()=>{});
+ db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>setUser(session?.user),0));
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&userId)refresh()});
+ window.addEventListener('focus',()=>{if(userId)refresh()});
+ setInterval(()=>{if(userId&&document.visibilityState==='visible')refresh()},45000);
+})();
+</script>
+
 <!-- My List: personal saved reactions -->
 <style>
 #m4dMyList{background:#111216;border-top:1px solid #292a30}
@@ -524,6 +612,8 @@ checkM4DLive();
       catch(err){add.disabled=false;add.textContent='+ Add Friend';msg('Could not send request: '+(err.message||'Please try again.'))}
       finally{requestBusy=false}
     })}
+    const view=document.createElement('button');view.type='button';view.className='m4d-public-view';view.textContent='View Profile';view.addEventListener('click',()=>window.m4dOpenPublicProfile?.(member.id));details.appendChild(view);
+    avatar.classList.add('m4d-public-clickable');avatar.tabIndex=0;avatar.setAttribute('role','button');avatar.setAttribute('aria-label','View '+(member.username||'member')+' profile');avatar.addEventListener('click',()=>window.m4dOpenPublicProfile?.(member.id));avatar.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();window.m4dOpenPublicProfile?.(member.id)}});
     card.append(avatar,details,add);grid.appendChild(card);
    }
    msg((members||[]).length?(members||[]).length+' member(s) found.':'No matching members found.');
@@ -590,6 +680,7 @@ checkM4DLive();
   const details=document.createElement('div');details.className='m4d-member-details';
   const name=document.createElement('div');name.className='m4d-member-name';name.textContent=record.other_username||'Member';details.appendChild(name);
   if(record.other_bio){const bio=document.createElement('div');bio.className='m4d-member-bio';bio.textContent=record.other_bio;details.appendChild(bio)}
+  const view=document.createElement('button');view.type='button';view.className='m4d-public-view';view.textContent='View Profile';view.addEventListener('click',()=>window.m4dOpenPublicProfile?.(record.other_user_id));details.appendChild(view);
   el.append(avatar,details);
   if(actions){const group=document.createElement('div');group.className='m4d-request-actions';actions(group);el.appendChild(group)}
   return el;
@@ -1083,6 +1174,92 @@ header nav a[href="#m4dMessages"]{display:none!important}
   launch.style.display=session?.user?'flex':'none';
   if(!session?.user)setOpen(false);
  });
+})();
+</script>
+
+
+<!-- Public M4D member profiles: visible to signed-in community members only -->
+<style>
+.m4d-public-view{display:inline-flex;margin-top:9px;padding:6px 10px;border:1px solid #585965;background:#25262c;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:750}
+.m4d-public-view:hover,.m4d-public-view:focus-visible{border-color:#ee3345;color:#fff}
+.m4d-public-clickable{cursor:pointer}
+#m4dPublicProfileOverlay[hidden]{display:none!important}
+#m4dPublicProfileOverlay{position:fixed;inset:0;z-index:250;background:#000d;padding:22px;display:flex;justify-content:center;align-items:center;overflow:auto}
+#m4dPublicProfileCard{background:#17181e;color:#f9f9fb;width:min(540px,100%);border:1px solid #494953;border-radius:15px;overflow:hidden;box-shadow:0 35px 90px #000c}
+#m4dPublicCover{height:135px;background:radial-gradient(circle at 80% 35%,#bb253a65,transparent 45%),linear-gradient(115deg,#5d111c,#18151f 70%);position:relative}
+#m4dPublicClose{position:absolute;right:12px;top:12px;border:1px solid #ffffff5c;border-radius:8px;background:#0009;color:#fff;padding:8px 12px;font-weight:800;cursor:pointer}
+#m4dPublicContent{padding:0 25px 26px}
+#m4dPublicAvatar{width:106px;height:106px;background:#31323d;border:5px solid #17181e;border-radius:50%;display:grid;place-items:center;overflow:hidden;font-size:42px;margin-top:-52px;position:relative}
+#m4dPublicAvatar img{width:100%;height:100%;object-fit:cover}
+#m4dPublicName{font-size:clamp(24px,5vw,35px);font-weight:900;letter-spacing:-1px;margin:12px 0 7px;overflow-wrap:anywhere}
+#m4dPublicBio{color:#dadbe0;line-height:1.6;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+#m4dPublicTags{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
+#m4dPublicTags span{background:#4b202a;color:#ffd1d6;border:1px solid #823b48;padding:6px 10px;border-radius:99px;font-size:12px;font-weight:750}
+#m4dPublicActions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0 5px}
+#m4dPublicAdd{border:none;background:#e50914;color:#fff;padding:11px 16px;border-radius:7px;font-weight:800;cursor:pointer}
+#m4dPublicAdd:disabled{opacity:.65;cursor:default}
+#m4dPublicStatus{font-size:13px;color:#b7b8c4;min-height:20px;overflow-wrap:anywhere}
+@media(max-width:560px){#m4dPublicProfileOverlay{padding:10px}#m4dPublicContent{padding:0 16px 20px}}
+</style>
+<div id="m4dPublicProfileOverlay" role="dialog" aria-modal="true" aria-labelledby="m4dPublicName" hidden>
+  <div id="m4dPublicProfileCard">
+    <div id="m4dPublicCover"><button id="m4dPublicClose" type="button" aria-label="Close profile">✕ Close</button></div>
+    <div id="m4dPublicContent">
+      <div id="m4dPublicAvatar" aria-hidden="true">👤</div>
+      <h2 id="m4dPublicName">Member Profile</h2>
+      <div id="m4dPublicTags"></div>
+      <p id="m4dPublicBio"></p>
+      <div id="m4dPublicActions"><button id="m4dPublicAdd" type="button" hidden>+ Add Friend</button></div>
+      <p id="m4dPublicStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const $=id=>document.getElementById(id);
+ const overlay=$('m4dPublicProfileOverlay'), close=$('m4dPublicClose'),avatar=$('m4dPublicAvatar'),name=$('m4dPublicName'),bio=$('m4dPublicBio'),tags=$('m4dPublicTags'),add=$('m4dPublicAdd'),status=$('m4dPublicStatus');
+ let viewed=null,viewer=null,requestNumber=0,lastFocus=null;
+ function text(message){status.textContent=message}
+ function hide(){overlay.hidden=true;viewed=null;requestNumber++;document.body.style.removeProperty('overflow');lastFocus?.focus?.()}
+ close.addEventListener('click',hide);
+ overlay.addEventListener('click',e=>{if(e.target===overlay)hide()});
+ document.addEventListener('keydown',e=>{if(overlay.hidden)return;if(e.key==='Escape'){hide();return}if(e.key==='Tab'){const focusable=[close,...(!add.hidden&&!add.disabled?[add]:[])];if(e.shiftKey&&document.activeElement===focusable[0]){e.preventDefault();focusable[focusable.length-1].focus()}else if(!e.shiftKey&&document.activeElement===focusable[focusable.length-1]){e.preventDefault();focusable[0].focus()}}});
+ async function open(id){
+  if(!client||!id)return;
+  lastFocus=document.activeElement;overlay.hidden=false;document.body.style.overflow='hidden';close.focus();
+  const run=++requestNumber;viewed=null;name.textContent='Loading profile…';bio.textContent='';tags.replaceChildren();avatar.textContent='👤';add.hidden=true;text('');
+  try{
+   const {data:auth,error:authError}=await client.auth.getUser();if(authError)throw authError;
+   viewer=auth?.user||null;if(!viewer){text('Sign in to view member profiles.');return}
+   const {data,error}=await client.rpc('get_m4d_public_profile',{member_id:id});
+   if(error)throw error;
+   if(run!==requestNumber)return;
+   const p=Array.isArray(data)?data[0]:data;
+   if(!p){name.textContent='Profile unavailable';text('This profile is unavailable or cannot be viewed.');return}
+   viewed=p.id;name.textContent=p.username||'Member';bio.textContent=p.bio||'This member has not added a bio yet.';
+   if(p.avatar_url){const img=document.createElement('img');img.alt='';img.referrerPolicy='no-referrer';img.src=p.avatar_url;img.onerror=()=>avatar.replaceChildren(document.createTextNode('👤'));avatar.replaceChildren(img)}
+   if(Array.isArray(p.tags)){for(const tag of p.tags){if(typeof tag!=='string')continue;const pill=document.createElement('span');pill.textContent=tag;tags.appendChild(pill)}}
+   if(p.id===viewer.id){text('This is your profile.');return}
+   const {data:relations,error:relationError}=await client.from('friendships').select('id,requester_id,recipient_id,status').or('requester_id.eq.'+viewer.id+',recipient_id.eq.'+viewer.id);
+   if(relationError)throw relationError;
+   if(run!==requestNumber)return;
+   const relation=(relations||[]).find(r=>r.requester_id===p.id||r.recipient_id===p.id);
+   add.hidden=false;
+   if(relation){add.disabled=true;add.textContent=relation.status==='accepted'?'✓ Friends':relation.status==='pending'?(relation.requester_id===viewer.id?'Request Sent':'Request Received'):'Request Declined'}
+   else{add.disabled=false;add.textContent='+ Add Friend'}
+  }catch(err){if(run===requestNumber){add.hidden=true;text('Could not load profile: '+(err.message||'Please try again.'))}}
+ }
+ add.addEventListener('click',async()=>{
+  if(!client||!viewer||!viewed||add.disabled)return;
+  const id=viewed,userId=viewer.id;add.disabled=true;add.textContent='Sending…';
+  const {error}=await client.from('friendships').insert({requester_id:userId,recipient_id:id,status:'pending'});
+  if(error){add.disabled=false;add.textContent='+ Add Friend';text('Could not send request: '+error.message);return}
+  add.textContent='Request Sent';text('Friend request sent.');
+ });
+ window.m4dOpenPublicProfile=open;
+ if(client)client.auth.onAuthStateChange((_event,session)=>{if(!session?.user&&!overlay.hidden)hide()});
 })();
 </script>
 
