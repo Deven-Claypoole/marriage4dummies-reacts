@@ -207,6 +207,20 @@ checkM4DLive();
   console.log("Supabase connection initialized");
 </script>
 
+<style>
+/* M4D member profile customization */
+.m4d-profile-top{display:flex;gap:15px;align-items:center;margin:16px 0 18px}
+.m4d-profile-top strong{font-size:17px}.m4d-profile-top p{color:#bcbcc4;font-size:12px;overflow-wrap:anywhere}
+.m4d-photo-circle{width:92px;height:92px;min-width:92px;border:3px solid #e50914;background:#2c2026;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px}
+.m4d-photo-circle img{width:100%;height:100%;object-fit:cover;display:block}
+.m4d-photo-circle img[hidden]{display:none}
+#m4dProfileArea textarea,#m4dProfileArea input[type=file]{width:100%;background:#202127;border:1px solid #444651;color:white;border-radius:7px;padding:11px;margin:7px 0 5px;font:inherit}
+#m4dProfileArea textarea{resize:vertical;min-height:90px}
+.m4d-account-help{font-size:11px;color:#aeb0bb;line-height:1.4;margin:3px 0 12px}
+.m4d-admin-label{font-size:10px;color:#ff9199;margin-left:6px;font-weight:700}
+.m4d-profile-tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.m4d-profile-tag{background:#4a202a;border:1px solid #a53a4c;color:#fff1f2;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700}
+</style>
 <!-- M4D member accounts -->
 <div class="m4d-account-overlay" id="m4dAccountOverlay" role="dialog" aria-modal="true" aria-labelledby="m4dAccountTitle">
  <div class="m4d-account-panel">
@@ -220,7 +234,14 @@ checkM4DLive();
    <div id="m4dPasswordGroup"><label for="m4dPassword">Password</label><input id="m4dPassword" type="password" minlength="6" autocomplete="current-password" required /></div>
    <button class="m4d-account-primary" id="m4dAccountSubmit" type="submit">Sign In</button>
   </form>
-  <div id="m4dProfileArea" hidden><div class="m4d-account-avatar">🎬</div><p id="m4dProfileEmail"></p><label for="m4dProfileName">Display name</label><input id="m4dProfileName" maxlength="40" /><button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Profile</button><button class="m4d-account-primary" id="m4dSignOut" type="button" style="background:#383942">Sign Out</button></div>
+  <div id="m4dProfileArea" hidden>
+   <div class="m4d-profile-top"><div class="m4d-photo-circle"><img id="m4dPhotoPreview" alt="Your profile picture" hidden><span id="m4dPhotoFallback" aria-hidden="true">🎬</span></div><div><strong>Customize your profile</strong><p id="m4dProfileEmail"></p></div></div>
+   <label for="m4dProfilePicture">Upload profile picture</label><input id="m4dProfilePicture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="m4dPhotoHelp"/><p class="m4d-account-help" id="m4dPhotoHelp">JPG, PNG, or WebP · Maximum 2 MB · Pictures are publicly visible.</p>
+   <label for="m4dProfileName">Display name</label><input id="m4dProfileName" maxlength="40" />
+   <label for="m4dProfileBio">About me</label><textarea id="m4dProfileBio" maxlength="160" rows="3" placeholder="Tell the M4D community about yourself..."></textarea><p class="m4d-account-help" id="m4dBioCounter">0 / 160 characters</p>
+   <label>My tags <span class="m4d-admin-label">Admin assigned</span></label><div id="m4dProfileTags" class="m4d-profile-tags" aria-live="polite"><span class="m4d-account-help">No tags assigned yet.</span></div><p class="m4d-account-help">Only M4D administrators can give members profile tags.</p>
+   <button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Profile</button><button class="m4d-account-primary" id="m4dSignOut" type="button" style="background:#383942">Sign Out</button>
+  </div>
   <p id="m4dAccountMessage" class="m4d-account-message" role="status" aria-live="polite"></p>
   <div class="m4d-account-row"><button class="m4d-account-link" id="m4dSwitchMode" type="button">Create an account</button><button class="m4d-account-link" id="m4dForgotPassword" type="button">Forgot password?</button></div>
  </div>
@@ -241,9 +262,39 @@ checkM4DLive();
  $('m4dSwitchMode').addEventListener('click',()=>showMode(mode==='signin'?'signup':'signin'));
  $('m4dForgotPassword').addEventListener('click',()=>showMode('reset'));
  function setUser(u){user=u;accountButton.textContent=u?'👤 My Profile':'Sign In';if(overlay.classList.contains('open'))showMode(u?'profile':'signin')}
- async function loadProfile(){if(!client||!user)return;$('m4dProfileEmail').textContent=user.email||'';const {data,error}=await client.from('profiles').select('username').eq('id',user.id).maybeSingle();if(error)message(error.message);$('m4dProfileName').value=data?.username||user.user_metadata?.username||'Member'}
+ let currentPhotoUrl='';
+ function showPhoto(url){const img=$('m4dPhotoPreview');const fallback=$('m4dPhotoFallback');if(url && /^(https:\/\/|blob:)/i.test(url)){img.src=url;img.hidden=false;fallback.hidden=true;}else{img.removeAttribute('src');img.hidden=true;fallback.hidden=false;}}
+ function showTags(tags){const holder=$('m4dProfileTags');holder.replaceChildren();if(!Array.isArray(tags)||!tags.length){const hint=document.createElement('span');hint.className='m4d-account-help';hint.textContent='No tags assigned yet.';holder.append(hint);return}tags.forEach(tag=>{if(typeof tag!=='string')return;const el=document.createElement('span');el.className='m4d-profile-tag';el.textContent=tag;holder.append(el)})}
+ $('m4dProfileBio').addEventListener('input',()=>{$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters'});
+ $('m4dProfilePicture').addEventListener('change',()=>{const f=$('m4dProfilePicture').files?.[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>2*1024*1024){message('Choose a JPG, PNG, or WebP image no larger than 2 MB.');$('m4dProfilePicture').value='';return}const localUrl=URL.createObjectURL(f);const img=$('m4dPhotoPreview');img.onload=()=>URL.revokeObjectURL(localUrl);showPhoto(localUrl)});
+ async function loadProfile(){if(!client||!user)return;const requestedId=user.id;$('m4dProfileEmail').textContent=user.email||'';const {data,error}=await client.from('profiles').select('username,avatar_url,bio,tags').eq('id',requestedId).maybeSingle();if(!user||user.id!==requestedId)return;if(error){message('Could not load profile: '+error.message);return}$('m4dProfileName').value=data?.username||user.user_metadata?.username||'Member';$('m4dProfileBio').value=data?.bio||'';$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters';currentPhotoUrl=data?.avatar_url||'';$('m4dProfilePicture').value='';showPhoto(currentPhotoUrl);showTags(data?.tags)}
  $('m4dAccountForm').addEventListener('submit',async e=>{e.preventDefault();if(!client){message('Account service did not load. Refresh the page and try again.');return}const email=$('m4dEmail').value.trim();const password=$('m4dPassword').value;const submit=$('m4dAccountSubmit');submit.disabled=true;message('Please wait…');try{if(mode==='newpassword'){const {error}=await client.auth.updateUser({password});if(error)throw error;setUser((await client.auth.getUser()).data.user);showMode('profile');message('Your password has been updated.')}else if(mode==='signup'){const username=$('m4dUsername').value.trim();if(!username){message('Please enter a username.');return}const {data,error}=await client.auth.signUp({email,password,options:{data:{username},emailRedirectTo:location.origin+'/'}});if(error)throw error;if(data.session){setUser(data.user);message('Account created!')}else{showMode('signin');message('Account created! Check your email and confirm your address before signing in.')}}else if(mode==='reset'){const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/'});if(error)throw error;message('If this email is registered, a password reset link has been sent.')}else{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;setUser(data.user);showMode('profile');await loadProfile();message('Signed in successfully.')}}catch(err){message(err.message||'Something went wrong. Please try again.')}finally{submit.disabled=false}});
- $('m4dSaveProfile').addEventListener('click',async()=>{if(!user||!client)return;const username=$('m4dProfileName').value.trim();if(!username||username.length>40){message('Choose a display name between 1 and 40 characters.');return}const {error}=await client.from('profiles').update({username}).eq('id',user.id);message(error?error.message:'Profile saved!')});
+ $('m4dSaveProfile').addEventListener('click',async()=>{
+  if(!user||!client)return;const accountId=user.id;
+  const username=$('m4dProfileName').value.trim();const bio=$('m4dProfileBio').value.trim();
+  if(!username||username.length>40){message('Choose a display name between 1 and 40 characters.');return}
+  if(bio.length>160){message('Bio cannot be longer than 160 characters.');return}
+  const button=$('m4dSaveProfile');button.disabled=true;message('Saving profile…');
+  try{
+   const changes={username,bio};const photo=$('m4dProfilePicture').files?.[0];
+   if(photo){
+    if(!['image/jpeg','image/png','image/webp'].includes(photo.type)||photo.size>2*1024*1024)throw new Error('Use a JPG, PNG, or WebP image smaller than 2 MB.');
+    const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[photo.type];
+    const path=accountId+'/'+crypto.randomUUID()+'.'+ext;
+    const {error:uploadError}=await client.storage.from('profile-avatars').upload(path,photo,{contentType:photo.type,upsert:false,cacheControl:'3600'});
+    if(uploadError)throw uploadError;
+    const {data:publicData}=client.storage.from('profile-avatars').getPublicUrl(path);
+    changes.avatar_url=publicData.publicUrl;
+   }
+   const {error}=await client.from('profiles').update(changes).eq('id',accountId);
+   if(error)throw error;
+   if(!user||user.id!==accountId)return;
+   if(changes.avatar_url)currentPhotoUrl=changes.avatar_url;
+   $('m4dProfilePicture').value='';showPhoto(currentPhotoUrl);
+   message('Profile saved successfully!');
+  }catch(err){message('Could not save profile: '+(err.message||'Unknown error'));}
+  finally{button.disabled=false}
+ });
  $('m4dSignOut').addEventListener('click',async()=>{if(!client)return;const {error}=await client.auth.signOut();if(error){message(error.message);return}setUser(null);close()});
  if(client){client.auth.getUser().then(({data,error})=>{if(!error)setUser(data.user)}).catch(()=>{});client.auth.onAuthStateChange((_event,session)=>{setUser(session?.user||null);if(_event==='PASSWORD_RECOVERY'){overlay.classList.add('open');document.body.style.overflow='hidden';showMode('newpassword');message('Enter your new password below.')}})}else{console.warn('Supabase client is unavailable')}
 })();
