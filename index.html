@@ -601,7 +601,7 @@ checkM4DLive();
 .m4d-chat-stream{flex:1;min-height:270px;max-height:480px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
 .m4d-chat-bubble{max-width:83%;align-self:flex-start;background:#30313c;padding:10px 13px;border-radius:12px;overflow-wrap:anywhere;white-space:pre-wrap;font-size:14px}
 .m4d-chat-bubble.mine{align-self:flex-end;background:#a5101c}.m4d-chat-bubble small{display:block;font-size:10px;opacity:.7;margin-top:5px}
-.m4d-chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid #34353e}.m4d-chat-compose input{min-width:0;flex:1;background:#24252f;border:1px solid #444650;color:white;padding:12px;border-radius:7px}
+.m4d-chat-bubble.mine .m4d-receipt{color:#f9d5d9;font-weight:650;opacity:1}.m4d-chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid #34353e}.m4d-chat-compose input{min-width:0;flex:1;background:#24252f;border:1px solid #444650;color:white;padding:12px;border-radius:7px}
 .m4d-chat-compose button,.m4d-chat-refresh{border:0;background:#e50914;color:white;border-radius:7px;padding:11px 15px;font-weight:750;cursor:pointer}
 .m4d-chat-compose button:disabled{opacity:.5;cursor:not-allowed}.m4d-chat-note{font-size:12px;color:#b5b7c2;margin:10px 0}
 @media(max-width:680px){.m4d-chat-shell{grid-template-columns:1fr}.m4d-chat-sidebar{border-right:0;border-bottom:1px solid #34353e}.m4d-chat-contacts{display:flex;overflow-x:auto}.m4d-chat-contact{min-width:140px}.m4d-chat-stream{max-height:360px}}
@@ -636,12 +636,12 @@ checkM4DLive();
  }
  async function loadMessages(force){
   if(!uid||!active)return;const current=active.other_user_id,member=uid;
-  try{const {data,error}=await client.from('m4d_messages').select('id,sender_id,recipient_id,body,created_at').or('and(sender_id.eq.'+member+',recipient_id.eq.'+current+'),and(sender_id.eq.'+current+',recipient_id.eq.'+member+')').order('created_at',{ascending:true}).limit(200);
+  try{const {data,error}=await client.from('m4d_messages').select('id,sender_id,recipient_id,body,created_at,read_at').or('and(sender_id.eq.'+member+',recipient_id.eq.'+current+'),and(sender_id.eq.'+current+',recipient_id.eq.'+member+')').order('created_at',{ascending:true}).limit(200);
    if(error)throw error;if(uid!==member||active?.other_user_id!==current)return;
-   const rows=data||[],signature=rows.map(r=>r.id).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
+   const rows=data||[],signature=rows.map(r=>r.id+':'+(r.read_at||'')).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
    stream.replaceChildren();if(!rows.length){clearStream('No messages yet. Say hello!');return}
    for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.body;
-    const ts=document.createElement('small');ts.textContent=new Date(r.created_at).toLocaleString();bubble.append(ts);stream.append(bubble)}stream.scrollTop=stream.scrollHeight;
+    const ts=document.createElement('small');ts.textContent=new Date(r.created_at).toLocaleString();bubble.append(ts);if(r.sender_id===uid){const receipt=document.createElement('small');receipt.className='m4d-receipt';receipt.textContent=r.read_at?'✓✓ Seen':'✓ Sent';receipt.setAttribute('aria-label',r.read_at?'Message seen':'Message sent');bubble.append(receipt)}stream.append(bubble)}stream.scrollTop=stream.scrollHeight;
   }catch(e){note('Could not load messages: '+e.message)}
  }
  form.addEventListener('submit',async e=>{e.preventDefault();if(!uid||!active||busy)return;const body=input.value.trim();if(!body||body.length>2000)return;
