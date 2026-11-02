@@ -1409,10 +1409,75 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
  setInterval(refresh,30000);
 })();
 </script>
+<style id="m4d-public-channels-css">
+#m4dChannels{padding:22px 20px 75px;min-height:65vh}
+#m4dChannels .m4d-ch-shell{display:grid;grid-template-columns:235px minmax(0,1fr);max-width:1190px;min-height:610px;margin:0 auto;border:1px solid #373946;border-radius:19px;background:#15161d;overflow:hidden;box-shadow:0 20px 70px #0005}
+#m4dChannels .m4d-ch-rooms{background:#20212a;padding:20px 12px;border-right:1px solid #383946}
+#m4dChannels .m4d-ch-rooms h3{font-size:12px;letter-spacing:.1em;color:#b8bac8;margin:0 10px 20px}
+#m4dChannels .m4d-ch-room{width:100%;background:transparent;border:0;border-radius:9px;text-align:left;padding:13px 12px;color:#c8cbd4;font:inherit;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:9px;margin:4px 0}
+#m4dChannels .m4d-ch-room:hover{background:#343643;color:#fff}
+#m4dChannels .m4d-ch-room.active{background:#3a2933;color:#fff;box-shadow:inset 3px 0 #f04259}
+#m4dChannels .m4d-ch-main{min-width:0;display:flex;flex-direction:column;max-height:720px}
+#m4dChannels .m4d-ch-head{padding:19px 23px;border-bottom:1px solid #353643;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#m4dChannels .m4d-ch-head strong{color:#fff;font-size:19px}
+#m4dChannels .m4d-ch-head span{color:#aaaebc;font-size:12px}
+#m4dChannels .m4d-ch-feed{flex:1;min-height:300px;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:17px;overscroll-behavior:contain}
+#m4dChannels .m4d-ch-msg{display:flex;align-items:flex-start;gap:12px}
+#m4dChannels .m4d-ch-avatar{height:40px;width:40px;flex:0 0 40px;border-radius:15px;object-fit:cover;background:#343641;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:17px;overflow:hidden}
+#m4dChannels .m4d-ch-msg-main{min-width:0;flex:1}
+#m4dChannels .m4d-ch-byline{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#m4dChannels .m4d-ch-byline button{background:none;border:0;padding:0;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+#m4dChannels .m4d-ch-byline time{color:#898d9f;font-size:11px}
+#m4dChannels .m4d-ch-body{white-space:pre-wrap;overflow-wrap:anywhere;color:#d6d8e0;font-size:14px;line-height:1.6;margin-top:3px}
+#m4dChannels .m4d-ch-remove{background:none;border:0;color:#ee8e9a;font-size:11px;cursor:pointer;margin-left:auto}
+#m4dChannels .m4d-ch-compose{border-top:1px solid #353643;padding:15px 20px 19px}
+#m4dChannels .m4d-ch-compose form{display:flex;align-items:end;gap:10px}
+#m4dChannels textarea{flex:1;min-width:0;resize:vertical;min-height:55px;max-height:170px;border:1px solid #4b4d5a;border-radius:12px;background:#292b35;color:white;padding:14px;font:inherit;font-size:14px}
+#m4dChannels .m4d-ch-send{background:#d71936;border:none;border-radius:11px;padding:15px 17px;color:#fff;font-weight:800;cursor:pointer}
+#m4dChannels .m4d-ch-send:disabled{opacity:.45;cursor:not-allowed}
+#m4dChannels .m4d-ch-note{font-size:12px;color:#a7a9b7;margin:8px 0 0}
+#m4dChannels .m4d-ch-empty{color:#b5b8c6;text-align:center;margin:auto;padding:36px 10px}
+#m4dChannels button:focus-visible,#m4dChannels textarea:focus-visible{outline:2px solid #ff788b;outline-offset:3px}
+@media(max-width:750px){#m4dChannels{padding:14px 10px 85px}#m4dChannels .m4d-ch-shell{display:block;min-height:560px}#m4dChannels .m4d-ch-rooms{border-right:0;border-bottom:1px solid #383946;padding:12px}#m4dChannels .m4d-ch-rooms h3{margin:3px 6px 10px}#m4dChannels .m4d-ch-roomlist{display:flex;overflow-x:auto;gap:4px}#m4dChannels .m4d-ch-room{flex:0 0 auto;width:auto;margin:0;white-space:nowrap}#m4dChannels .m4d-ch-main{height:62vh;min-height:490px}#m4dChannels .m4d-ch-feed{padding:15px}#m4dChannels .m4d-ch-compose{padding:12px}#m4dChannels .m4d-ch-send{padding:14px 12px}}
+</style>
+<section id="m4dChannels" class="m4d-tab-hidden" aria-label="Community channels"><div class="m4d-ch-shell">
+<aside class="m4d-ch-rooms"><h3>COMMUNITY CHANNELS</h3><div class="m4d-ch-roomlist" id="m4dChannelRooms">
+<button type="button" class="m4d-ch-room active" data-channel="general"># general</button>
+<button type="button" class="m4d-ch-room" data-channel="reactions"># reactions</button>
+<button type="button" class="m4d-ch-room" data-channel="juice-wrld"># juice-wrld</button>
+<button type="button" class="m4d-ch-room" data-channel="stream-talk"># stream-talk</button>
+</div></aside>
+<div class="m4d-ch-main"><div class="m4d-ch-head"><strong id="m4dChannelTitle"># general</strong><span id="m4dChannelDescription">Chat with the M4D community</span></div>
+<div class="m4d-ch-feed" id="m4dChannelFeed" role="log" aria-live="polite"><div class="m4d-ch-empty">Sign in to join community discussions.</div></div>
+<div class="m4d-ch-compose"><form id="m4dChannelForm"><textarea id="m4dChannelInput" maxlength="2000" rows="2" placeholder="Message #general" aria-label="Write a public channel message"></textarea><button type="submit" class="m4d-ch-send" id="m4dChannelSend">Send</button></form><p id="m4dChannelNotice" class="m4d-ch-note" role="status">Messages posted here are visible to all signed-in members. Private messages remain in the chat bubble.</p></div></div>
+</div></section>
+<script id="m4d-public-channels-script">(()=>{
+'use strict';
+const db=window.supabaseClient, root=document.getElementById('m4dChannels');
+if(!db||!root)return;
+const rooms=root.querySelector('#m4dChannelRooms'), feed=root.querySelector('#m4dChannelFeed'), form=root.querySelector('#m4dChannelForm'), input=root.querySelector('#m4dChannelInput'), send=root.querySelector('#m4dChannelSend'), note=root.querySelector('#m4dChannelNotice');
+const labels={'general':'Chat with the M4D community','reactions':'Discuss the newest reaction videos','juice-wrld':'Talk all things Juice WRLD','stream-talk':'Live streams, schedules, and moments'};
+let user=null,active='general',seq=0, busy=false, loading=false, knownProfiles=new Map(), isAdmin=false, previousSignature='';
+const tell=(msg)=>{note.textContent=msg};
+function resetFeed(msg){feed.replaceChildren();let el=document.createElement('div');el.className='m4d-ch-empty';el.textContent=msg;feed.append(el)}
+function updateComposer(){const allowed=!!user&&!busy;input.disabled=!allowed;send.disabled=!allowed;input.placeholder=user?'Message #'+active:'Sign in to post';}
+function switchRoom(slug){if(!labels[slug])return;active=slug;seq++;previousSignature='';rooms.querySelectorAll('[data-channel]').forEach(b=>{b.classList.toggle('active',b.dataset.channel===slug);b.setAttribute('aria-pressed',String(b.dataset.channel===slug))});root.querySelector('#m4dChannelTitle').textContent='# '+slug;root.querySelector('#m4dChannelDescription').textContent=labels[slug];updateComposer();resetFeed(user?'Loading messages…':'Sign in to join community discussions.');if(user)loadMessages(true)}
+rooms.addEventListener('click',e=>{const b=e.target.closest('[data-channel]');if(b)switchRoom(b.dataset.channel)});
+async function getProfile(id){if(knownProfiles.has(id))return knownProfiles.get(id);let name='Member',avatar=null;try{const {data,error}=await db.rpc('get_m4d_public_profile',{member_id:id});if(!error&&data){const p=Array.isArray(data)?data[0]:data;name=p?.username||name;avatar=p?.avatar_url||null}}catch(e){}const profile={name,avatar};knownProfiles.set(id,profile);return profile}
+function createMessage(m,p){const row=document.createElement('article');row.className='m4d-ch-msg';let avatar=document.createElement('div');avatar.className='m4d-ch-avatar';if(p.avatar){let img=document.createElement('img');img.src=p.avatar;img.alt='';img.referrerPolicy='no-referrer';img.style.cssText='height:100%;width:100%;object-fit:cover';img.onerror=()=>{avatar.textContent=p.name.charAt(0).toUpperCase()};avatar.append(img)}else avatar.textContent=p.name.charAt(0).toUpperCase();const main=document.createElement('div');main.className='m4d-ch-msg-main';const by=document.createElement('div');by.className='m4d-ch-byline';const name=document.createElement('button');name.type='button';name.textContent=p.name;name.addEventListener('click',()=>window.m4dOpenPublicProfile?.(m.author_id));const time=document.createElement('time');time.dateTime=m.created_at;time.textContent=new Date(m.created_at).toLocaleString();by.append(name,time);if(m.author_id===user?.id||isAdmin){let del=document.createElement('button');del.type='button';del.className='m4d-ch-remove';del.textContent='Delete';del.setAttribute('aria-label','Delete message from '+p.name);del.addEventListener('click',async()=>{if(!confirm('Delete this public message?'))return;del.disabled=true;const {error}=await db.from('m4d_channel_messages').delete().eq('id',m.id);if(error){tell('Unable to delete message: '+error.message);del.disabled=false}else{tell('Message deleted.');await loadMessages(true)}});by.append(del)}const body=document.createElement('div');body.className='m4d-ch-body';body.textContent=m.body;main.append(by,body);row.append(avatar,main);return row}
+async function loadMessages(force=false){if(!user||loading||document.visibilityState==='hidden'||(location.hash!=='#m4dChannels'&&!force))return;const token=seq,room=active;loading=true;try{const {data,error}=await db.from('m4d_channel_messages').select('id,channel_id,author_id,body,created_at').eq('channel_id',room).order('created_at',{ascending:false}).limit(80);if(error)throw error;if(token!==seq)return;const entries=(data||[]).reverse();const signature=entries.map(m=>m.id).join(',');if(!force&&signature===previousSignature)return;previousSignature=signature;const ids=[...new Set(entries.map(m=>m.author_id))];await Promise.all(ids.map(id=>getProfile(id)));if(token!==seq)return;const atBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<120;feed.replaceChildren();if(!entries.length)resetFeed('No messages yet. Start the conversation!');for(const m of entries)feed.append(createMessage(m,knownProfiles.get(m.author_id)||{name:'Member',avatar:null}));if(force||atBottom)feed.scrollTop=feed.scrollHeight;}
+catch(err){if(token===seq)resetFeed('Could not load channels: '+(err?.message||'Unknown error')+'. Run the Supabase setup SQL first.')}finally{loading=false}}
+form.addEventListener('submit',async e=>{e.preventDefault();if(!user||busy)return;const body=input.value.trim();if(!body||body.length>2000){tell('Enter a message of 1–2000 characters.');return}busy=true;updateComposer();try{const {error}=await db.from('m4d_channel_messages').insert({channel_id:active,author_id:user.id,body});if(error)throw error;input.value='';tell('Message posted to #'+active);await loadMessages(true)}catch(err){tell('Could not post: '+(err?.message||'Unknown error'))}finally{busy=false;updateComposer()}});
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
+async function setUser(next){if(user?.id===next?.id)return;user=next||null;seq++;knownProfiles.clear();previousSignature='';isAdmin=false;updateComposer();if(!user){resetFeed('Sign in to join community discussions.');tell('Public channels are available to signed-in members.');return}tell('Messages are public to signed-in members. Press Enter to send; Shift+Enter for a new line.');db.rpc('m4d_is_admin').then(({data})=>{if(user)isAdmin=data===true}).catch(()=>{});if(location.hash==='#m4dChannels')loadMessages(true)}
+db.auth.getUser().then(({data})=>setUser(data?.user)).catch(()=>{});db.auth.onAuthStateChange((_ev,s)=>setTimeout(()=>setUser(s?.user),0));window.addEventListener('hashchange',()=>{if(location.hash==='#m4dChannels')loadMessages(true)});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&location.hash==='#m4dChannels')loadMessages(true)});setInterval(()=>loadMessages(),12000);
+const nav=document.querySelector('header nav');if(nav&&!nav.querySelector('[href="#m4dChannels"]')){const link=document.createElement('a');link.href='#m4dChannels';link.textContent='Community';nav.append(link)}
+updateComposer();
+})();</script>
 <script id="m4d-tabbed-pages-router">(()=>{
  'use strict';
- const contentIds=['home','latest','weekly','featured','library','video-search','contact','m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration'];
- const titles={home:'Home',latest:'New & Popular',weekly:'Top Picks',featured:'Featured Reactions',library:'Collections','video-search':'Search Reactions',contact:'Contact',m4dMyList:'My List',m4dMembers:'Find Members',m4dFriends:'Friends & Requests',m4dSafety:'Safety Center',m4dModeration:'Admin Moderation'};
+ const contentIds=['home','latest','weekly','featured','library','video-search','contact','m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration','m4dChannels'];
+ const titles={home:'Home',latest:'New & Popular',weekly:'Top Picks',featured:'Featured Reactions',library:'Collections','video-search':'Search Reactions',contact:'Contact',m4dMyList:'My List',m4dMembers:'Find Members',m4dFriends:'Friends & Requests',m4dSafety:'Safety Center',m4dModeration:'Admin Moderation',m4dChannels:'Community Channels'};
  const special={m4dMessages:'m4dFriends',m4dDashboard:'home'};
  let current='home';
  function render(){
@@ -1426,7 +1491,7 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
       if(el.id && contentIds.includes(el.id))el.classList.toggle('m4d-tab-hidden',el.id!==view);
    });
    // The original My List/Friends/Safety sections are placed after main.
-   for(const id of ['m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration']){
+   for(const id of ['m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration','m4dChannels']){
       const el=document.getElementById(id);if(el)el.classList.toggle('m4d-tab-hidden',id!==view);
    }
    const label=document.getElementById('m4dTabPageName');if(label)label.textContent=titles[view]||'Explore';
