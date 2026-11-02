@@ -53,6 +53,7 @@ async function loadVideoIndex(){
  }catch(err){status.textContent='Individual video search is temporarily unavailable. Playlist search still works.';renderAdvanced();}
 }
 loadVideoIndex();
+ 
 const upcomingStreams=[];
 // Example: {title:'Friday Reaction Live',date:'2026-12-04T20:00:00-05:00',url:'https://www.youtube.com/@marriage4dummiesreacts/streams'}
 const weekNumber=Math.floor(Date.now()/604800000);
@@ -147,6 +148,25 @@ async function checkM4DLive() {
 }
 
 checkM4DLive();
+</script>
+
+<!-- Hide video results until someone searches -->
+<script>
+(function () {
+  const search = document.getElementById("videoQuery");
+  const results = document.getElementById("videoResults");
+
+  if (!search || !results) return;
+
+  function updateSearchVisibility() {
+    const hasSearch = search.value.trim().length > 0;
+    results.style.display = hasSearch ? "" : "none";
+  }
+
+  search.addEventListener("input", updateSearchVisibility);
+
+  updateSearchVisibility();
+})();
 </script>
 
 </body>
