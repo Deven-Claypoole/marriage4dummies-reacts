@@ -65,4 +65,89 @@ function renderSchedule(){const box=$('scheduleEvents');box.replaceChildren();co
 function renderAdvanced(){const q=$('videoQuery').value.toLowerCase().trim();const results=$('videoResults');results.replaceChildren();const all=[...playlists.map(p=>({title:p.title,category:p.cat,url:'https://www.youtube.com/playlist?list='+p.id,type:'Playlist'})),...videoIndex.map(v=>({...v,type:'Video'}))];const matches=all.filter(v=>[v.title,v.artist||'',v.category||'',v.type].join(' ').toLowerCase().includes(q));matches.forEach(v=>{const a=document.createElement('a');a.className='upgrade-result';a.href=v.url;a.target='_blank';a.rel='noopener noreferrer';const label=document.createElement('strong');label.textContent=v.title;const small=document.createElement('small');small.textContent=v.type+' · '+(v.category||v.artist||'Reaction');a.append(label,small);results.appendChild(a)});$('videoSearchNote').textContent=matches.length+' result'+(matches.length===1?'':'s')+' · Currently indexes 10 playlists'+(videoIndex.length?' and '+videoIndex.length+' individual videos':' (individual video titles not yet supplied)');if(!matches.length){const p=document.createElement('p');p.className='upgrade-notice';p.textContent='No matches found. Try an artist or genre.';results.appendChild(p)}}
 $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 })();
-</script></body></html>
+</script>
+ 
+<!-- Marriage4Dummies NOW LIVE Indicator -->
+<style>
+#m4d-live {
+  background: #181818;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 900px;
+  text-align: center;
+}
+#m4d-live a {
+  display: inline-block;
+  background: #d71920;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+#m4d-live img {
+  max-width: 100%;
+  width: 420px;
+  border-radius: 8px;
+  margin: 12px auto;
+  display: block;
+}
+</style>
+
+<div id="m4d-live" role="status" aria-live="polite">
+  Checking livestream status...
+</div>
+
+<script>
+async function checkM4DLive() {
+  const box = document.getElementById("m4d-live");
+  try {
+    const response = await fetch(
+      "/.netlify/functions/live-status"
+    );
+    if (!response.ok) throw new Error("Status unavailable");
+
+    const data = await response.json();
+    box.replaceChildren();
+
+    const heading = document.createElement("h2");
+    heading.textContent = data.live
+      ? "🔴 LIVE NOW"
+      : "Currently Offline";
+    box.appendChild(heading);
+
+    const message = document.createElement("p");
+    message.textContent = data.live
+      ? data.title || "Markis & Christian are live!"
+      : "Markis & Christian are not live right now.";
+    box.appendChild(message);
+
+    if (data.live && data.url) {
+      if (data.thumbnail) {
+        const img = document.createElement("img");
+        img.src = data.thumbnail;
+        img.alt = "Livestream thumbnail";
+        box.appendChild(img);
+      }
+
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "▶ WATCH LIVE";
+      box.appendChild(link);
+    }
+  } catch (error) {
+    box.textContent =
+      "Livestream status temporarily unavailable.";
+  }
+}
+
+checkM4DLive();
+</script>
+
+</body>
+</html>
