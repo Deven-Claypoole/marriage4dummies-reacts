@@ -409,5 +409,87 @@ checkM4DLive();
  else status.textContent='Account service is unavailable. Please refresh.';
 })();
 </script>
+<!-- M4D Friends: secure member discovery and friend requests -->
+<style>
+#m4dMembers{background:linear-gradient(180deg,#121318,#090a0c);border-top:1px solid #292b31}
+.m4d-friends-shell{max-width:1020px}.m4d-friends-toolbar{display:flex;gap:12px;margin:20px 0;flex-wrap:wrap}
+#m4dMemberSearch{min-width:220px;flex:1;background:#1b1c23;color:white;border:1px solid #454650;border-radius:7px;padding:15px;font:inherit}
+#m4dMemberSearch:focus{outline:2px solid #e50914;outline-offset:1px}
+.m4d-friends-action{background:#e50914;color:white;border:0;border-radius:6px;padding:13px 17px;font-weight:750}
+.m4d-friends-action:disabled{opacity:.52;cursor:not-allowed}
+.m4d-member-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.m4d-member-result{min-width:0;background:#1b1c22;border:1px solid #34363d;border-radius:10px;padding:18px;display:flex;align-items:center;gap:13px}
+.m4d-member-avatar{width:55px;height:55px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:#343039;color:white;overflow:hidden;border:2px solid #8d2937;font-size:23px}
+.m4d-member-avatar img{width:100%;height:100%;object-fit:cover}
+.m4d-member-details{flex:1;min-width:0}.m4d-member-name{font-size:15px;font-weight:800;overflow-wrap:anywhere}.m4d-member-bio{color:#adb0ba;font-size:12px;margin-top:5px;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.4}
+.m4d-member-result .m4d-friends-action{font-size:12px;padding:10px;white-space:nowrap}
+#m4dMembersStatus{color:#bdbfc8;font-size:13px;min-height:22px}
+@media(max-width:800px){.m4d-member-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.m4d-member-result{flex-wrap:wrap}.m4d-member-result .m4d-friends-action{margin-left:68px}}
+</style>
+<section id="m4dMembers"><div class="wrap m4d-friends-shell">
+ <div class="eyebrow">M4D COMMUNITY</div><h2>Find Members</h2>
+ <p class="lead">Find other fans by username and send a friend request. Only accepted friends will be able to message each other when messaging launches.</p>
+ <div class="m4d-friends-toolbar"><input type="search" id="m4dMemberSearch" autocomplete="off" maxlength="40" placeholder="Search member usernames (2+ characters)" aria-label="Search member usernames"/><button class="m4d-friends-action" id="m4dSearchMembersButton" type="button">Search Members</button></div>
+ <p id="m4dMembersStatus" role="status" aria-live="polite">Sign in to find other members.</p>
+ <div class="m4d-member-grid" id="m4dMemberResults" aria-live="polite"></div>
+</div></section>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const field=document.getElementById('m4dMemberSearch');
+ const button=document.getElementById('m4dSearchMembersButton');
+ const status=document.getElementById('m4dMembersStatus');
+ const grid=document.getElementById('m4dMemberResults');
+ let currentUser=null, requestBusy=false, searchSequence=0;
+ const nav=document.querySelector('header nav');
+ if(nav){const link=document.createElement('a');link.href='#m4dMembers';link.textContent='Find Members';nav.appendChild(link)}
+ function msg(s){status.textContent=s}
+ function clear(){grid.replaceChildren()}
+ function signIn(){document.querySelector('.m4d-account-button')?.click()}
+ function requireUser(){if(currentUser)return true;msg('Sign in to search and add friends.');signIn();return false}
+ async function search(){
+  if(!requireUser())return;
+  const q=field.value.trim();
+  if(q.length<2){clear();msg('Enter at least 2 characters of a username.');return}
+  const seq=++searchSequence;button.disabled=true;clear();msg('Searching members…');
+  try{
+   const {data:members,error}=await client.rpc('search_m4d_members',{search_term:q});
+   if(error)throw error;
+   const {data:relationships,error:relError}=await client.from('friendships').select('requester_id,recipient_id,status').or('requester_id.eq.'+currentUser.id+',recipient_id.eq.'+currentUser.id);
+   if(relError)throw relError;
+   if(seq!==searchSequence)return;
+   const relById=new Map((relationships||[]).map(r=>[r.requester_id===currentUser.id?r.recipient_id:r.requester_id,r]));
+   for(const member of (members||[])){
+    const card=document.createElement('div');card.className='m4d-member-result';
+    const avatar=document.createElement('div');avatar.className='m4d-member-avatar';
+    if(member.avatar_url){const img=document.createElement('img');img.alt='';img.referrerPolicy='no-referrer';img.src=member.avatar_url;img.onerror=()=>avatar.replaceChildren(document.createTextNode('👤'));avatar.appendChild(img)}else avatar.textContent='👤';
+    const details=document.createElement('div');details.className='m4d-member-details';
+    const name=document.createElement('div');name.className='m4d-member-name';name.textContent=member.username||'Member';details.appendChild(name);
+    if(member.bio){const bio=document.createElement('div');bio.className='m4d-member-bio';bio.textContent=member.bio;details.appendChild(bio)}
+    const add=document.createElement('button');add.type='button';add.className='m4d-friends-action';
+    const relation=relById.get(member.id);
+    if(relation){add.disabled=true;add.textContent=relation.status==='accepted'?'✓ Friends':relation.status==='pending'?(relation.requester_id===currentUser.id?'Request Sent':'Request Received'):'Request Declined'}
+    else{add.textContent='+ Add Friend';add.addEventListener('click',async()=>{
+      if(requestBusy||!requireUser())return;requestBusy=true;add.disabled=true;add.textContent='Sending…';
+      try{const {error:sendError}=await client.from('friendships').insert({requester_id:currentUser.id,recipient_id:member.id,status:'pending'});if(sendError)throw sendError;add.textContent='Request Sent';msg('Friend request sent to '+(member.username||'member')+'.')}
+      catch(err){add.disabled=false;add.textContent='+ Add Friend';msg('Could not send request: '+(err.message||'Please try again.'))}
+      finally{requestBusy=false}
+    })}
+    card.append(avatar,details,add);grid.appendChild(card);
+   }
+   msg((members||[]).length?(members||[]).length+' member(s) found.':'No matching members found.');
+  }catch(err){if(seq===searchSequence)msg('Could not search members: '+(err.message||'Please try again.'))}
+  finally{if(seq===searchSequence)button.disabled=false}
+ }
+ button.addEventListener('click',search);
+ field.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();search()}});
+ if(!client){msg('Member accounts are temporarily unavailable.');button.disabled=true;return}
+ client.auth.getUser().then(({data})=>{currentUser=data?.user||null;msg(currentUser?'Search for another member by username.':'Sign in to find other members.')}).catch(()=>msg('Unable to check sign-in status.'));
+ client.auth.onAuthStateChange((_event,session)=>{const changed=currentUser?.id!==session?.user?.id;currentUser=session?.user||null;if(changed){++searchSequence;clear();button.disabled=false;msg(currentUser?'Search for another member by username.':'Sign in to find other members.')}});
+})();
+</script>
+
 </body>
 </html>
