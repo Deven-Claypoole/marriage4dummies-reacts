@@ -847,7 +847,7 @@ checkM4DLive();
 <section id="m4dMessages"><div class="wrap"><div class="eyebrow">M4D COMMUNITY</div><h2>Private Messages</h2><p class="lead">Chat privately with accepted friends. Only the two people in a conversation can read it.</p>
 <button class="m4d-chat-refresh" id="m4dChatRefresh" type="button">↻ Refresh friends</button>
 <p aria-live="polite" class="m4d-chat-note" id="m4dChatStatus" role="status">Sign in to message friends.</p>
-<div class="m4d-chat-shell"><aside class="m4d-chat-sidebar"><h3>Your friends</h3><div class="m4d-chat-contacts" id="m4dChatContacts"></div></aside><div class="m4d-chat-main"><div class="m4d-chat-title" id="m4dChatTitle">Choose a friend to begin</div><div aria-live="polite" class="m4d-chat-stream" id="m4dChatStream"></div><form class="m4d-chat-compose" id="m4dChatForm"><input aria-label="Message text" autocomplete="off" disabled="" id="m4dChatInput" maxlength="2000" placeholder="Message a friend..." required=""/><button disabled="" id="m4dChatSend" type="submit">Send</button></form></div></div>
+<div class="m4d-chat-shell"><aside class="m4d-chat-sidebar"><h3>Group Chats</h3><button id="m4dGroupCreateToggle" class="m4d-chat-refresh" type="button">＋ New group</button><div id="m4dGroupCreatePanel" hidden class="m4d-group-create"><label for="m4dGroupName">Group name</label><input id="m4dGroupName" maxlength="60" placeholder="Your group name"/><p class="m4d-chat-note">Select accepted friends:</p><div id="m4dGroupInviteList"></div><button id="m4dGroupCreateSubmit" type="button">Create group</button></div><div id="m4dGroupList" class="m4d-chat-contacts"></div><hr class="m4d-group-divider"/><h3>Your friends</h3><div class="m4d-chat-contacts" id="m4dChatContacts"></div></aside><div class="m4d-chat-main"><div class="m4d-chat-title" id="m4dChatTitle">Choose a friend to begin</div><div aria-live="polite" class="m4d-chat-stream" id="m4dChatStream"></div><form class="m4d-chat-compose" id="m4dChatForm"><input aria-label="Message text" autocomplete="off" disabled="" id="m4dChatInput" maxlength="2000" placeholder="Message a friend..." required=""/><button disabled="" id="m4dChatSend" type="submit">Send</button></form></div></div>
 <p class="m4d-chat-note">Messages are stored in Supabase. Don't share passwords or sensitive personal information in chat.</p></div></section>
 <script>
 (function(){
@@ -857,7 +857,7 @@ checkM4DLive();
  let uid=null,active=null,friends=[],seq=0,busy=false,lastSignature='';
  function note(t){status.textContent=t}
  function clearStream(t){stream.replaceChildren();const e=document.createElement('p');e.className='m4d-chat-note';e.textContent=t;stream.append(e)}
- function syncForm(){input.disabled=send.disabled=!uid||!active||busy}
+ function syncForm(){input.disabled=send.disabled=!uid||(!active&&!window.m4dGroupActive)||busy}
  function reset(){active=null;friends=[];lastSignature='';contacts.replaceChildren();title.textContent='Choose a friend to begin';clearStream('Select a friend from the list.');syncForm()}
  async function loadFriends(){
   const token=++seq;reset();if(!uid){note('Sign in to see your messages.');return}
@@ -868,17 +868,17 @@ checkM4DLive();
    for(const friend of friends){const b=document.createElement('button');b.type='button';b.className='m4d-chat-contact';b.dataset.m4dFriendId=friend.other_user_id;
     if(friend.other_avatar_url){const img=document.createElement('img');img.alt='';img.src=friend.other_avatar_url;img.referrerPolicy='no-referrer';b.append(img)}
     const label=document.createElement('span');label.textContent=friend.other_username||'Member';b.append(label);
-    b.addEventListener('click',()=>{active=friend;lastSignature='';for(const x of contacts.children)x.classList.toggle('active',x===b);title.textContent='Chat with '+(friend.other_username||'Member');syncForm();loadMessages(true)});contacts.append(b)}
+    b.addEventListener('click',()=>{window.m4dExitGroup?.();active=friend;lastSignature='';for(const x of contacts.children)x.classList.toggle('active',x===b);title.textContent='Chat with '+(friend.other_username||'Member');syncForm();loadMessages(true)});contacts.append(b)}
    note('Choose a friend to start a private conversation.');
   }catch(e){if(token===seq)note('Could not load friends: '+e.message)}
  }
  async function loadMessages(force){
-  if(!uid||!active)return;const current=active.other_user_id,member=uid;
-  try{const {data,error}=await client.from('m4d_messages').select('id,sender_id,recipient_id,body,created_at,read_at').or('and(sender_id.eq.'+member+',recipient_id.eq.'+current+'),and(sender_id.eq.'+current+',recipient_id.eq.'+member+')').order('created_at',{ascending:true}).limit(200);
+  if(window.m4dGroupActive||!uid||!active)return;const current=active.other_user_id,member=uid;
+  try{const {data,error}=await client.from('m4d_messages').select('id,sender_id,recipient_id,body,image_path,created_at,read_at').or('and(sender_id.eq.'+member+',recipient_id.eq.'+current+'),and(sender_id.eq.'+current+',recipient_id.eq.'+member+')').order('created_at',{ascending:true}).limit(200);
    if(error)throw error;if(uid!==member||active?.other_user_id!==current)return;
-   const rows=data||[],signature=rows.map(r=>r.id+':'+(r.read_at||'')).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
+   const rows=data||[],signature=rows.map(r=>r.id+':'+(r.read_at||'')+':'+(r.image_path||'')).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
    stream.replaceChildren();if(!rows.length){clearStream('No messages yet. Say hello!');return}
-   for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.body;
+   for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'📷 Photo':r.body;if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-chat-images');
     const ts=document.createElement('small');ts.textContent=new Date(r.created_at).toLocaleString();bubble.append(ts);if(r.sender_id===uid){const receipt=document.createElement('small');receipt.className='m4d-receipt';receipt.textContent=r.read_at?'✓✓ Seen':'✓ Sent';receipt.setAttribute('aria-label',r.read_at?'Message seen':'Message sent');bubble.append(receipt)}stream.append(bubble)}stream.scrollTop=stream.scrollHeight;
   }catch(e){note('Could not load messages: '+e.message)}
  }
@@ -895,6 +895,139 @@ checkM4DLive();
  reset();
 })();
 </script>
+<style>
+#m4dGroupCreateToggle{width:100%;padding:9px;margin-bottom:10px}
+.m4d-group-create{background:#252631;border:1px solid #444653;padding:12px;border-radius:10px;margin-bottom:12px}
+.m4d-group-create label{font-size:12px;font-weight:700;display:block;margin-bottom:5px}
+.m4d-group-create input[type=text],#m4dGroupName{width:100%;padding:10px;border:1px solid #555766;border-radius:7px;background:#11121a;color:white}
+#m4dGroupInviteList{max-height:130px;overflow:auto;display:grid;gap:7px;margin-bottom:10px}
+#m4dGroupInviteList label{display:flex;gap:9px;align-items:center;font-weight:500}
+#m4dGroupCreateSubmit{width:100%;border:0;padding:9px;border-radius:7px;background:#e50914;color:white;cursor:pointer;font-weight:700}
+.m4d-group-divider{border:0;border-top:1px solid #383a47;margin:18px 0}
+.m4d-group-selected{background:#492733!important;border-color:#e50914!important}
+</style>
+<script>
+(function(){
+'use strict';
+const client=window.supabaseClient;
+const list=document.getElementById('m4dGroupList'), panel=document.getElementById('m4dGroupCreatePanel'),toggle=document.getElementById('m4dGroupCreateToggle'),name=document.getElementById('m4dGroupName'),inviteList=document.getElementById('m4dGroupInviteList'),create=document.getElementById('m4dGroupCreateSubmit');
+const stream=document.getElementById('m4dChatStream'),title=document.getElementById('m4dChatTitle'),input=document.getElementById('m4dChatInput'),send=document.getElementById('m4dChatSend'),form=document.getElementById('m4dChatForm'),status=document.getElementById('m4dChatStatus');
+if(!client||!list||!form)return;
+let uid=null, groups=[],current=null,friends=[],loading=false,sequence=0;
+const say=t=>{status.textContent=t};
+function setForm(enabled){input.disabled=send.disabled=!enabled}
+function clear(t){stream.replaceChildren();const p=document.createElement('p');p.className='m4d-chat-note';p.textContent=t;stream.append(p)}
+window.m4dExitGroup=function(){current=null;window.m4dGroupActive=null;for(const b of list.children)b.classList.remove('m4d-group-selected')};
+async function refreshFriends(){
+ if(!uid)return;
+ const {data,error}=await client.rpc('get_m4d_friendships');if(error)throw error;
+ friends=(data||[]).filter(f=>f.request_status==='accepted');
+ inviteList.replaceChildren();for(const f of friends){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.value=f.other_user_id;label.append(check,document.createTextNode(f.other_username||'Member'));inviteList.append(label)}
+}
+async function refreshGroups(){
+ if(!uid){list.replaceChildren();groups=[];return}
+ const {data,error}=await client.from('m4d_chat_groups').select('id,name,owner_id,created_at').order('created_at',{ascending:false});
+ if(error){say('Group chats unavailable: '+error.message+'. Run the group chat SQL setup.');return}
+ groups=data||[];list.replaceChildren();for(const g of groups){const b=document.createElement('button');b.type='button';b.className='m4d-chat-contact'+(current===g.id?' m4d-group-selected':'');b.textContent='👥 '+g.name;b.addEventListener('click',()=>choose(g,b));list.append(b)}
+}
+async function choose(g,b){
+ current=g.id;window.m4dGroupActive=g.id;
+ document.querySelectorAll('#m4dChatContacts .m4d-chat-contact').forEach(x=>x.classList.remove('active'));
+ Array.from(list.children).forEach(x=>x.classList.toggle('m4d-group-selected',x===b));
+ title.textContent='👥 '+g.name+' · Group Chat';setForm(true);say('Group messages are visible only to group members.');await loadMessages(true);
+}
+async function loadMessages(force){
+ if(!uid||!current||loading)return;const group=current;loading=true;
+ try{
+  const {data,error}=await client.from('m4d_chat_group_messages').select('id,group_id,sender_id,body,image_path,created_at').eq('group_id',group).order('created_at',{ascending:true}).limit(200);
+  if(error)throw error;if(current!==group)return;
+  const rows=data||[];stream.replaceChildren();if(!rows.length){clear('No messages yet. Start the conversation!');return}
+  for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'📷 Photo':r.body;if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-group-chat-images');const meta=document.createElement('small');meta.textContent=(r.sender_id===uid?'You':(friends.find(f=>f.other_user_id===r.sender_id)?.other_username||'Group member'))+' · '+new Date(r.created_at).toLocaleString();bubble.append(meta);stream.append(bubble)}
+  stream.scrollTop=stream.scrollHeight;
+ }catch(err){say('Could not load group messages: '+err.message)}finally{loading=false}
+}
+// Capturing handler intercepts only group sends. Original private-message handler remains intact.
+form.addEventListener('submit',async e=>{
+ if(!current)return;
+ e.preventDefault();e.stopImmediatePropagation();if(!uid||loading)return;
+ const gid=current,body=input.value.trim();if(!body||body.length>2000)return;
+ setForm(false);
+ try{const {error}=await client.from('m4d_chat_group_messages').insert({group_id:gid,sender_id:uid,body});if(error)throw error;input.value='';say('Group message sent.');await loadMessages(true)}catch(err){say('Could not send group message: '+err.message)}finally{if(current===gid)setForm(true)}
+ },true);
+ toggle.addEventListener('click',async()=>{panel.hidden=!panel.hidden;if(!panel.hidden){try{await refreshFriends()}catch(e){say('Could not load friends: '+e.message)}}});
+ create.addEventListener('click',async()=>{
+  const selected=[...inviteList.querySelectorAll('input:checked')].map(x=>x.value);const groupName=name.value.trim();
+  if(groupName.length<2||groupName.length>60||!selected.length){say('Enter a group name and select at least one accepted friend.');return}
+  create.disabled=true;
+  try{const {data,error}=await client.rpc('m4d_create_group_chat',{group_name:groupName,invitees:selected});if(error)throw error;name.value='';panel.hidden=true;await refreshGroups();const g=groups.find(x=>x.id===data);if(g)choose(g,Array.from(list.children)[groups.indexOf(g)]);say('Group created!')}
+  catch(e){say('Could not create group: '+e.message)}finally{create.disabled=false}
+ });
+ async function init(user){const token=++sequence;uid=user;window.m4dExitGroup();list.replaceChildren();if(!uid){panel.hidden=true;return}await refreshGroups();if(token!==sequence)return}
+ client.auth.getUser().then(({data})=>init(data?.user?.id||null));
+ client.auth.onAuthStateChange((_ev,session)=>{if(uid!==(session?.user?.id||null))init(session?.user?.id||null)});
+ document.getElementById('m4dChatRefresh')?.addEventListener('click',()=>{refreshGroups();if(!panel.hidden)refreshFriends().catch(e=>say(e.message))});
+ setInterval(()=>{if(document.visibilityState==='visible'&&current&&uid)loadMessages(false)},4500);
+})();
+</script>
+
+<style>
+.m4d-chat-compose{display:flex;align-items:center;gap:7px}
+#m4dChatPhotoButton{min-width:43px;min-height:43px;border-radius:10px;border:1px solid #676879;background:#353744;color:white;font-size:22px;cursor:pointer;flex-shrink:0}
+#m4dChatPhotoButton:hover,#m4dChatPhotoButton:focus-visible{border-color:#ff536b;background:#662c3c;outline-offset:2px}
+#m4dChatPhotoButton:disabled{opacity:.45;cursor:not-allowed}
+.m4d-chat-attachment{display:block;max-width:min(260px,100%);max-height:280px;width:auto;height:auto;object-fit:contain;background:#111;border-radius:9px;margin:8px 0 3px;cursor:zoom-in}
+.m4d-chat-image-error{display:block;font-size:12px;color:#efb4bb;margin-top:6px}
+</style>
+<script>
+(function(){
+ 'use strict';
+ const db=window.supabaseClient,form=document.getElementById('m4dChatForm'),field=document.getElementById('m4dChatInput'),note=document.getElementById('m4dChatStatus');
+ if(!db||!form||!field)return;
+ const choose=document.createElement('input');choose.type='file';choose.accept='image/jpeg,image/png,image/webp';choose.hidden=true;choose.setAttribute('aria-label','Choose photo');
+ const button=document.createElement('button');button.type='button';button.id='m4dChatPhotoButton';button.title='Send a photo';button.setAttribute('aria-label','Send photo');button.textContent='📷';
+ form.insertBefore(button,field);form.appendChild(choose);
+ const report=t=>{if(note)note.textContent=t};
+ window.m4dRenderChatPhoto=async function(bubble,path,sender,bucket){
+  if(!path||!bubble.isConnected)return;
+  const img=document.createElement('img');img.className='m4d-chat-attachment';img.alt='Photo attachment';img.loading='lazy';
+  const placeholder=document.createElement('span');placeholder.className='m4d-chat-image-error';placeholder.textContent='Loading photo…';bubble.append(placeholder);
+  const {data,error}=await db.storage.from(bucket).createSignedUrl(path,3600);
+  if(!bubble.isConnected)return;
+  if(error||!data?.signedUrl){placeholder.textContent='Photo unavailable';return}
+  img.src=data.signedUrl;
+  img.addEventListener('load',()=>placeholder.remove(),{once:true});
+  img.addEventListener('error',()=>{placeholder.textContent='Could not load photo';img.remove()},{once:true});
+  img.addEventListener('click',()=>window.open(data.signedUrl,'_blank','noopener,noreferrer'));
+  bubble.append(img);
+ };
+ button.addEventListener('click',()=>choose.click());
+ choose.addEventListener('change',async()=>{
+  const file=choose.files?.[0];choose.value='';if(!file)return;
+  const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+  if(!types[file.type]){report('Please choose a JPG, PNG, or WebP image.');return}
+  if(file.size>5*1024*1024){report('Image must be 5 MB or smaller.');return}
+  const {data:{user},error:authError}=await db.auth.getUser();
+  if(authError||!user){report('Sign in to send photos.');return}
+  const group=window.m4dGroupActive||null;
+  const friend=group?null:document.querySelector('#m4dChatContacts .m4d-chat-contact.active')?.dataset?.m4dFriendId;
+  if(!group&&!friend){report('Choose a friend or group chat first.');return}
+  const bucket=group?'m4d-group-chat-images':'m4d-chat-images';
+  const path=user.id+'/'+crypto.randomUUID()+'.'+types[file.type];
+  button.disabled=true;report('Uploading photo…');
+  let uploaded=false;
+  try{
+   const {error:upError}=await db.storage.from(bucket).upload(path,file,{contentType:file.type,upsert:false,cacheControl:'3600'});
+   if(upError)throw upError;uploaded=true;
+   const table=group?'m4d_chat_group_messages':'m4d_messages';
+   const values=group?{group_id:group,sender_id:user.id,body:'📷 Photo',image_path:path}:{sender_id:user.id,recipient_id:friend,body:'📷 Photo',image_path:path};
+   const {error:msgError}=await db.from(table).insert(values);if(msgError)throw msgError;
+   report('Photo sent!');document.getElementById('m4dChatRefresh')?.click();
+   // The existing chat polling refreshes the visible conversation shortly after upload.
+  }catch(err){report('Could not send photo: '+err.message);if(uploaded)await db.storage.from(bucket).remove([path]).catch(()=>{});}finally{button.disabled=false}
+ });
+})();
+</script>
+
 <!-- M4D Online Status: private heartbeat + accepted-friends-only display -->
 <style>
 .m4d-online-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:650;color:#aeb0b8;margin-left:8px;white-space:nowrap}
