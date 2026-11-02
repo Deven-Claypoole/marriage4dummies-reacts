@@ -221,6 +221,36 @@ checkM4DLive();
 .m4d-profile-tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
 .m4d-profile-tag{background:#4a202a;border:1px solid #a53a4c;color:#fff1f2;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700}
 </style>
+<style>
+/* Profile redesign: presentation only, no database changes */
+.m4d-account-panel:has(#m4dProfileArea:not([hidden])){width:min(720px,100%);padding:0;overflow:hidden;border:1px solid #3d3e46;border-radius:17px;background:#14151a}
+.m4d-account-panel:has(#m4dProfileArea:not([hidden]))>.eyebrow,
+.m4d-account-panel:has(#m4dProfileArea:not([hidden]))>#m4dAccountTitle,
+.m4d-account-panel:has(#m4dProfileArea:not([hidden]))>#m4dAccountIntro{display:none}
+.m4d-account-panel:has(#m4dProfileArea:not([hidden])) #m4dAccountMessage{margin:8px 28px}
+.m4d-account-panel:has(#m4dProfileArea:not([hidden])) .m4d-account-row{display:none}
+.m4d-account-panel:has(#m4dProfileArea:not([hidden])) .m4d-account-close{z-index:3;top:14px;right:14px;background:#0b0b0bb8;border-radius:50%}
+#m4dProfileArea{color:#f9f9fb}
+.m4d-profile-cover{height:154px;position:relative;background:radial-gradient(circle at 83% 30%,#ef304650,transparent 31%),linear-gradient(115deg,#760d20,#251020 65%,#11131a);display:flex;align-items:flex-start;padding:25px 28px}
+.m4d-profile-cover:after{content:'M4D';position:absolute;right:36px;top:20px;font-weight:950;letter-spacing:-.08em;font-size:90px;color:#ffffff0e;pointer-events:none}
+.m4d-profile-cover-label{position:relative;z-index:1;color:#fff;font-size:11px;letter-spacing:2.1px;font-weight:850}
+.m4d-profile-summary{display:flex;gap:21px;padding:0 28px 22px;align-items:flex-end;border-bottom:1px solid #2b2d35;margin-top:-45px;position:relative;z-index:1}
+#m4dProfileArea .m4d-photo-circle{width:112px;height:112px;min-width:112px;border:5px solid #14151a;box-shadow:0 0 0 2px #f13849,0 9px 25px #0008;background:#292934;font-size:48px}
+.m4d-profile-intro{min-width:0;flex:1;padding-bottom:4px}.m4d-profile-intro h3{margin:0 0 4px;font-size:clamp(21px,4vw,30px);letter-spacing:-.7px;overflow-wrap:anywhere}.m4d-profile-intro p{margin:0;color:#a6a8b5!important;font-size:12px;overflow-wrap:anywhere}
+.m4d-profile-editor{padding:25px 28px 28px}
+.m4d-profile-section-title{font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:#b7b9c3;font-weight:850;margin:0 0 14px}
+.m4d-profile-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.m4d-profile-field{min-width:0}.m4d-profile-field label{margin:0 0 8px!important}
+.m4d-profile-field input:not([type=file]),.m4d-profile-field textarea{width:100%;background:#202128!important;color:white;border:1px solid #41424c!important;border-radius:8px!important;padding:12px!important;margin:0!important}
+.m4d-profile-field textarea{min-height:118px!important}
+.m4d-profile-editor .m4d-account-help{line-height:1.55;margin:8px 0 13px}
+.m4d-profile-tag-section{margin:19px 0 21px;padding:16px 17px;background:#1e1e25;border:1px solid #30313b;border-radius:11px}
+.m4d-profile-tag-section label{margin:0!important}.m4d-profile-tags{margin:12px 0 2px}.m4d-profile-tag{background:#401b27;border-color:#92344a}
+.m4d-profile-actions{display:flex;gap:10px;flex-wrap:wrap}
+.m4d-profile-actions .m4d-account-primary{margin:0!important;flex:1;min-width:150px}
+.m4d-profile-preview-bio{color:#d5d6de!important;font-size:13px!important;margin:10px 0 0!important;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){.m4d-account-overlay{padding:10px}.m4d-profile-cover{height:125px;padding:19px}.m4d-profile-cover:after{font-size:60px;right:16px}.m4d-profile-summary{padding:0 17px 18px;gap:13px;margin-top:-36px}#m4dProfileArea .m4d-photo-circle{width:89px;height:89px;min-width:89px}.m4d-profile-editor{padding:22px 17px}.m4d-profile-editor-grid{grid-template-columns:1fr}.m4d-profile-intro h3{font-size:20px}}
+</style>
 <!-- M4D member accounts -->
 <div class="m4d-account-overlay" id="m4dAccountOverlay" role="dialog" aria-modal="true" aria-labelledby="m4dAccountTitle">
  <div class="m4d-account-panel">
@@ -235,12 +265,21 @@ checkM4DLive();
    <button class="m4d-account-primary" id="m4dAccountSubmit" type="submit">Sign In</button>
   </form>
   <div id="m4dProfileArea" hidden>
-   <div class="m4d-profile-top"><div class="m4d-photo-circle"><img id="m4dPhotoPreview" alt="Your profile picture" hidden><span id="m4dPhotoFallback" aria-hidden="true">🎬</span></div><div><strong>Customize your profile</strong><p id="m4dProfileEmail"></p></div></div>
-   <label for="m4dProfilePicture">Upload profile picture</label><input id="m4dProfilePicture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="m4dPhotoHelp"/><p class="m4d-account-help" id="m4dPhotoHelp">JPG, PNG, or WebP · Maximum 2 MB · Pictures are publicly visible.</p>
-   <label for="m4dProfileName">Display name</label><input id="m4dProfileName" maxlength="40" />
-   <label for="m4dProfileBio">About me</label><textarea id="m4dProfileBio" maxlength="160" rows="3" placeholder="Tell the M4D community about yourself..."></textarea><p class="m4d-account-help" id="m4dBioCounter">0 / 160 characters</p>
-   <label>My tags <span class="m4d-admin-label">Admin assigned</span></label><div id="m4dProfileTags" class="m4d-profile-tags" aria-live="polite"><span class="m4d-account-help">No tags assigned yet.</span></div><p class="m4d-account-help">Only M4D administrators can give members profile tags.</p>
-   <button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Profile</button><button class="m4d-account-primary" id="m4dSignOut" type="button" style="background:#383942">Sign Out</button>
+   <div class="m4d-profile-cover"><span class="m4d-profile-cover-label">MARRIAGE4DUMMIES • MEMBER PROFILE</span></div>
+   <div class="m4d-profile-summary">
+    <div class="m4d-photo-circle"><img id="m4dPhotoPreview" alt="Your profile picture" hidden><span id="m4dPhotoFallback" aria-hidden="true">🎬</span></div>
+    <div class="m4d-profile-intro"><h3 id="m4dProfileDisplayName">Member</h3><p id="m4dProfileEmail"></p><p class="m4d-profile-preview-bio" id="m4dProfileBioPreview"></p></div>
+   </div>
+   <div class="m4d-profile-editor">
+    <h3 class="m4d-profile-section-title">Edit your profile</h3>
+    <div class="m4d-profile-editor-grid">
+     <div class="m4d-profile-field"><label for="m4dProfileName">Display name</label><input id="m4dProfileName" maxlength="40" autocomplete="nickname" /></div>
+     <div class="m4d-profile-field"><label for="m4dProfilePicture">Change profile picture</label><input id="m4dProfilePicture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="m4dPhotoHelp"/><p class="m4d-account-help" id="m4dPhotoHelp">JPG, PNG, WebP • Max 2 MB • Publicly visible</p></div>
+    </div>
+    <div class="m4d-profile-field"><label for="m4dProfileBio">About me</label><textarea id="m4dProfileBio" maxlength="160" rows="3" placeholder="Tell the M4D community a little about yourself..."></textarea><p class="m4d-account-help" id="m4dBioCounter">0 / 160 characters</p></div>
+    <div class="m4d-profile-tag-section"><label>Member tags <span class="m4d-admin-label">Admin assigned</span></label><div id="m4dProfileTags" class="m4d-profile-tags" aria-live="polite"><span class="m4d-account-help">No tags assigned yet.</span></div><p class="m4d-account-help">Special tags are assigned by M4D administrators and cannot be edited here.</p></div>
+    <div class="m4d-profile-actions"><button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Changes</button><button class="m4d-account-primary" id="m4dSignOut" type="button" style="background:#383942">Sign Out</button></div>
+   </div>
   </div>
   <p id="m4dAccountMessage" class="m4d-account-message" role="status" aria-live="polite"></p>
   <div class="m4d-account-row"><button class="m4d-account-link" id="m4dSwitchMode" type="button">Create an account</button><button class="m4d-account-link" id="m4dForgotPassword" type="button">Forgot password?</button></div>
@@ -265,9 +304,9 @@ checkM4DLive();
  let currentPhotoUrl='';
  function showPhoto(url){const img=$('m4dPhotoPreview');const fallback=$('m4dPhotoFallback');if(url && /^(https:\/\/|blob:)/i.test(url)){img.src=url;img.hidden=false;fallback.hidden=true;}else{img.removeAttribute('src');img.hidden=true;fallback.hidden=false;}}
  function showTags(tags){const holder=$('m4dProfileTags');holder.replaceChildren();if(!Array.isArray(tags)||!tags.length){const hint=document.createElement('span');hint.className='m4d-account-help';hint.textContent='No tags assigned yet.';holder.append(hint);return}tags.forEach(tag=>{if(typeof tag!=='string')return;const el=document.createElement('span');el.className='m4d-profile-tag';el.textContent=tag;holder.append(el)})}
- $('m4dProfileBio').addEventListener('input',()=>{$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters'});
+ $('m4dProfileBio').addEventListener('input',()=>{$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters';$('m4dProfileBioPreview').textContent=$('m4dProfileBio').value});$('m4dProfileName').addEventListener('input',()=>{$('m4dProfileDisplayName').textContent=$('m4dProfileName').value||'Member'});
  $('m4dProfilePicture').addEventListener('change',()=>{const f=$('m4dProfilePicture').files?.[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>2*1024*1024){message('Choose a JPG, PNG, or WebP image no larger than 2 MB.');$('m4dProfilePicture').value='';return}const localUrl=URL.createObjectURL(f);const img=$('m4dPhotoPreview');img.onload=()=>URL.revokeObjectURL(localUrl);showPhoto(localUrl)});
- async function loadProfile(){if(!client||!user)return;const requestedId=user.id;$('m4dProfileEmail').textContent=user.email||'';const {data,error}=await client.from('profiles').select('username,avatar_url,bio,tags').eq('id',requestedId).maybeSingle();if(!user||user.id!==requestedId)return;if(error){message('Could not load profile: '+error.message);return}$('m4dProfileName').value=data?.username||user.user_metadata?.username||'Member';$('m4dProfileBio').value=data?.bio||'';$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters';currentPhotoUrl=data?.avatar_url||'';$('m4dProfilePicture').value='';showPhoto(currentPhotoUrl);showTags(data?.tags)}
+ async function loadProfile(){if(!client||!user)return;const requestedId=user.id;$('m4dProfileEmail').textContent=user.email||'';const {data,error}=await client.from('profiles').select('username,avatar_url,bio,tags').eq('id',requestedId).maybeSingle();if(!user||user.id!==requestedId)return;if(error){message('Could not load profile: '+error.message);return}$('m4dProfileName').value=data?.username||user.user_metadata?.username||'Member';$('m4dProfileBio').value=data?.bio||'';$('m4dProfileDisplayName').textContent=$('m4dProfileName').value;$('m4dProfileBioPreview').textContent=data?.bio||'';$('m4dBioCounter').textContent=$('m4dProfileBio').value.length+' / 160 characters';currentPhotoUrl=data?.avatar_url||'';$('m4dProfilePicture').value='';showPhoto(currentPhotoUrl);showTags(data?.tags)}
  $('m4dAccountForm').addEventListener('submit',async e=>{e.preventDefault();if(!client){message('Account service did not load. Refresh the page and try again.');return}const email=$('m4dEmail').value.trim();const password=$('m4dPassword').value;const submit=$('m4dAccountSubmit');submit.disabled=true;message('Please wait…');try{if(mode==='newpassword'){const {error}=await client.auth.updateUser({password});if(error)throw error;setUser((await client.auth.getUser()).data.user);showMode('profile');message('Your password has been updated.')}else if(mode==='signup'){const username=$('m4dUsername').value.trim();if(!username){message('Please enter a username.');return}const {data,error}=await client.auth.signUp({email,password,options:{data:{username},emailRedirectTo:location.origin+'/'}});if(error)throw error;if(data.session){setUser(data.user);message('Account created!')}else{showMode('signin');message('Account created! Check your email and confirm your address before signing in.')}}else if(mode==='reset'){const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/'});if(error)throw error;message('If this email is registered, a password reset link has been sent.')}else{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;setUser(data.user);showMode('profile');await loadProfile();message('Signed in successfully.')}}catch(err){message(err.message||'Something went wrong. Please try again.')}finally{submit.disabled=false}});
  $('m4dSaveProfile').addEventListener('click',async()=>{
   if(!user||!client)return;const accountId=user.id;
@@ -291,7 +330,7 @@ checkM4DLive();
    if(!user||user.id!==accountId)return;
    if(changes.avatar_url)currentPhotoUrl=changes.avatar_url;
    $('m4dProfilePicture').value='';showPhoto(currentPhotoUrl);
-   message('Profile saved successfully!');
+   $('m4dProfileDisplayName').textContent=username;$('m4dProfileBioPreview').textContent=bio;message('Profile saved successfully!');
   }catch(err){message('Could not save profile: '+(err.message||'Unknown error'));}
   finally{button.disabled=false}
  });
