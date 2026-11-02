@@ -1011,5 +1011,64 @@ checkM4DLive();
 })();
 </script>
 
+
+<!-- M4D floating chat launcher — reuses the existing authenticated Messages section -->
+<style>
+#m4dFloatingChatButton{position:fixed;right:22px;bottom:22px;z-index:140;width:62px;height:62px;border:1px solid #ff7180;border-radius:50%;background:#d90d20;color:white;box-shadow:0 10px 35px #000b;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:27px;transition:transform .15s ease}
+#m4dFloatingChatButton:hover{transform:translateY(-3px)}
+#m4dFloatingChatButton:focus-visible,#m4dFloatingChatClose:focus-visible{outline:3px solid white;outline-offset:3px}
+#m4dFloatingUnread{display:none;position:absolute;top:-5px;right:-5px;min-width:23px;height:23px;padding:2px 5px;align-items:center;justify-content:center;border-radius:20px;background:#fff;color:#b50919;font-size:12px;font-weight:900;border:2px solid #b50919}
+#m4dFloatingChatClose{display:none;position:fixed;z-index:152;right:24px;bottom:min(77vh,710px);background:#e50914;color:#fff;border:0;border-radius:7px;padding:9px 12px;font-weight:800;cursor:pointer}
+#m4dMessages.m4d-floating-open{position:fixed;z-index:150;right:16px;bottom:94px;top:auto;left:auto;width:min(470px,calc(100vw - 32px));height:min(74vh,690px);padding:0!important;overflow:auto;border:1px solid #484952;border-radius:14px;box-shadow:0 24px 90px #000e;background:#101116}
+#m4dMessages.m4d-floating-open>.wrap{padding:18px!important;max-width:none!important;width:100%}
+#m4dMessages.m4d-floating-open h2{font-size:23px;margin:4px 0 8px}
+#m4dMessages.m4d-floating-open .eyebrow,#m4dMessages.m4d-floating-open .lead{display:none}
+#m4dMessages.m4d-floating-open .m4d-chat-shell{display:flex;flex-direction:column;min-height:0}
+#m4dMessages.m4d-floating-open .m4d-chat-sidebar{border-right:0;border-bottom:1px solid #34353e;padding:10px}
+#m4dMessages.m4d-floating-open .m4d-chat-sidebar h3{font-size:13px;margin:0 0 7px}
+#m4dMessages.m4d-floating-open .m4d-chat-contacts{display:flex;gap:8px;overflow-x:auto}
+#m4dMessages.m4d-floating-open .m4d-chat-contact{min-width:130px;width:auto;flex-shrink:0}
+#m4dMessages.m4d-floating-open .m4d-chat-main{min-height:260px;flex:1}
+#m4dMessages.m4d-floating-open .m4d-chat-stream{min-height:195px;max-height:270px}
+#m4dMessages.m4d-floating-open~#m4dFloatingChatClose{display:block}
+@media(max-width:550px){#m4dFloatingChatButton{right:14px;bottom:14px;width:56px;height:56px}#m4dMessages.m4d-floating-open{right:8px;width:calc(100vw - 16px);bottom:80px;height:min(78vh,680px)}#m4dFloatingChatClose{right:17px}}
+</style>
+<button id="m4dFloatingChatButton" type="button" aria-label="Open messages" aria-expanded="false" aria-controls="m4dMessages">💬<span id="m4dFloatingUnread" aria-hidden="true"></span></button>
+<button id="m4dFloatingChatClose" type="button" aria-label="Close floating messages">✕ Close</button>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const section=document.getElementById('m4dMessages');
+ const launch=document.getElementById('m4dFloatingChatButton');
+ const close=document.getElementById('m4dFloatingChatClose');
+ const badge=document.getElementById('m4dFloatingUnread');
+ if(!client||!section||!launch||!close)return;
+ function setOpen(open){
+  section.classList.toggle('m4d-floating-open',open);
+  launch.setAttribute('aria-expanded',String(open));
+  launch.setAttribute('aria-label',open?'Close messages':'Open messages');
+  close.style.display=open?'block':'none';
+  if(open)document.getElementById('m4dChatRefresh')?.click();
+ }
+ launch.addEventListener('click',()=>setOpen(!section.classList.contains('m4d-floating-open')));
+ close.addEventListener('click',()=>setOpen(false));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&section.classList.contains('m4d-floating-open'))setOpen(false)});
+ document.querySelectorAll('a[href="#m4dMessages"]').forEach(a=>a.addEventListener('click',()=>setOpen(false)));
+ function updateBadge(){
+  const nav=Array.from(document.querySelectorAll('header nav a')).find(a=>a.getAttribute('href')==='#m4dMessages');
+  const n=nav?.querySelector('.m4d-unread-badge')?.textContent?.trim()||'';
+  badge.textContent=n;badge.style.display=n?'flex':'none';
+  launch.setAttribute('title',n?`${n} unread messages`:'Open messages');
+ }
+ setInterval(updateBadge,1500);updateBadge();
+ client.auth.getUser().then(({data})=>{launch.style.display=data?.user?'flex':'none'}).catch(()=>{});
+ client.auth.onAuthStateChange((_event,session)=>{
+  launch.style.display=session?.user?'flex':'none';
+  if(!session?.user)setOpen(false);
+ });
+})();
+</script>
+
 </body>
 </html>
