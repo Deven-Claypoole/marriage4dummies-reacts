@@ -736,5 +736,80 @@ checkM4DLive();
 })();
 </script>
 
+<!-- M4D unread message notifications (independent of existing chat logic) -->
+<style>
+.m4d-unread-badge{display:inline-flex;min-width:19px;height:19px;align-items:center;justify-content:center;padding:0 5px;margin-left:7px;border-radius:99px;background:#e50914;color:white;font-size:11px;font-weight:800;line-height:1;vertical-align:middle}
+.m4d-chat-contact .m4d-unread-badge{margin-left:auto;flex-shrink:0}
+.m4d-unread-heading{display:inline-flex;align-items:center;gap:5px}
+</style>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ const contacts=document.getElementById('m4dChatContacts');
+ if(!client||!contacts)return;
+ let currentUser=null,counts=new Map(),inFlight=false,marking=false,lastMarkedKey='',authVersion=0;
+ const navLink=Array.from(document.querySelectorAll('header nav a')).find(a=>a.getAttribute('href')==='#m4dMessages');
+ function makeBadge(host,count){
+  if(!host)return;
+  let badge=host.querySelector(':scope > .m4d-unread-badge');
+  if(count>0){
+   if(!badge){badge=document.createElement('span');badge.className='m4d-unread-badge';badge.setAttribute('aria-label','Unread messages');host.appendChild(badge)}
+   badge.textContent=count>99?'99+':String(count);
+  }else if(badge)badge.remove();
+ }
+ function paint(){
+  const total=Array.from(counts.values()).reduce((a,b)=>a+b,0);
+  makeBadge(navLink,total);
+  if(navLink)navLink.setAttribute('aria-label',total?`Messages, ${total} unread`:'Messages');
+  contacts.querySelectorAll('[data-m4d-friend-id]').forEach(button=>{
+   makeBadge(button,counts.get(button.dataset.m4dFriendId)||0);
+  });
+ }
+ async function refresh(){
+  if(!currentUser||inFlight||document.visibilityState==='hidden')return;
+  inFlight=true;const version=authVersion;
+  try{
+   const {data,error}=await client.rpc('m4d_unread_counts');
+   if(error)throw error;
+   if(version!==authVersion)return;
+   counts=new Map((data||[]).map(r=>[r.friend_id,Number(r.unread_count)||0]));paint();
+  }catch(err){console.warn('M4D unread notifications:',err.message||err)}finally{inFlight=false}
+ }
+ function selectedFriend(){return contacts.querySelector('.m4d-chat-contact.active')?.dataset.m4dFriendId||null}
+ async function markOpenConversation(){
+  const friend=selectedFriend();
+  if(!currentUser||!friend||marking||document.visibilityState==='hidden')return;
+  // The existing chat calls loadMessages() when a friend is selected. Delay read marking
+  // slightly so its conversation can be displayed first.
+  marking=true;
+  const version=authVersion;
+  try{
+   const {error}=await client.rpc('m4d_mark_conversation_read',{p_friend_id:friend});
+   if(error)throw error;
+   if(version!==authVersion)return;
+   counts.delete(friend);paint();
+   await refresh();
+  }catch(err){console.warn('M4D mark read:',err.message||err)}finally{marking=false}
+ }
+ contacts.addEventListener('click',event=>{
+  if(event.target.closest('.m4d-chat-contact'))setTimeout(markOpenConversation,600);
+ });
+ function setUser(id){
+  if(currentUser===id)return;
+  currentUser=id;authVersion++;counts.clear();paint();
+  if(id)refresh();
+ }
+ client.auth.getUser().then(({data})=>setUser(data?.user?.id||null)).catch(()=>{});
+ client.auth.onAuthStateChange((_event,session)=>setTimeout(()=>setUser(session?.user?.id||null),0));
+ const observer=new MutationObserver(()=>paint());
+ observer.observe(contacts,{childList:true});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refresh();if(selectedFriend())setTimeout(markOpenConversation,600)}});
+ window.addEventListener('focus',()=>{refresh()});
+ // Periodically refresh unread badges; while viewing a conversation, mark newly received messages read.
+ setInterval(()=>{if(!currentUser||document.visibilityState==='hidden')return;refresh();if(selectedFriend()&&!marking&&counts.get(selectedFriend())>0)markOpenConversation()},7000);
+})();
+</script>
+
 </body>
 </html>
