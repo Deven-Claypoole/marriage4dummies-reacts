@@ -248,5 +248,76 @@ checkM4DLive();
  if(client){client.auth.getUser().then(({data,error})=>{if(!error)setUser(data.user)}).catch(()=>{});client.auth.onAuthStateChange((_event,session)=>{setUser(session?.user||null);if(_event==='PASSWORD_RECOVERY'){overlay.classList.add('open');document.body.style.overflow='hidden';showMode('newpassword');message('Enter your new password below.')}})}else{console.warn('Supabase client is unavailable')}
 })();
 </script>
+<!-- My List: personal saved reactions -->
+<style>
+#m4dMyList{background:#111216;border-top:1px solid #292a30}
+.m4d-list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:16px;margin-top:24px}
+.m4d-list-card{background:#1c1d23;border:1px solid #34353d;border-radius:9px;overflow:hidden}
+.m4d-list-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.m4d-list-body{padding:14px}.m4d-list-body h3{font-size:14px;line-height:1.45;margin:0 0 13px}
+.m4d-list-actions{display:flex;gap:8px;flex-wrap:wrap}.m4d-list-actions a,.m4d-list-actions button,.m4d-save-btn{border:1px solid #54545f;background:#292b33;color:#fff;border-radius:5px;padding:8px 11px;font-size:12px;font-weight:750;text-decoration:none}
+.m4d-list-actions a{background:#e50914;border-color:#e50914}
+.m4d-save-btn{margin-top:10px;width:100%;text-align:center}.m4d-save-btn:hover,.m4d-list-actions button:hover{border-color:#f34b55}
+.m4d-save-btn:disabled{opacity:.5;cursor:wait}
+#m4dMyListStatus{color:#b8b9c4;font-size:14px;margin-top:12px}
+@media(max-width:600px){.m4d-list-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<section id="m4dMyList"><div class="wrap">
+ <div class="eyebrow">YOUR PERSONAL REACTION COLLECTION</div>
+ <h2>＋ My List</h2>
+ <p class="lead">Save reactions from search results and find them here whenever you sign in.</p>
+ <p id="m4dMyListStatus" role="status" aria-live="polite">Sign in to view your saved reactions.</p>
+ <div id="m4dMyListGrid" class="m4d-list-grid"></div>
+</div></section>
+<script>
+(function(){
+ const client=window.supabaseClient;
+ const grid=document.getElementById('m4dMyListGrid');
+ const status=document.getElementById('m4dMyListStatus');
+ const results=document.getElementById('videoResults');
+ let user=null, saved=new Map(), loading=false;
+ function videoId(url){try{const u=new URL(url);if(u.hostname==='youtu.be')return /^[\w-]{11}$/.test(u.pathname.slice(1))?u.pathname.slice(1):null;if(!/(^|\.)youtube\.com$/.test(u.hostname))return null;const id=u.searchParams.get('v')||(u.pathname.match(/^\/(?:shorts|live|embed)\/([\w-]{11})/)||[])[1];return id&&/^[\w-]{11}$/.test(id)?id:null}catch{return null}}
+ function buttonText(btn,id){btn.textContent=saved.has(id)?'✓ In My List':'＋ My List';btn.setAttribute('aria-pressed',String(saved.has(id)))}
+ function syncButtons(){if(!results)return;results.querySelectorAll('.m4d-save-btn').forEach(b=>buttonText(b,b.dataset.videoId))}
+ function addButtons(){if(!results)return;results.querySelectorAll('a.upgrade-result').forEach(a=>{
+   if(a.parentElement?.classList.contains('m4d-result-wrap'))return;
+   const id=videoId(a.href);if(!id)return;
+   const wrapper=document.createElement('div');wrapper.className='m4d-result-wrap';wrapper.style.minWidth='0';
+   a.parentNode.insertBefore(wrapper,a);wrapper.appendChild(a);
+   const btn=document.createElement('button');btn.type='button';btn.className='m4d-save-btn';btn.dataset.videoId=id;
+   btn.dataset.videoTitle=a.querySelector('strong')?.textContent?.trim()||'Reaction';
+   buttonText(btn,id);btn.addEventListener('click',()=>toggle(id,btn.dataset.videoTitle,btn));wrapper.appendChild(btn);
+ })}
+ function display(){grid.replaceChildren();if(!user){status.textContent='Sign in to save reactions to your personal list.';return}
+   status.textContent=saved.size?saved.size+' saved reaction'+(saved.size===1?'':'s'):'Your list is empty. Search for a reaction and select ＋ My List.';
+   for(const entry of saved.values()){
+    const card=document.createElement('article');card.className='m4d-list-card';
+    const img=document.createElement('img');img.loading='lazy';img.src=entry.thumbnail_url||('https://i.ytimg.com/vi/'+entry.video_id+'/hqdefault.jpg');img.alt='Thumbnail for '+entry.video_title;
+    const body=document.createElement('div');body.className='m4d-list-body';const h=document.createElement('h3');h.textContent=entry.video_title;
+    const actions=document.createElement('div');actions.className='m4d-list-actions';const watch=document.createElement('a');watch.href='https://www.youtube.com/watch?v='+encodeURIComponent(entry.video_id);watch.target='_blank';watch.rel='noopener noreferrer';watch.textContent='▶ Watch';
+    const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';remove.addEventListener('click',()=>toggle(entry.video_id,entry.video_title,remove));
+    actions.append(watch,remove);body.append(h,actions);card.append(img,body);grid.append(card);
+   }
+ }
+ async function refresh(){if(!client)return;const current=user?.id; if(!current){saved.clear();display();syncButtons();return}status.textContent='Loading your list…';
+ const {data,error}=await client.from('my_list').select('video_id,video_title,thumbnail_url,created_at').eq('user_id',current).order('created_at',{ascending:false});
+ if(user?.id!==current)return;if(error){status.textContent='Unable to load My List: '+error.message;return}
+ saved=new Map((data||[]).map(v=>[v.video_id,v]));display();syncButtons();}
+ async function toggle(id,title,btn){if(!client){status.textContent='Account service is unavailable.';return}
+ if(!user){document.querySelector('.m4d-account-button')?.click();return}
+ if(loading)return;loading=true;btn.disabled=true;
+ try{if(saved.has(id)){
+   const {error}=await client.from('my_list').delete().eq('user_id',user.id).eq('video_id',id);if(error)throw error;saved.delete(id);
+ }else{const entry={user_id:user.id,video_id:id,video_title:title,thumbnail_url:'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg'};
+   const {error}=await client.from('my_list').upsert(entry,{onConflict:'user_id,video_id'});if(error)throw error;saved.set(id,entry);
+ }display();syncButtons();}catch(e){status.textContent='Could not update My List: '+(e.message||'Try again.')}finally{loading=false;btn.disabled=false;buttonText(btn,id)}
+ }
+ document.querySelector('header nav')?.insertAdjacentHTML('beforeend','<a href="#m4dMyList">My List</a>');
+ if(results){const observer=new MutationObserver(addButtons);observer.observe(results,{childList:true,subtree:false});addButtons()}
+ if(client){client.auth.getUser().then(({data})=>{user=data?.user||null;refresh()}).catch(()=>{});
+ client.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;setTimeout(refresh,0)});}
+ else status.textContent='Account service is unavailable. Please refresh.';
+})();
+</script>
 </body>
 </html>
