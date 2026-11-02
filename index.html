@@ -420,8 +420,16 @@ checkM4DLive();
 #m4dDashNav{display:none}
 @media(max-width:1040px){.m4d-dash-grid{grid-template-columns:1fr 1fr}.m4d-dash-card:first-child{grid-column:1/-1}}
 @media(max-width:580px){#m4dDashboard{padding:30px 0}.m4d-dash-grid{grid-template-columns:1fr}.m4d-dash-card:first-child{grid-column:auto}.m4d-dash-card{padding:18px}.m4d-dash-photo{width:62px;height:62px}}
+/* Popup dashboard: no longer occupies homepage space */
+#m4dDashboard{position:fixed;inset:0;z-index:99990;padding:20px!important;background:#000b!important;border:0;overflow-y:auto;align-items:center;justify-content:center;scroll-margin-top:0}
+#m4dDashboard.is-visible{display:flex}
+#m4dDashboard>.wrap{position:relative;width:min(1080px,100%);max-height:calc(100dvh - 40px);overflow:auto;background:#101116;border:1px solid #48404a;border-radius:18px;padding:30px;box-shadow:0 30px 100px #000d}
+#m4dDashClose{position:sticky;top:0;float:right;z-index:3;margin:-8px -8px 0 10px;background:#292a32;border:1px solid #55545d;color:white;border-radius:50%;width:38px;height:38px;cursor:pointer;font-size:24px;line-height:1}
+#m4dDashClose:hover,#m4dDashClose:focus-visible{background:#b5152b;outline:2px solid #fff;outline-offset:2px}
+@media(max-width:580px){#m4dDashboard{padding:8px!important}#m4dDashboard>.wrap{padding:18px;max-height:calc(100dvh - 16px);border-radius:12px}.m4d-dash-grid{grid-template-columns:1fr}.m4d-dash-card[style]{grid-column:auto!important}}
 </style>
-<section id="m4dDashboard" aria-labelledby="m4dDashTitle"><div class="wrap">
+<section id="m4dDashboard" role="dialog" aria-modal="true" aria-labelledby="m4dDashTitle" aria-hidden="true" tabindex="-1"><div class="wrap">
+ <button id="m4dDashClose" type="button" aria-label="Close member dashboard">&times;</button>
  <div class="m4d-dash-head"><div><div class="m4d-dash-kicker">YOUR M4D HOME</div><h2 id="m4dDashTitle">Welcome back!</h2><p>Everything you love about Marriage4Dummies-Reacts, in one place.</p></div><button id="m4dDashRefresh" class="m4d-dash-action" type="button">↻ Refresh dashboard</button></div>
  <div class="m4d-dash-grid">
   <article class="m4d-dash-card"><h3>Your profile</h3><div class="m4d-dash-identity"><div class="m4d-dash-photo" id="m4dDashAvatar" aria-label="Profile photo">🎬</div><div><div class="m4d-dash-name" id="m4dDashName">Member</div><div class="m4d-dash-tagline" id="m4dDashTags">M4D Community Member</div></div></div><p class="m4d-dash-bio" id="m4dDashBio">Welcome to the reaction family.</p><button class="m4d-dash-action" id="m4dDashEditProfile" type="button">Edit Profile</button></article>
@@ -439,8 +447,13 @@ checkM4DLive();
  const db=window.supabaseClient;if(!db)return;
  const el=id=>document.getElementById(id);
  const section=el('m4dDashboard'),nav=document.querySelector('header nav');
- if(nav){const a=document.createElement('a');a.id='m4dDashNav';a.href='#m4dDashboard';a.textContent='My Dashboard';nav.insertBefore(a,nav.firstChild)}
- let userId=null,revision=0,loading=false;
+ if(nav){const a=document.createElement('a');a.id='m4dDashNav';a.href='#m4dDashboard';a.textContent='My Dashboard';nav.insertBefore(a,nav.firstChild);a.addEventListener('click',e=>{e.preventDefault();if(userId)openDashboard()})}
+ let userId=null,revision=0,loading=false,previousFocus=null;
+ function openDashboard(){if(!userId)return;previousFocus=document.activeElement;section.classList.add('is-visible');section.setAttribute('aria-hidden','false');el('m4dDashClose').focus();refresh()}
+ function closeDashboard(){section.classList.remove('is-visible');section.setAttribute('aria-hidden','true');if(previousFocus?.isConnected)previousFocus.focus();previousFocus=null}
+ el('m4dDashClose').addEventListener('click',closeDashboard);
+ section.addEventListener('click',e=>{if(e.target===section)closeDashboard()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&section.classList.contains('is-visible'))closeDashboard()});
  function text(id,value){el(id).textContent=String(value)}
  function safePhoto(url,container){container.replaceChildren();if(typeof url==='string'&&/^https:\/\//i.test(url)){const img=document.createElement('img');img.alt='Your profile picture';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.onerror=()=>container.textContent='🎬';container.append(img)}else container.textContent='🎬'}
  function reset(){text('m4dDashTitle','Welcome back!');text('m4dDashSaved','—');text('m4dDashUnread','—');text('m4dDashFriendCount','—');text('m4dDashRequestCount','Checking friend requests…');text('m4dDashName','Member');text('m4dDashBio','Welcome to the reaction family.');text('m4dDashTags','M4D Community Member');el('m4dDashAvatar').textContent='🎬';el('m4dDashOnline').textContent='Checking friend activity…';text('m4dDashStatus','')}
@@ -461,7 +474,7 @@ checkM4DLive();
   const o=result(presence,'online status');if(f&&o){renderOnline(friends,new Set((o.data||[]).filter(x=>x.is_online).map(x=>x.friend_id)))}else if(!friends.length&&f){renderOnline([],new Set())}
   text('m4dDashStatus',errors.length?'Some information could not be loaded: '+errors.join(', ')+'. Other features remain available.':'Dashboard updated.');
  }catch(e){text('m4dDashStatus','Could not update your dashboard. Please try again.')}finally{loading=false}}
- function setUser(user){const next=user?.id||null;if(userId===next)return;userId=next;revision++;section.classList.toggle('is-visible',!!next);if(el('m4dDashNav'))el('m4dDashNav').style.display=next?'inline-flex':'none';reset();if(next)refresh()}
+ function setUser(user){const next=user?.id||null;if(userId===next)return;userId=next;revision++;closeDashboard();if(el('m4dDashNav'))el('m4dDashNav').style.display=next?'inline-flex':'none';reset();if(next){openDashboard()}}
  el('m4dDashRefresh').addEventListener('click',refresh);
  el('m4dDashEditProfile').addEventListener('click',()=>document.querySelector('.m4d-account-button')?.click());
  el('m4dDashOpenChat').addEventListener('click',()=>el('m4dFloatingChatButton')?.click());
