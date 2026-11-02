@@ -74,7 +74,6 @@ section{scroll-margin-top:90px}
 @media(max-width:540px){.brand{font-size:15px}.brand-logo{width:40px;height:40px}.hero h1{letter-spacing:-.045em}.btn{padding:12px 15px}.cards{gap:12px}.card{border-radius:9px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
 </style>
-
 <style id="m4d-one-line-navigation">
 /* Navigation polish: one continuous line with horizontal scrolling if needed. */
 header .wrap{display:flex;align-items:center;flex-wrap:nowrap!important;gap:14px;max-width:1550px;min-width:0;padding-top:10px;padding-bottom:10px}
@@ -85,9 +84,20 @@ header .m4d-account-button{flex:0 0 auto;white-space:nowrap;padding:10px 12px}
 @media(max-width:850px){header .wrap{flex-wrap:wrap!important;gap:7px 12px;padding-top:10px;padding-bottom:9px}header .brand{flex:1 1 auto}header .m4d-account-button{order:1}header nav{order:2;flex:1 0 100%!important;width:100%;max-width:100%;justify-content:flex-start!important;scrollbar-width:thin}header nav a{padding:8px 10px}section{scroll-margin-top:135px}}
 @media(max-width:540px){header .wrap{flex-direction:row!important;align-items:center!important}header nav{flex:1 0 100%!important}header .brand{font-size:14px}header .brand-logo{width:36px;height:36px}}
 </style>
-</head><body>
+<style id="m4d-tabbed-pages-style">
+/* Tabs: page sections no longer pile up beneath the hero */
+main > .m4d-tab-hidden, main > section.m4d-tab-hidden, body > section.m4d-tab-hidden{display:none!important}
+#m4dMessages{display:none!important} /* messaging lives in the floating bubble */
+header nav a.m4d-active-tab{background:rgba(231,32,58,.15)!important;color:#fff!important;box-shadow:inset 0 -2px #f32642!important;border-radius:8px 8px 0 0}
+#m4dTabHeading{display:none;max-width:1190px;margin:30px auto 0;padding:20px 26px 6px}
+body[data-m4d-view]:not([data-m4d-view="home"]) #m4dTabHeading{display:block}
+#m4dTabHeading .m4d-tab-eyebrow{font-size:11px;letter-spacing:.2em;font-weight:900;color:#ff596b;text-transform:uppercase}
+#m4dTabHeading h1{font-size:clamp(25px,3.5vw,41px);line-height:1.1;margin:8px 0 0;color:#fafafa}
+main > section:not(.m4d-tab-hidden){padding-top:16px}
+@media(max-width:700px){#m4dTabHeading{padding:14px 20px 0;margin-top:12px}}
+</style></head><body>
 <header><div class="wrap"><a class="brand" href="#home"><img alt="Marriage4Dummies-Reacts logo" class="brand-logo" src="data:image/jpeg;base64,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"/><span class="brand-text">MARRIAGE<b>4</b>DUMMIES<small>REACTION FAN HUB</small></span></a><nav><a href="#home">Home</a><a href="#latest">New &amp; Popular</a><a href="#weekly">Top Picks</a><a href="#featured">Featured</a><a href="#library">Collections</a><a href="#contact">Contact</a><a href="#video-search">Search</a></nav></div></header>
-<main><div class="hero" id="home"><div class="m4d-hero-motion" aria-hidden="true"><span class="m4d-glow m4d-glow-one"></span><span class="m4d-glow m4d-glow-two"></span><span class="m4d-glow m4d-glow-three"></span><span class="m4d-lightline m4d-lightline-one"></span><span class="m4d-lightline m4d-lightline-two"></span></div><div class="wrap"><div class="hero-kicker">▶  FEATURED EXPERIENCE  •  MUSIC  •  REACTIONS  •  COMMUNITY</div><div class="eyebrow">THE UNOFFICIAL REACTION STREAMING HUB</div><h1>THE REACTIONS<br/><em>NEVER STOP.</em></h1><p>Your front-row seat to Markis &amp; Christian. Explore the reaction vault, discover playlists, and find the songs everyone is talking about.</p><div class="actions"><a class="btn" href="#video-search">▶ Browse Reactions</a><a class="btn secondary" href="#library">Browse Collections</a><a class="btn secondary" href="https://www.youtube.com/@marriage4dummiesreacts" rel="noopener" target="_blank">Visit YouTube ↗</a></div><div class="stats"><div class="stat"><strong>10</strong><span>Curated playlists</span></div><div class="stat"><strong>7</strong><span>Reaction categories</span></div><div class="stat"><strong>1</strong><span>Reaction family</span></div></div></div></div>
+<main><div id="m4dTabHeading"><div class="m4d-tab-eyebrow">MARRIAGE4DUMMIES · EXPLORE</div><h1 id="m4dTabPageName">Browse</h1></div><div class="hero" id="home"><div aria-hidden="true" class="m4d-hero-motion"><span class="m4d-glow m4d-glow-one"></span><span class="m4d-glow m4d-glow-two"></span><span class="m4d-glow m4d-glow-three"></span><span class="m4d-lightline m4d-lightline-one"></span><span class="m4d-lightline m4d-lightline-two"></span></div><div class="wrap"><div class="hero-kicker">▶  FEATURED EXPERIENCE  •  MUSIC  •  REACTIONS  •  COMMUNITY</div><div class="eyebrow">THE UNOFFICIAL REACTION STREAMING HUB</div><h1>THE REACTIONS<br/><em>NEVER STOP.</em></h1><p>Your front-row seat to Markis &amp; Christian. Explore the reaction vault, discover playlists, and find the songs everyone is talking about.</p><div class="actions"><a class="btn" href="#video-search">▶ Browse Reactions</a><a class="btn secondary" href="#library">Browse Collections</a><a class="btn secondary" href="https://www.youtube.com/@marriage4dummiesreacts" rel="noopener" target="_blank">Visit YouTube ↗</a></div><div class="stats"><div class="stat"><strong>10</strong><span>Curated playlists</span></div><div class="stat"><strong>7</strong><span>Reaction categories</span></div><div class="stat"><strong>1</strong><span>Reaction family</span></div></div></div></div>
 <section class="section" id="latest"><div class="wrap"><div class="eyebrow">JUST ADDED</div><h2>Latest Reactions</h2><p class="lead">Catch the newest uploads directly from Marriage4Dummies-Reacts.</p><div class="upgrade-grid"><div class="upgrade-panel"><div class="upgrade-hero"><img alt="Marriage4Dummies-Reacts channel logo" src="data:image/jpeg;base64,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"/><div><span class="upgrade-badge">Official YouTube channel</span><h3>Fresh from the channel</h3></div></div><p>Browse the latest videos and shorts, updated on YouTube as soon as the creators publish them.</p><a class="upgrade-action" href="https://www.youtube.com/@marriage4dummiesreacts/videos" rel="noopener noreferrer" target="_blank">See latest uploads ↗</a></div><div class="upgrade-panel"><span class="upgrade-badge">New uploads</span><h3>Stay subscribed</h3><p>Want to catch each new reaction? Subscribe and turn on notifications on YouTube.</p><a class="upgrade-action outline" href="https://www.youtube.com/@marriage4dummiesreacts" rel="noopener noreferrer" target="_blank">Visit channel ↗</a><p class="upgrade-hint">The channel's newest uploads open live on YouTube. This static site does not claim to automatically fetch them.</p></div></div></div></section><section class="featured" id="featured"><div class="wrap"><div class="sectionhead"><div><div class="eyebrow">THE 999 COLLECTION</div><h2>Juice WRLD Reactions</h2><p class="lead">Watch the playlist directly here, or open it on YouTube.</p></div><span class="pill">999 COLLECTION</span></div><div class="featuregrid"><div class="video"><iframe allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/videoseries?list=PLEHx2jI2VxqdIn184F-ySzK7XwomXLA5c" title="Juice WRLD Reactions playlist"></iframe></div><div class="featurecopy"><span class="pill">HIP-HOP &amp; MUSIC</span><h3>999 Forever.</h3><p>Revisit the Juice WRLD reaction collection from Marriage4Dummies-Reacts. Pick a video from the playlist player and enjoy the reactions.</p><a class="btn" href="https://www.youtube.com/playlist?list=PLEHx2jI2VxqdIn184F-ySzK7XwomXLA5c" rel="noopener" target="_blank">Open full playlist ↗</a></div></div></div></section><section class="section" id="weekly"><div class="wrap"><div class="eyebrow">EDITOR’S PICK</div><h2>Reaction of the Week</h2><p class="lead">A rotating featured collection from the reaction library.</p><div class="upgrade-panel"><span class="upgrade-badge">This week's pick</span><h3 id="weeklyTitle">Featured reaction collection</h3><p id="weeklyDescription">Explore a featured playlist from the archive.</p><div class="player" id="weeklyPlayer" style="margin-top:20px"></div><a class="upgrade-action" id="weeklyLink" rel="noopener noreferrer" target="_blank">Open featured playlist ↗</a><p class="upgrade-hint">Rotates weekly between the submitted playlists. Individual video spotlighting can be added when video links are supplied.</p></div></div></section>
 <section id="library"><div class="wrap"><div class="sectionhead"><div><div class="eyebrow">BROWSE BY COLLECTION</div><h2>Reaction Library</h2><p class="lead">Search by artist or playlist, or filter by category. Open any playlist on YouTube.</p></div><span class="pill">10 PLAYLISTS</span></div><div class="toolbar"><input aria-label="Search playlists" class="search" id="search" placeholder="Search playlists, artists, genres..."/><div class="filters" id="filters"></div></div><div class="cards" id="cards"></div><p class="empty" id="empty">No playlists match your search.</p></div></section>
 <section class="section" id="video-search"><div class="wrap"><div class="eyebrow">FIND YOUR NEXT WATCH</div><h2>Advanced Video Search</h2><p class="lead">Search the 10 playlist collections by artist, title or genre. Add individual video links to the editable video index in the HTML to enable song-level searching.</p><label for="videoQuery">Search reaction archive</label><input autocomplete="off" class="upgrade-search" id="videoQuery" placeholder="Search Juice WRLD, KISS, worship, song titles…" type="search"/><p class="upgrade-notice" id="syncStatus">Loading individual video index…</p><div aria-live="polite" class="upgrade-results" id="videoResults"></div><p class="upgrade-hint" id="videoSearchNote"></p></div></section><section class="contact-simple" id="contact"><div class="wrap"><div class="contact-panel"><div class="eyebrow">Questions or feedback?</div><h2>CONTACT US</h2><p>Want to get in touch? Send an email to the address below.</p><a class="contact-address" href="mailto:reachmarriage4dummiesreacts@gmail.com">reachmarriage4dummiesreacts@gmail.com</a><div><a class="btn" href="mailto:reachmarriage4dummiesreacts@gmail.com?subject=Marriage4Dummies-Reacts%20Website%20Inquiry">✉ Send an Email</a></div></div></div></section></main>
@@ -241,10 +251,8 @@ checkM4DLive();
   updateSearchVisibility();
 })();
 </script>
- 
 <!-- Supabase Account Connection -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
   window.supabaseClient = window.supabase.createClient(
     "https://htbomdkkbnlbgzrpztsu.supabase.co",
@@ -253,7 +261,6 @@ checkM4DLive();
 
   console.log("Supabase connection initialized");
 </script>
-
 <style>
 /* M4D member profile customization */
 .m4d-profile-top{display:flex;gap:15px;align-items:center;margin:16px 0 18px}
@@ -299,38 +306,38 @@ checkM4DLive();
 @media(max-width:600px){.m4d-account-overlay{padding:10px}.m4d-profile-cover{height:125px;padding:19px}.m4d-profile-cover:after{font-size:60px;right:16px}.m4d-profile-summary{padding:0 17px 18px;gap:13px;margin-top:-36px}#m4dProfileArea .m4d-photo-circle{width:89px;height:89px;min-width:89px}.m4d-profile-editor{padding:22px 17px}.m4d-profile-editor-grid{grid-template-columns:1fr}.m4d-profile-intro h3{font-size:20px}}
 </style>
 <!-- M4D member accounts -->
-<div class="m4d-account-overlay" id="m4dAccountOverlay" role="dialog" aria-modal="true" aria-labelledby="m4dAccountTitle">
- <div class="m4d-account-panel">
-  <button class="m4d-account-close" id="m4dAccountClose" type="button" aria-label="Close account dialog">✕</button>
-  <div class="eyebrow">MARRIAGE4DUMMIES MEMBERS</div>
-  <h2 id="m4dAccountTitle">Sign In</h2>
-  <p id="m4dAccountIntro">Welcome back to the reaction family.</p>
-  <form id="m4dAccountForm">
-   <div id="m4dNameGroup" hidden><label for="m4dUsername">Username</label><input id="m4dUsername" maxlength="40" autocomplete="nickname" placeholder="Your display name" /></div>
-   <div id="m4dEmailGroup"><label for="m4dEmail">Email</label><input id="m4dEmail" type="email" autocomplete="email" required /></div>
-   <div id="m4dPasswordGroup"><label for="m4dPassword">Password</label><input id="m4dPassword" type="password" minlength="6" autocomplete="current-password" required /></div>
-   <button class="m4d-account-primary" id="m4dAccountSubmit" type="submit">Sign In</button>
-  </form>
-  <div id="m4dProfileArea" hidden>
-   <div class="m4d-profile-cover"><span class="m4d-profile-cover-label">MARRIAGE4DUMMIES • MEMBER PROFILE</span></div>
-   <div class="m4d-profile-summary">
-    <div class="m4d-photo-circle"><img id="m4dPhotoPreview" alt="Your profile picture" hidden><span id="m4dPhotoFallback" aria-hidden="true">🎬</span></div>
-    <div class="m4d-profile-intro"><h3 id="m4dProfileDisplayName">Member</h3><p id="m4dProfileEmail"></p><p class="m4d-profile-preview-bio" id="m4dProfileBioPreview"></p></div>
-   </div>
-   <div class="m4d-profile-editor">
-    <h3 class="m4d-profile-section-title">Edit your profile</h3>
-    <div class="m4d-profile-editor-grid">
-     <div class="m4d-profile-field"><label for="m4dProfileName">Display name</label><input id="m4dProfileName" maxlength="40" autocomplete="nickname" /></div>
-     <div class="m4d-profile-field"><label for="m4dProfilePicture">Change profile picture</label><input id="m4dProfilePicture" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="m4dPhotoHelp"/><p class="m4d-account-help" id="m4dPhotoHelp">JPG, PNG, WebP • Max 2 MB • Publicly visible</p></div>
-    </div>
-    <div class="m4d-profile-field"><label for="m4dProfileBio">About me</label><textarea id="m4dProfileBio" maxlength="160" rows="3" placeholder="Tell the M4D community a little about yourself..."></textarea><p class="m4d-account-help" id="m4dBioCounter">0 / 160 characters</p></div>
-    <div class="m4d-profile-tag-section"><label>Member tags <span class="m4d-admin-label">Admin assigned</span></label><div id="m4dProfileTags" class="m4d-profile-tags" aria-live="polite"><span class="m4d-account-help">No tags assigned yet.</span></div><p class="m4d-account-help">Special tags are assigned by M4D administrators and cannot be edited here.</p></div>
-    <div class="m4d-profile-actions"><button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Changes</button><button class="m4d-account-primary" id="m4dSignOut" type="button" style="background:#383942">Sign Out</button></div>
-   </div>
-  </div>
-  <p id="m4dAccountMessage" class="m4d-account-message" role="status" aria-live="polite"></p>
-  <div class="m4d-account-row"><button class="m4d-account-link" id="m4dSwitchMode" type="button">Create an account</button><button class="m4d-account-link" id="m4dForgotPassword" type="button">Forgot password?</button></div>
- </div>
+<div aria-labelledby="m4dAccountTitle" aria-modal="true" class="m4d-account-overlay" id="m4dAccountOverlay" role="dialog">
+<div class="m4d-account-panel">
+<button aria-label="Close account dialog" class="m4d-account-close" id="m4dAccountClose" type="button">✕</button>
+<div class="eyebrow">MARRIAGE4DUMMIES MEMBERS</div>
+<h2 id="m4dAccountTitle">Sign In</h2>
+<p id="m4dAccountIntro">Welcome back to the reaction family.</p>
+<form id="m4dAccountForm">
+<div hidden="" id="m4dNameGroup"><label for="m4dUsername">Username</label><input autocomplete="nickname" id="m4dUsername" maxlength="40" placeholder="Your display name"/></div>
+<div id="m4dEmailGroup"><label for="m4dEmail">Email</label><input autocomplete="email" id="m4dEmail" required="" type="email"/></div>
+<div id="m4dPasswordGroup"><label for="m4dPassword">Password</label><input autocomplete="current-password" id="m4dPassword" minlength="6" required="" type="password"/></div>
+<button class="m4d-account-primary" id="m4dAccountSubmit" type="submit">Sign In</button>
+</form>
+<div hidden="" id="m4dProfileArea">
+<div class="m4d-profile-cover"><span class="m4d-profile-cover-label">MARRIAGE4DUMMIES • MEMBER PROFILE</span></div>
+<div class="m4d-profile-summary">
+<div class="m4d-photo-circle"><img alt="Your profile picture" hidden="" id="m4dPhotoPreview"/><span aria-hidden="true" id="m4dPhotoFallback">🎬</span></div>
+<div class="m4d-profile-intro"><h3 id="m4dProfileDisplayName">Member</h3><p id="m4dProfileEmail"></p><p class="m4d-profile-preview-bio" id="m4dProfileBioPreview"></p></div>
+</div>
+<div class="m4d-profile-editor">
+<h3 class="m4d-profile-section-title">Edit your profile</h3>
+<div class="m4d-profile-editor-grid">
+<div class="m4d-profile-field"><label for="m4dProfileName">Display name</label><input autocomplete="nickname" id="m4dProfileName" maxlength="40"/></div>
+<div class="m4d-profile-field"><label for="m4dProfilePicture">Change profile picture</label><input accept="image/png,image/jpeg,image/webp" aria-describedby="m4dPhotoHelp" id="m4dProfilePicture" type="file"/><p class="m4d-account-help" id="m4dPhotoHelp">JPG, PNG, WebP • Max 2 MB • Publicly visible</p></div>
+</div>
+<div class="m4d-profile-field"><label for="m4dProfileBio">About me</label><textarea id="m4dProfileBio" maxlength="160" placeholder="Tell the M4D community a little about yourself..." rows="3"></textarea><p class="m4d-account-help" id="m4dBioCounter">0 / 160 characters</p></div>
+<div class="m4d-profile-tag-section"><label>Member tags <span class="m4d-admin-label">Admin assigned</span></label><div aria-live="polite" class="m4d-profile-tags" id="m4dProfileTags"><span class="m4d-account-help">No tags assigned yet.</span></div><p class="m4d-account-help">Special tags are assigned by M4D administrators and cannot be edited here.</p></div>
+<div class="m4d-profile-actions"><button class="m4d-account-primary" id="m4dSaveProfile" type="button">Save Changes</button><button class="m4d-account-primary" id="m4dSignOut" style="background:#383942" type="button">Sign Out</button></div>
+</div>
+</div>
+<p aria-live="polite" class="m4d-account-message" id="m4dAccountMessage" role="status"></p>
+<div class="m4d-account-row"><button class="m4d-account-link" id="m4dSwitchMode" type="button">Create an account</button><button class="m4d-account-link" id="m4dForgotPassword" type="button">Forgot password?</button></div>
+</div>
 </div>
 <script>
 (function(){
@@ -428,18 +435,18 @@ checkM4DLive();
 #m4dDashClose:hover,#m4dDashClose:focus-visible{background:#b5152b;outline:2px solid #fff;outline-offset:2px}
 @media(max-width:580px){#m4dDashboard{padding:8px!important}#m4dDashboard>.wrap{padding:18px;max-height:calc(100dvh - 16px);border-radius:12px}.m4d-dash-grid{grid-template-columns:1fr}.m4d-dash-card[style]{grid-column:auto!important}}
 </style>
-<section id="m4dDashboard" role="dialog" aria-modal="true" aria-labelledby="m4dDashTitle" aria-hidden="true" tabindex="-1"><div class="wrap">
- <button id="m4dDashClose" type="button" aria-label="Close member dashboard">&times;</button>
- <div class="m4d-dash-head"><div><div class="m4d-dash-kicker">YOUR M4D HOME</div><h2 id="m4dDashTitle">Welcome back!</h2><p>Everything you love about Marriage4Dummies-Reacts, in one place.</p></div><button id="m4dDashRefresh" class="m4d-dash-action" type="button">↻ Refresh dashboard</button></div>
- <div class="m4d-dash-grid">
-  <article class="m4d-dash-card"><h3>Your profile</h3><div class="m4d-dash-identity"><div class="m4d-dash-photo" id="m4dDashAvatar" aria-label="Profile photo">🎬</div><div><div class="m4d-dash-name" id="m4dDashName">Member</div><div class="m4d-dash-tagline" id="m4dDashTags">M4D Community Member</div></div></div><p class="m4d-dash-bio" id="m4dDashBio">Welcome to the reaction family.</p><button class="m4d-dash-action" id="m4dDashEditProfile" type="button">Edit Profile</button></article>
-  <article class="m4d-dash-card"><h3>My List</h3><div id="m4dDashSaved" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Reactions saved for later</div><a class="m4d-dash-link" href="#m4dMyList">View saved reactions →</a></article>
-  <article class="m4d-dash-card"><h3>Messages</h3><div id="m4dDashUnread" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Unread messages</div><button id="m4dDashOpenChat" class="m4d-dash-action" type="button" style="margin-top:15px">Open chat bubble →</button></article>
-  <article class="m4d-dash-card"><h3>Friends &amp; Requests</h3><div id="m4dDashFriendCount" class="m4d-dash-stat">—</div><div class="m4d-dash-muted">Accepted friends</div><p id="m4dDashRequestCount">Checking friend requests…</p><a href="#m4dFriends" class="m4d-dash-link">Manage friends →</a></article>
-  <article class="m4d-dash-card" style="grid-column:span 2"><h3>Friends online</h3><div id="m4dDashOnline" class="m4d-dash-friends"><p>Checking friend activity…</p></div></article>
- </div>
- <div class="m4d-dash-shortcuts"><a href="#latest">New &amp; Popular</a><a href="#video-search">Search Reactions</a><a href="#m4dMembers">Find Members</a><a href="#m4dSafety">Safety Center</a></div>
- <p id="m4dDashStatus" role="status" aria-live="polite" style="font-size:12px;color:#a8aab5;margin-top:16px"></p>
+<section aria-hidden="true" aria-labelledby="m4dDashTitle" aria-modal="true" id="m4dDashboard" role="dialog" tabindex="-1"><div class="wrap">
+<button aria-label="Close member dashboard" id="m4dDashClose" type="button">×</button>
+<div class="m4d-dash-head"><div><div class="m4d-dash-kicker">YOUR M4D HOME</div><h2 id="m4dDashTitle">Welcome back!</h2><p>Everything you love about Marriage4Dummies-Reacts, in one place.</p></div><button class="m4d-dash-action" id="m4dDashRefresh" type="button">↻ Refresh dashboard</button></div>
+<div class="m4d-dash-grid">
+<article class="m4d-dash-card"><h3>Your profile</h3><div class="m4d-dash-identity"><div aria-label="Profile photo" class="m4d-dash-photo" id="m4dDashAvatar">🎬</div><div><div class="m4d-dash-name" id="m4dDashName">Member</div><div class="m4d-dash-tagline" id="m4dDashTags">M4D Community Member</div></div></div><p class="m4d-dash-bio" id="m4dDashBio">Welcome to the reaction family.</p><button class="m4d-dash-action" id="m4dDashEditProfile" type="button">Edit Profile</button></article>
+<article class="m4d-dash-card"><h3>My List</h3><div class="m4d-dash-stat" id="m4dDashSaved">—</div><div class="m4d-dash-muted">Reactions saved for later</div><a class="m4d-dash-link" href="#m4dMyList">View saved reactions →</a></article>
+<article class="m4d-dash-card"><h3>Messages</h3><div class="m4d-dash-stat" id="m4dDashUnread">—</div><div class="m4d-dash-muted">Unread messages</div><button class="m4d-dash-action" id="m4dDashOpenChat" style="margin-top:15px" type="button">Open chat bubble →</button></article>
+<article class="m4d-dash-card"><h3>Friends &amp; Requests</h3><div class="m4d-dash-stat" id="m4dDashFriendCount">—</div><div class="m4d-dash-muted">Accepted friends</div><p id="m4dDashRequestCount">Checking friend requests…</p><a class="m4d-dash-link" href="#m4dFriends">Manage friends →</a></article>
+<article class="m4d-dash-card" style="grid-column:span 2"><h3>Friends online</h3><div class="m4d-dash-friends" id="m4dDashOnline"><p>Checking friend activity…</p></div></article>
+</div>
+<div class="m4d-dash-shortcuts"><a href="#latest">New &amp; Popular</a><a href="#video-search">Search Reactions</a><a href="#m4dMembers">Find Members</a><a href="#m4dSafety">Safety Center</a></div>
+<p aria-live="polite" id="m4dDashStatus" role="status" style="font-size:12px;color:#a8aab5;margin-top:16px"></p>
 </div></section>
 <script>
 (function(){
@@ -485,7 +492,6 @@ checkM4DLive();
  setInterval(()=>{if(userId&&document.visibilityState==='visible')refresh()},45000);
 })();
 </script>
-
 <!-- My List: personal saved reactions -->
 <style>
 #m4dMyList{background:#111216;border-top:1px solid #292a30}
@@ -501,11 +507,11 @@ checkM4DLive();
 @media(max-width:600px){.m4d-list-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <section id="m4dMyList"><div class="wrap">
- <div class="eyebrow">YOUR PERSONAL REACTION COLLECTION</div>
- <h2>＋ My List</h2>
- <p class="lead">Save reactions from search results and find them here whenever you sign in.</p>
- <p id="m4dMyListStatus" role="status" aria-live="polite">Sign in to view your saved reactions.</p>
- <div id="m4dMyListGrid" class="m4d-list-grid"></div>
+<div class="eyebrow">YOUR PERSONAL REACTION COLLECTION</div>
+<h2>＋ My List</h2>
+<p class="lead">Save reactions from search results and find them here whenever you sign in.</p>
+<p aria-live="polite" id="m4dMyListStatus" role="status">Sign in to view your saved reactions.</p>
+<div class="m4d-list-grid" id="m4dMyListGrid"></div>
 </div></section>
 <script>
 (function(){
@@ -576,11 +582,11 @@ checkM4DLive();
 @media(max-width:480px){.m4d-member-result{flex-wrap:wrap}.m4d-member-result .m4d-friends-action{margin-left:68px}}
 </style>
 <section id="m4dMembers"><div class="wrap m4d-friends-shell">
- <div class="eyebrow">M4D COMMUNITY</div><h2>Find Members</h2>
- <p class="lead">Find other fans by username and send a friend request. Only accepted friends will be able to message each other when messaging launches.</p>
- <div class="m4d-friends-toolbar"><input type="search" id="m4dMemberSearch" autocomplete="off" maxlength="40" placeholder="Search member usernames (2+ characters)" aria-label="Search member usernames"/><button class="m4d-friends-action" id="m4dSearchMembersButton" type="button">Search Members</button></div>
- <p id="m4dMembersStatus" role="status" aria-live="polite">Sign in to find other members.</p>
- <div class="m4d-member-grid" id="m4dMemberResults" aria-live="polite"></div>
+<div class="eyebrow">M4D COMMUNITY</div><h2>Find Members</h2>
+<p class="lead">Find other fans by username and send a friend request. Only accepted friends will be able to message each other when messaging launches.</p>
+<div class="m4d-friends-toolbar"><input aria-label="Search member usernames" autocomplete="off" id="m4dMemberSearch" maxlength="40" placeholder="Search member usernames (2+ characters)" type="search"/><button class="m4d-friends-action" id="m4dSearchMembersButton" type="button">Search Members</button></div>
+<p aria-live="polite" id="m4dMembersStatus" role="status">Sign in to find other members.</p>
+<div aria-live="polite" class="m4d-member-grid" id="m4dMemberResults"></div>
 </div></section>
 <script>
 (function(){
@@ -640,8 +646,6 @@ checkM4DLive();
  client.auth.onAuthStateChange((_event,session)=>{const changed=currentUser?.id!==session?.user?.id;currentUser=session?.user||null;if(changed){++searchSequence;clear();button.disabled=false;msg(currentUser?'Search for another member by username.':'Sign in to find other members.')}});
 })();
 </script>
-
-
 <!-- M4D Friends: incoming requests, sent requests, accepted friends -->
 <style>
 #m4dFriends{background:#101115;border-top:1px solid #2d2e35}
@@ -661,15 +665,15 @@ checkM4DLive();
 @media(max-width:750px){.m4d-request-columns{grid-template-columns:1fr}}
 </style>
 <section id="m4dFriends"><div class="wrap m4d-friends-panel">
- <div class="eyebrow">M4D COMMUNITY</div><h2>Friends &amp; Requests</h2>
- <p class="lead">Accept or decline incoming requests and see who you've added. You can message friends from the Private Messages section below.</p>
- <button id="m4dRefreshFriends" class="m4d-friends-action" type="button">↻ Refresh Requests</button>
- <p id="m4dFriendsStatus" role="status" aria-live="polite">Sign in to see your friend requests.</p>
- <div class="m4d-request-columns">
-  <div class="m4d-request-block"><h3>📩 Incoming requests</h3><div id="m4dIncomingRequests" class="m4d-request-list"></div></div>
-  <div class="m4d-request-block"><h3>✓ My friends</h3><div id="m4dAcceptedFriends" class="m4d-request-list"></div></div>
-  <div class="m4d-request-block"><h3>↗ Requests sent</h3><div id="m4dOutgoingRequests" class="m4d-request-list"></div></div>
- </div>
+<div class="eyebrow">M4D COMMUNITY</div><h2>Friends &amp; Requests</h2>
+<p class="lead">Accept or decline incoming requests and see who you've added. You can message friends from the Private Messages section below.</p>
+<button class="m4d-friends-action" id="m4dRefreshFriends" type="button">↻ Refresh Requests</button>
+<p aria-live="polite" id="m4dFriendsStatus" role="status">Sign in to see your friend requests.</p>
+<div class="m4d-request-columns">
+<div class="m4d-request-block"><h3>📩 Incoming requests</h3><div class="m4d-request-list" id="m4dIncomingRequests"></div></div>
+<div class="m4d-request-block"><h3>✓ My friends</h3><div class="m4d-request-list" id="m4dAcceptedFriends"></div></div>
+<div class="m4d-request-block"><h3>↗ Requests sent</h3><div class="m4d-request-list" id="m4dOutgoingRequests"></div></div>
+</div>
 </div></section>
 <script>
 (function(){
@@ -738,8 +742,6 @@ checkM4DLive();
  client.auth.onAuthStateChange((_event,session)=>{const newId=session?.user?.id||null;if(userId!==newId){userId=newId;load()}});
 })();
 </script>
-
-
 <!-- M4D Private Messages: only accepted friends can send -->
 <style>
 #m4dMessages{background:#0d0e12;border-top:1px solid #303038}
@@ -758,9 +760,9 @@ checkM4DLive();
 @media(max-width:680px){.m4d-chat-shell{grid-template-columns:1fr}.m4d-chat-sidebar{border-right:0;border-bottom:1px solid #34353e}.m4d-chat-contacts{display:flex;overflow-x:auto}.m4d-chat-contact{min-width:140px}.m4d-chat-stream{max-height:360px}}
 </style>
 <section id="m4dMessages"><div class="wrap"><div class="eyebrow">M4D COMMUNITY</div><h2>Private Messages</h2><p class="lead">Chat privately with accepted friends. Only the two people in a conversation can read it.</p>
-<button id="m4dChatRefresh" class="m4d-chat-refresh" type="button">↻ Refresh friends</button>
-<p id="m4dChatStatus" class="m4d-chat-note" role="status" aria-live="polite">Sign in to message friends.</p>
-<div class="m4d-chat-shell"><aside class="m4d-chat-sidebar"><h3>Your friends</h3><div id="m4dChatContacts" class="m4d-chat-contacts"></div></aside><div class="m4d-chat-main"><div id="m4dChatTitle" class="m4d-chat-title">Choose a friend to begin</div><div id="m4dChatStream" class="m4d-chat-stream" aria-live="polite"></div><form id="m4dChatForm" class="m4d-chat-compose"><input id="m4dChatInput" maxlength="2000" placeholder="Message a friend..." autocomplete="off" aria-label="Message text" disabled required/><button id="m4dChatSend" type="submit" disabled>Send</button></form></div></div>
+<button class="m4d-chat-refresh" id="m4dChatRefresh" type="button">↻ Refresh friends</button>
+<p aria-live="polite" class="m4d-chat-note" id="m4dChatStatus" role="status">Sign in to message friends.</p>
+<div class="m4d-chat-shell"><aside class="m4d-chat-sidebar"><h3>Your friends</h3><div class="m4d-chat-contacts" id="m4dChatContacts"></div></aside><div class="m4d-chat-main"><div class="m4d-chat-title" id="m4dChatTitle">Choose a friend to begin</div><div aria-live="polite" class="m4d-chat-stream" id="m4dChatStream"></div><form class="m4d-chat-compose" id="m4dChatForm"><input aria-label="Message text" autocomplete="off" disabled="" id="m4dChatInput" maxlength="2000" placeholder="Message a friend..." required=""/><button disabled="" id="m4dChatSend" type="submit">Send</button></form></div></div>
 <p class="m4d-chat-note">Messages are stored in Supabase. Don't share passwords or sensitive personal information in chat.</p></div></section>
 <script>
 (function(){
@@ -808,8 +810,6 @@ checkM4DLive();
  reset();
 })();
 </script>
-
-
 <!-- M4D Online Status: private heartbeat + accepted-friends-only display -->
 <style>
 .m4d-online-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:650;color:#aeb0b8;margin-left:8px;white-space:nowrap}
@@ -886,7 +886,6 @@ checkM4DLive();
  paint();
 })();
 </script>
-
 <!-- M4D unread message notifications (independent of existing chat logic) -->
 <style>
 .m4d-unread-badge{display:inline-flex;min-width:19px;height:19px;align-items:center;justify-content:center;padding:0 5px;margin-left:7px;border-radius:99px;background:#e50914;color:white;font-size:11px;font-weight:800;line-height:1;vertical-align:middle}
@@ -961,22 +960,20 @@ checkM4DLive();
  setInterval(()=>{if(!currentUser||document.visibilityState==='hidden')return;refresh();if(selectedFriend()&&!marking&&counts.get(selectedFriend())>0)markOpenConversation()},7000);
 })();
 </script>
-
-
 <!-- M4D member safety tools: blocks and reports; admin review is a separate protected stage. -->
 <style>
 #m4dSafety{background:#101115;border-top:1px solid #34343c}#m4dSafety .m4d-safe-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}#m4dSafety .m4d-safe-panel{background:#191a20;border:1px solid #34343c;border-radius:10px;padding:20px}#m4dSafety h3{margin:0 0 12px}#m4dSafety .m4d-safe-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #30313a}#m4dSafety .m4d-safe-row span{flex:1;min-width:120px}#m4dSafety button{padding:9px 13px;border:0;border-radius:6px;background:#34353e;color:#fff;font-weight:700;cursor:pointer}#m4dSafety button.m4d-danger{background:#b81829}#m4dSafety button:disabled{opacity:.55;cursor:wait}#m4dSafety select,#m4dSafety textarea,#m4dSafety input{width:100%;margin:6px 0 13px;padding:12px;background:#101116;border:1px solid #494a52;border-radius:6px;color:#fff;font:inherit}#m4dSafety textarea{min-height:90px;resize:vertical}#m4dSafety label{display:block;font-size:13px;font-weight:700}#m4dSafety .m4d-safe-note{font-size:13px;color:#c5c5cb;margin:12px 0;overflow-wrap:anywhere}@media(max-width:700px){#m4dSafety .m4d-safe-layout{grid-template-columns:1fr}}
 </style>
 <section id="m4dSafety"><div class="wrap"><div class="eyebrow">M4D COMMUNITY SAFETY</div><h2>Block &amp; Report</h2><p class="lead">Manage unwanted contact and report behavior to the moderation team. Blocking stops new private messages in both directions.</p>
-<p id="m4dSafetyStatus" class="m4d-safe-note" role="status" aria-live="polite">Sign in to use safety tools.</p>
+<p aria-live="polite" class="m4d-safe-note" id="m4dSafetyStatus" role="status">Sign in to use safety tools.</p>
 <div class="m4d-safe-layout">
 <div class="m4d-safe-panel"><h3>Manage members</h3><p class="m4d-safe-note">Your accepted friends appear below. You can also search for another member by username.</p>
-<label for="m4dSafeSearch">Find a member</label><input id="m4dSafeSearch" type="search" minlength="2" maxlength="40" placeholder="Enter at least 2 characters" autocomplete="off"/><button id="m4dSafeSearchBtn" type="button">Search</button>
+<label for="m4dSafeSearch">Find a member</label><input autocomplete="off" id="m4dSafeSearch" maxlength="40" minlength="2" placeholder="Enter at least 2 characters" type="search"/><button id="m4dSafeSearchBtn" type="button">Search</button>
 <div id="m4dSafeMembers"></div><h3 style="margin-top:22px">Blocked members</h3><div id="m4dBlockedMembers"></div><button id="m4dSafeRefresh" type="button">↻ Refresh</button></div>
-<div class="m4d-safe-panel"><h3>Report a member</h3><form id="m4dReportForm"><label for="m4dReportMember">Member</label><select id="m4dReportMember" required><option value="">Select a member from the list</option></select>
-<label for="m4dReportReason">Reason</label><select id="m4dReportReason" required><option value="">Select a reason</option><option value="harassment">Harassment</option><option value="spam">Spam</option><option value="hate">Hateful behavior</option><option value="threats">Threats</option><option value="impersonation">Impersonation</option><option value="other">Other</option></select>
+<div class="m4d-safe-panel"><h3>Report a member</h3><form id="m4dReportForm"><label for="m4dReportMember">Member</label><select id="m4dReportMember" required=""><option value="">Select a member from the list</option></select>
+<label for="m4dReportReason">Reason</label><select id="m4dReportReason" required=""><option value="">Select a reason</option><option value="harassment">Harassment</option><option value="spam">Spam</option><option value="hate">Hateful behavior</option><option value="threats">Threats</option><option value="impersonation">Impersonation</option><option value="other">Other</option></select>
 <label for="m4dReportDetails">Details (up to 2,000 characters)</label><textarea id="m4dReportDetails" maxlength="2000" placeholder="Describe what happened. Don't include passwords or sensitive information."></textarea>
-<button type="submit" class="m4d-danger">Submit report</button></form><p class="m4d-safe-note">Reports are private to the reporter until authorized moderator review is configured. Reports do not automatically suspend accounts.</p></div></div></div></section>
+<button class="m4d-danger" type="submit">Submit report</button></form><p class="m4d-safe-note">Reports are private to the reporter until authorized moderator review is configured. Reports do not automatically suspend accounts.</p></div></div></div></section>
 <script>
 (function(){
  'use strict';
@@ -1013,8 +1010,6 @@ checkM4DLive();
  db.auth.onAuthStateChange((_event,session)=>{const id=session?.user?.id||null;if(user!==id){user=id;refresh()}});
 })();
 </script>
-
-
 <!-- M4D moderation center: admin authorisation enforced server-side by Supabase RLS. -->
 <style>
 #m4dModeration{display:none;background:linear-gradient(145deg,#16171d,#0b0c10);border-top:1px solid #35343d;color:#f5f5f7}
@@ -1038,14 +1033,14 @@ checkM4DLive();
 #m4dModeration .mod-status{min-height:20px;color:#f2c5c8;font-size:13px}
 @media(max-width:650px){#m4dModeration .mod-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
-<section id="m4dModeration" aria-label="Admin Moderation Dashboard">
- <div class="wrap">
-  <div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Moderation Center</h2><p class="lead">Review community reports and track their status. Original report details remain unchanged.</p></div><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div>
-  <div class="mod-stats" id="m4dModStats" aria-label="Report statistics"></div>
-  <div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div>
-  <p class="mod-status" id="m4dModStatus" role="status" aria-live="polite"></p>
-  <div class="mod-list" id="m4dModList"></div>
- </div>
+<section aria-label="Admin Moderation Dashboard" id="m4dModeration">
+<div class="wrap">
+<div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Moderation Center</h2><p class="lead">Review community reports and track their status. Original report details remain unchanged.</p></div><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div>
+<div aria-label="Report statistics" class="mod-stats" id="m4dModStats"></div>
+<div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div>
+<p aria-live="polite" class="mod-status" id="m4dModStatus" role="status"></p>
+<div class="mod-list" id="m4dModList"></div>
+</div>
 </section>
 <script>
 (function(){
@@ -1125,8 +1120,6 @@ checkM4DLive();
  db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>verify(session?.user),0));
 })();
 </script>
-
-
 <!-- Bubble-only messaging: keep the working chat DOM for Supabase, but remove the standalone page and navigation entry. -->
 <style>
 #m4dMessages{display:none!important}
@@ -1154,8 +1147,8 @@ header nav a[href="#m4dMessages"]{display:none!important}
 #m4dMessages.m4d-floating-open~#m4dFloatingChatClose{display:block}
 @media(max-width:550px){#m4dFloatingChatButton{right:14px;bottom:14px;width:56px;height:56px}#m4dMessages.m4d-floating-open{right:8px;width:calc(100vw - 16px);bottom:80px;height:min(78vh,680px)}#m4dFloatingChatClose{right:17px}}
 </style>
-<button id="m4dFloatingChatButton" type="button" aria-label="Open messages" aria-expanded="false" aria-controls="m4dMessages">💬<span id="m4dFloatingUnread" aria-hidden="true"></span></button>
-<button id="m4dFloatingChatClose" type="button" aria-label="Close floating messages">✕ Close</button>
+<button aria-controls="m4dMessages" aria-expanded="false" aria-label="Open messages" id="m4dFloatingChatButton" type="button">💬<span aria-hidden="true" id="m4dFloatingUnread"></span></button>
+<button aria-label="Close floating messages" id="m4dFloatingChatClose" type="button">✕ Close</button>
 <script>
 (function(){
  'use strict';
@@ -1189,8 +1182,6 @@ header nav a[href="#m4dMessages"]{display:none!important}
  });
 })();
 </script>
-
-
 <!-- Public M4D member profiles: visible to signed-in community members only -->
 <style>
 .m4d-public-view{display:inline-flex;margin-top:9px;padding:6px 10px;border:1px solid #585965;background:#25262c;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:750}
@@ -1214,18 +1205,18 @@ header nav a[href="#m4dMessages"]{display:none!important}
 #m4dPublicStatus{font-size:13px;color:#b7b8c4;min-height:20px;overflow-wrap:anywhere}
 @media(max-width:560px){#m4dPublicProfileOverlay{padding:10px}#m4dPublicContent{padding:0 16px 20px}}
 </style>
-<div id="m4dPublicProfileOverlay" role="dialog" aria-modal="true" aria-labelledby="m4dPublicName" hidden>
-  <div id="m4dPublicProfileCard">
-    <div id="m4dPublicCover"><button id="m4dPublicClose" type="button" aria-label="Close profile">✕ Close</button></div>
-    <div id="m4dPublicContent">
-      <div id="m4dPublicAvatar" aria-hidden="true">👤</div>
-      <h2 id="m4dPublicName">Member Profile</h2>
-      <div id="m4dPublicTags"></div>
-      <p id="m4dPublicBio"></p>
-      <div id="m4dPublicActions"><button id="m4dPublicAdd" type="button" hidden>+ Add Friend</button></div>
-      <p id="m4dPublicStatus" role="status" aria-live="polite"></p>
-    </div>
-  </div>
+<div aria-labelledby="m4dPublicName" aria-modal="true" hidden="" id="m4dPublicProfileOverlay" role="dialog">
+<div id="m4dPublicProfileCard">
+<div id="m4dPublicCover"><button aria-label="Close profile" id="m4dPublicClose" type="button">✕ Close</button></div>
+<div id="m4dPublicContent">
+<div aria-hidden="true" id="m4dPublicAvatar">👤</div>
+<h2 id="m4dPublicName">Member Profile</h2>
+<div id="m4dPublicTags"></div>
+<p id="m4dPublicBio"></p>
+<div id="m4dPublicActions"><button hidden="" id="m4dPublicAdd" type="button">+ Add Friend</button></div>
+<p aria-live="polite" id="m4dPublicStatus" role="status"></p>
+</div>
+</div>
 </div>
 <script>
 (function(){
@@ -1275,8 +1266,6 @@ header nav a[href="#m4dMessages"]{display:none!important}
  if(client)client.auth.onAuthStateChange((_event,session)=>{if(!session?.user&&!overlay.hidden)hide()});
 })();
 </script>
-
-
 <!-- M4D Discord-inspired quick friends rail -->
 <style>
 #m4dFriendsRail{display:none;position:fixed;left:0;top:0;bottom:0;width:78px;z-index:90;background:#101116;border-right:1px solid #32343d;box-shadow:6px 0 28px #0004;flex-direction:column;align-items:center;gap:10px;padding:86px 7px 14px}
@@ -1334,12 +1323,12 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
 @media(prefers-reduced-motion:reduce){.hero .m4d-glow,.hero .m4d-lightline,.hero:before{animation:none!important;will-change:auto!important}}
 
 </style>
-<aside id="m4dFriendsRail" aria-label="Quick access to friends">
- <button type="button" id="m4dRailCollapse" title="Collapse friends sidebar" aria-label="Collapse friends sidebar" aria-expanded="true" aria-controls="m4dRailFriendsList">❮</button>
- <button type="button" id="m4dRailFriendsButton" class="m4d-rail-action" title="Open Friends & Requests" aria-label="Open Friends & Requests">♧</button>
- <div class="m4d-rail-heading">FRIENDS</div>
- <div class="m4d-rail-list" id="m4dRailFriendsList"><div class="m4d-rail-empty">Loading…</div></div>
- <div class="m4d-rail-status" id="m4dRailStatus" aria-live="polite"></div>
+<aside aria-label="Quick access to friends" id="m4dFriendsRail">
+<button aria-controls="m4dRailFriendsList" aria-expanded="true" aria-label="Collapse friends sidebar" id="m4dRailCollapse" title="Collapse friends sidebar" type="button">❮</button>
+<button aria-label="Open Friends &amp; Requests" class="m4d-rail-action" id="m4dRailFriendsButton" title="Open Friends &amp; Requests" type="button">♧</button>
+<div class="m4d-rail-heading">FRIENDS</div>
+<div class="m4d-rail-list" id="m4dRailFriendsList"><div class="m4d-rail-empty">Loading…</div></div>
+<div aria-live="polite" class="m4d-rail-status" id="m4dRailStatus"></div>
 </aside>
 <script>
 (function(){
@@ -1420,6 +1409,45 @@ body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh
  setInterval(refresh,30000);
 })();
 </script>
-
-</body>
+<script id="m4d-tabbed-pages-router">(()=>{
+ 'use strict';
+ const contentIds=['home','latest','weekly','featured','library','video-search','contact','m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration'];
+ const titles={home:'Home',latest:'New & Popular',weekly:'Top Picks',featured:'Featured Reactions',library:'Collections','video-search':'Search Reactions',contact:'Contact',m4dMyList:'My List',m4dMembers:'Find Members',m4dFriends:'Friends & Requests',m4dSafety:'Safety Center',m4dModeration:'Admin Moderation'};
+ const special={m4dMessages:'m4dFriends',m4dDashboard:'home'};
+ let current='home';
+ function render(){
+   const raw=decodeURIComponent(location.hash.slice(1)||'home');
+   // Unknown anchors remain on the containing page (for jump links).
+   let view=contentIds.includes(raw)?raw:(special[raw]||null);
+   if(!view){const target=document.getElementById(raw);const parent=target?.closest('main > section, main > #home');view=parent?.id||'home';}
+   current=view;
+   document.body.dataset.m4dView=view;
+   document.querySelectorAll('main > #home, main > section').forEach(el=>{
+      if(el.id && contentIds.includes(el.id))el.classList.toggle('m4d-tab-hidden',el.id!==view);
+   });
+   // The original My List/Friends/Safety sections are placed after main.
+   for(const id of ['m4dMyList','m4dMembers','m4dFriends','m4dSafety','m4dModeration']){
+      const el=document.getElementById(id);if(el)el.classList.toggle('m4d-tab-hidden',id!==view);
+   }
+   const label=document.getElementById('m4dTabPageName');if(label)label.textContent=titles[view]||'Explore';
+   document.querySelectorAll('header nav a[href^="#"]').forEach(a=>{
+      const id=a.getAttribute('href').slice(1);
+      const active=(id===view||(view==='home'&&id==='home'));
+      a.classList.toggle('m4d-active-tab',active);
+      if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+   });
+   if(raw==='m4dMessages')document.getElementById('m4dFloatingChatButton')?.click();
+   if(raw!=='m4dDashboard')window.scrollTo({top:0,behavior:'instant'});
+ }
+ function install(){
+    render();
+    window.addEventListener('hashchange',render);
+    // Dynamic links (admin/member sections) are picked up automatically on navigation.
+    document.addEventListener('click',e=>{
+       const a=e.target.closest?.('a[href^="#"]');if(!a)return;
+       if(a.getAttribute('href')===location.hash)requestAnimationFrame(render);
+    });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();</script></body>
 </html>
