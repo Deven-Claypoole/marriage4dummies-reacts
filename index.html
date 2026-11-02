@@ -1297,8 +1297,24 @@ header nav a[href="#m4dMessages"]{display:none!important}
 #m4dFriendsRail.m4d-rail-visible{display:flex}
 @media(min-width:1000px){body:has(#m4dFriendsRail.m4d-rail-visible){padding-left:78px}body:has(#m4dFriendsRail.m4d-rail-visible) header{left:78px;width:calc(100% - 78px)} }
 @media(max-width:999px){#m4dFriendsRail.m4d-rail-visible{top:auto;bottom:0;left:0;right:0;width:100%;height:71px;flex-direction:row;padding:6px 82px 5px 12px;border-right:0;border-top:1px solid #41434d;box-shadow:0 -5px 24px #0007;gap:10px}#m4dFriendsRail .m4d-rail-heading{display:none}#m4dFriendsRail .m4d-rail-list{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:0;gap:10px}#m4dFriendsRail .m4d-rail-item{width:55px;flex:0 0 55px;gap:0}#m4dFriendsRail .m4d-rail-name{display:none}#m4dFriendsRail .m4d-rail-avatar{width:49px;height:49px}#m4dFriendsRail .m4d-rail-action{width:44px;height:44px}#m4dFriendsRail .m4d-rail-status{display:none}body:has(#m4dFriendsRail.m4d-rail-visible){padding-bottom:75px}body:has(#m4dFriendsRail.m4d-rail-visible) #m4dFloatingChatButton{bottom:82px}body:has(#m4dFriendsRail.m4d-rail-visible) #m4dMessages.m4d-floating-open{bottom:150px;height:min(65vh,630px)} }
+
+/* Collapsible friend rail and subtle ambient animated background */
+#m4dRailCollapse{flex:0 0 auto;width:41px;height:36px;background:#272932;border:1px solid #484a55;border-radius:10px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+#m4dRailCollapse:hover{background:#971a29}
+#m4dRailCollapse:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#m4dFriendsRail,body,header{transition:padding .22s ease,width .22s ease,left .22s ease}
+#m4dFriendsRail.m4d-rail-collapsed{width:52px;padding-left:5px;padding-right:5px;box-shadow:3px 0 12px #0004}
+#m4dFriendsRail.m4d-rail-collapsed .m4d-rail-list,#m4dFriendsRail.m4d-rail-collapsed .m4d-rail-heading,#m4dFriendsRail.m4d-rail-collapsed .m4d-rail-status,#m4dFriendsRail.m4d-rail-collapsed #m4dRailFriendsButton{display:none!important}
+@media(min-width:1000px){body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed){padding-left:52px}body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed) header{left:52px;width:calc(100% - 52px)}}
+@media(max-width:999px){#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed{height:53px;width:57px;left:0;right:auto;padding:7px 6px;border-right:1px solid #41434d;border-top-right-radius:14px;gap:0}body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed){padding-bottom:0}body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed) #m4dFloatingChatButton{bottom:20px}body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed) #m4dMessages.m4d-floating-open{bottom:86px;height:min(65vh,630px)}}
+body{background-color:#090a0e;background-image:radial-gradient(ellipse 65vw 65vh at 12% 25%,rgba(105,13,39,.21),transparent 75%),radial-gradient(ellipse 65vw 60vh at 87% 72%,rgba(64,33,112,.15),transparent 75%);background-size:145% 145%;animation:m4dAmbientDrift 28s ease-in-out infinite alternate}
+.hero{background-size:140% 140%;animation:m4dHeroDrift 22s ease-in-out infinite alternate}
+@keyframes m4dAmbientDrift{0%{background-position:0% 15%,100% 80%}100%{background-position:100% 65%,0% 30%}}
+@keyframes m4dHeroDrift{0%{background-position:10% 30%}100%{background-position:90% 70%}}
+@media(prefers-reduced-motion:reduce){body,.hero{animation:none!important}#m4dFriendsRail,body,header{transition:none!important}}
 </style>
 <aside id="m4dFriendsRail" aria-label="Quick access to friends">
+ <button type="button" id="m4dRailCollapse" title="Collapse friends sidebar" aria-label="Collapse friends sidebar" aria-expanded="true" aria-controls="m4dRailFriendsList">❮</button>
  <button type="button" id="m4dRailFriendsButton" class="m4d-rail-action" title="Open Friends & Requests" aria-label="Open Friends & Requests">♧</button>
  <div class="m4d-rail-heading">FRIENDS</div>
  <div class="m4d-rail-list" id="m4dRailFriendsList"><div class="m4d-rail-empty">Loading…</div></div>
@@ -1314,6 +1330,19 @@ header nav a[href="#m4dMessages"]{display:none!important}
  if(!client||!rail||!list)return;
  let currentUser=null, runId=0, members=[], isLoading=false;
  const button=document.getElementById('m4dRailFriendsButton');
+ const collapseButton=document.getElementById('m4dRailCollapse');
+ let isCollapsed=false;
+ try{isCollapsed=localStorage.getItem('m4dFriendsRailCollapsed')==='1'}catch(e){}
+ function updateCollapse(){
+  rail.classList.toggle('m4d-rail-collapsed',isCollapsed);
+  collapseButton.textContent=isCollapsed?'❯':'❮';
+  collapseButton.setAttribute('aria-expanded',String(!isCollapsed));
+  collapseButton.setAttribute('aria-label',isCollapsed?'Expand friends sidebar':'Collapse friends sidebar');
+  collapseButton.title=isCollapsed?'Expand friends sidebar':'Collapse friends sidebar';
+ }
+ collapseButton.addEventListener('click',()=>{isCollapsed=!isCollapsed;try{localStorage.setItem('m4dFriendsRailCollapsed',isCollapsed?'1':'0')}catch(e){}updateCollapse()});
+ updateCollapse();
+
  button.addEventListener('click',()=>{document.getElementById('m4dFriends')?.scrollIntoView({behavior:'smooth'});});
  function empty(msg){list.replaceChildren();const p=document.createElement('div');p.className='m4d-rail-empty';p.textContent=msg;list.appendChild(p)}
  function openFriendChat(friendId){
