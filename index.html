@@ -576,7 +576,7 @@ checkM4DLive();
      group.append(a,d);
    }));
    for(const r of pendingOut)outgoing.appendChild(card(r,null));
-   for(const r of friends)accepted.appendChild(card(r,null));
+   for(const r of friends){const friendCard=card(r,null);friendCard.dataset.m4dFriendId=r.other_user_id;accepted.appendChild(friendCard)}
    status.textContent=pendingIn.length+' incoming request(s) · '+friends.length+' friend(s).';
   }catch(e){if(token===generation)status.textContent='Could not load friends: '+(e.message||'Try again.')}
   finally{if(token===generation)refresh.disabled=false}
@@ -627,7 +627,7 @@ checkM4DLive();
   try{const {data,error}=await client.rpc('get_m4d_friendships');if(error)throw error;if(token!==seq)return;
    friends=(data||[]).filter(x=>x.request_status==='accepted');
    if(!friends.length){note('No accepted friends yet. Visit Friends & Requests to add one.');return}
-   for(const friend of friends){const b=document.createElement('button');b.type='button';b.className='m4d-chat-contact';
+   for(const friend of friends){const b=document.createElement('button');b.type='button';b.className='m4d-chat-contact';b.dataset.m4dFriendId=friend.other_user_id;
     if(friend.other_avatar_url){const img=document.createElement('img');img.alt='';img.src=friend.other_avatar_url;img.referrerPolicy='no-referrer';b.append(img)}
     const label=document.createElement('span');label.textContent=friend.other_username||'Member';b.append(label);
     b.addEventListener('click',()=>{active=friend;lastSignature='';for(const x of contacts.children)x.classList.toggle('active',x===b);title.textContent='Chat with '+(friend.other_username||'Member');syncForm();loadMessages(true)});contacts.append(b)}
@@ -655,6 +655,84 @@ checkM4DLive();
  // Poll while the page is visible for fresh messages without requiring Realtime publication changes.
  setInterval(()=>{if(document.visibilityState==='visible'&&uid&&active&&!busy)loadMessages(false)},4000);
  reset();
+})();
+</script>
+
+
+<!-- M4D Online Status: private heartbeat + accepted-friends-only display -->
+<style>
+.m4d-online-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:650;color:#aeb0b8;margin-left:8px;white-space:nowrap}
+.m4d-online-indicator::before{content:"";width:8px;height:8px;display:inline-block;border-radius:50%;background:#777b86;flex-shrink:0}
+.m4d-online-indicator.is-online{color:#7be39a}
+.m4d-online-indicator.is-online::before{background:#35cf74;box-shadow:0 0 0 2px #35cf7429}
+.m4d-chat-contact .m4d-online-indicator{margin-left:auto}
+.m4d-request-card .m4d-online-indicator{margin-left:0;display:flex;margin-top:5px}
+</style>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient;
+ if(!client)return;
+ let userId=null,online=new Map(),busy=false,authGeneration=0;
+ const liveThresholdRefresh=30000;
+ function signedInAndVisible(){return !!userId && document.visibilityState==='visible'}
+ function putIndicator(host,friendId){
+  if(!host||!friendId)return;
+  let label=host.querySelector('.m4d-online-indicator');
+  if(!label){label=document.createElement('span');label.className='m4d-online-indicator';host.append(label)}
+  const active=online.get(friendId)===true;
+  label.classList.toggle('is-online',active);
+  label.textContent=active?'Online':'Offline';
+ }
+ function paint(){
+  document.querySelectorAll('#m4dAcceptedFriends [data-m4d-friend-id]').forEach(card=>{
+   putIndicator(card.querySelector('.m4d-member-details'),card.dataset.m4dFriendId)
+  });
+  document.querySelectorAll('#m4dChatContacts [data-m4d-friend-id]').forEach(card=>{
+   putIndicator(card,card.dataset.m4dFriendId)
+  });
+ }
+ async function pulse(){
+  if(!signedInAndVisible()||busy)return;
+  busy=true;
+  const generation=authGeneration;
+  try{
+   const heartbeat=await client.rpc('m4d_heartbeat');
+   if(heartbeat.error)throw heartbeat.error;
+   const {data,error}=await client.rpc('m4d_friend_online_status');
+   if(error)throw error;
+   if(generation!==authGeneration)return;
+   online=new Map((data||[]).map(r=>[r.friend_id,r.is_online]));
+   paint();
+  }catch(e){
+   if(!document.getElementById('m4dPresenceError')){
+    const note=document.createElement('p');note.id='m4dPresenceError';note.className='m4d-chat-note';
+    note.textContent='Online status is unavailable. Check the Supabase online-status setup.';
+    document.getElementById('m4dChatStatus')?.after(note);
+   }
+   console.warn('M4D online status:',e.message||e);
+  }finally{busy=false}
+ }
+ function setUser(user){
+  const next=user?.id||null;
+  if(next===userId)return;
+  userId=next;authGeneration++;online.clear();paint();
+  if(userId)pulse();
+ }
+ client.auth.getUser().then(({data})=>setUser(data?.user)).catch(()=>{});
+ client.auth.onAuthStateChange((_event,session)=>{
+  // Schedule outside the auth callback to avoid conflicting with auth state locks.
+  setTimeout(()=>setUser(session?.user),0)
+ });
+ document.addEventListener('visibilitychange',()=>{if(signedInAndVisible())pulse()});
+ window.addEventListener('focus',()=>{if(signedInAndVisible())pulse()});
+ setInterval(()=>{if(signedInAndVisible())pulse()},liveThresholdRefresh);
+ // Existing Friends and Messages sections rebuild their cards; decorate new ones.
+ const observer=new MutationObserver(()=>paint());
+ for(const id of ['m4dAcceptedFriends','m4dChatContacts']){
+  const target=document.getElementById(id);if(target)observer.observe(target,{childList:true});
+ }
+ paint();
 })();
 </script>
 
