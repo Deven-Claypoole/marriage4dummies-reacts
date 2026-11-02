@@ -811,5 +811,57 @@ checkM4DLive();
 })();
 </script>
 
+
+<!-- M4D member safety tools: blocks and reports; admin review is a separate protected stage. -->
+<style>
+#m4dSafety{background:#101115;border-top:1px solid #34343c}#m4dSafety .m4d-safe-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}#m4dSafety .m4d-safe-panel{background:#191a20;border:1px solid #34343c;border-radius:10px;padding:20px}#m4dSafety h3{margin:0 0 12px}#m4dSafety .m4d-safe-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #30313a}#m4dSafety .m4d-safe-row span{flex:1;min-width:120px}#m4dSafety button{padding:9px 13px;border:0;border-radius:6px;background:#34353e;color:#fff;font-weight:700;cursor:pointer}#m4dSafety button.m4d-danger{background:#b81829}#m4dSafety button:disabled{opacity:.55;cursor:wait}#m4dSafety select,#m4dSafety textarea,#m4dSafety input{width:100%;margin:6px 0 13px;padding:12px;background:#101116;border:1px solid #494a52;border-radius:6px;color:#fff;font:inherit}#m4dSafety textarea{min-height:90px;resize:vertical}#m4dSafety label{display:block;font-size:13px;font-weight:700}#m4dSafety .m4d-safe-note{font-size:13px;color:#c5c5cb;margin:12px 0;overflow-wrap:anywhere}@media(max-width:700px){#m4dSafety .m4d-safe-layout{grid-template-columns:1fr}}
+</style>
+<section id="m4dSafety"><div class="wrap"><div class="eyebrow">M4D COMMUNITY SAFETY</div><h2>Block &amp; Report</h2><p class="lead">Manage unwanted contact and report behavior to the moderation team. Blocking stops new private messages in both directions.</p>
+<p id="m4dSafetyStatus" class="m4d-safe-note" role="status" aria-live="polite">Sign in to use safety tools.</p>
+<div class="m4d-safe-layout">
+<div class="m4d-safe-panel"><h3>Manage members</h3><p class="m4d-safe-note">Your accepted friends appear below. You can also search for another member by username.</p>
+<label for="m4dSafeSearch">Find a member</label><input id="m4dSafeSearch" type="search" minlength="2" maxlength="40" placeholder="Enter at least 2 characters" autocomplete="off"/><button id="m4dSafeSearchBtn" type="button">Search</button>
+<div id="m4dSafeMembers"></div><h3 style="margin-top:22px">Blocked members</h3><div id="m4dBlockedMembers"></div><button id="m4dSafeRefresh" type="button">↻ Refresh</button></div>
+<div class="m4d-safe-panel"><h3>Report a member</h3><form id="m4dReportForm"><label for="m4dReportMember">Member</label><select id="m4dReportMember" required><option value="">Select a member from the list</option></select>
+<label for="m4dReportReason">Reason</label><select id="m4dReportReason" required><option value="">Select a reason</option><option value="harassment">Harassment</option><option value="spam">Spam</option><option value="hate">Hateful behavior</option><option value="threats">Threats</option><option value="impersonation">Impersonation</option><option value="other">Other</option></select>
+<label for="m4dReportDetails">Details (up to 2,000 characters)</label><textarea id="m4dReportDetails" maxlength="2000" placeholder="Describe what happened. Don't include passwords or sensitive information."></textarea>
+<button type="submit" class="m4d-danger">Submit report</button></form><p class="m4d-safe-note">Reports are private to the reporter until authorized moderator review is configured. Reports do not automatically suspend accounts.</p></div></div></div></section>
+<script>
+(function(){
+ 'use strict';
+ const db=window.supabaseClient;
+ const status=document.getElementById('m4dSafetyStatus'),members=document.getElementById('m4dSafeMembers'),blocked=document.getElementById('m4dBlockedMembers'),search=document.getElementById('m4dSafeSearch'),picker=document.getElementById('m4dReportMember'),form=document.getElementById('m4dReportForm');
+ const nav=document.querySelector('header nav');if(nav){const a=document.createElement('a');a.href='#m4dSafety';a.textContent='Safety';nav.append(a)}
+ let user=null,people=new Map(),blockedIds=new Set(),version=0;
+ const say=t=>status.textContent=t;
+ const clear=(el,msg)=>{el.replaceChildren();if(msg){const p=document.createElement('p');p.className='m4d-safe-note';p.textContent=msg;el.append(p)}};
+ function showRows(){
+  clear(members,people.size?'':'No members loaded. Search by username or refresh your friends.');
+  for(const [id,p] of people){if(id===user)continue;const row=document.createElement('div');row.className='m4d-safe-row';const label=document.createElement('span');label.textContent=p.username||'Member';row.append(label);
+   const report=document.createElement('button');report.textContent='Report';report.onclick=()=>{picker.value=id;document.getElementById('m4dReportReason').focus()};row.append(report);
+   const b=document.createElement('button');const isBlocked=blockedIds.has(id);b.className=isBlocked?'':'m4d-danger';b.textContent=isBlocked?'Unblock':'Block';b.onclick=()=>changeBlock(id,!isBlocked,b);row.append(b);members.append(row)
+  }
+  const selected=picker.value;picker.replaceChildren();const first=document.createElement('option');first.value='';first.textContent='Select a member';picker.append(first);
+  for(const [id,p] of people){if(id===user)continue;const o=document.createElement('option');o.value=id;o.textContent=p.username||'Member';picker.append(o)}if(people.has(selected))picker.value=selected;
+  clear(blocked,blockedIds.size?'':'You have not blocked anyone.');for(const id of blockedIds){const row=document.createElement('div');row.className='m4d-safe-row';const label=document.createElement('span');label.textContent=people.get(id)?.username||'Blocked member';row.append(label);const b=document.createElement('button');b.textContent='Unblock';b.onclick=()=>changeBlock(id,false,b);row.append(b);blocked.append(row)}
+ }
+ async function changeBlock(id,add,button){if(!user||id===user)return;if(add&&!confirm('Block this member? Neither of you will be able to send new private messages to the other.'))return;button.disabled=true;
+  try{const r=add?await db.from('m4d_blocks').insert({blocker_id:user,blocked_id:id}):await db.from('m4d_blocks').delete().eq('blocker_id',user).eq('blocked_id',id);if(r.error)throw r.error;if(add)blockedIds.add(id);else blockedIds.delete(id);say(add?'Member blocked. New private messages are disabled.':'Member unblocked.');showRows()}catch(e){say('Could not update block: '+e.message)}finally{button.disabled=false}}
+ async function refresh(){const seq=++version;people.clear();blockedIds.clear();if(!db||!user){clear(members,'Sign in to manage members.');clear(blocked,'Sign in to see blocked members.');showRows();return}say('Loading safety tools…');try{
+  const [f,b]=await Promise.all([db.rpc('get_m4d_friendships'),db.from('m4d_blocks').select('blocked_id').eq('blocker_id',user)]);if(f.error)throw f.error;if(b.error)throw b.error;if(seq!==version)return;
+  for(const x of f.data||[])if(x.other_user_id)people.set(x.other_user_id,{username:x.other_username||'Member'});
+  for(const x of b.data||[])blockedIds.add(x.blocked_id);
+  // Find usernames of blocked users through authenticated member search when possible.
+  showRows();say('Safety tools ready.');
+ }catch(e){say('Could not load safety tools: '+e.message)}}
+ async function find(){if(!user){say('Sign in first.');return}const term=search.value.trim();if(term.length<2){say('Enter at least two characters.');return}say('Searching members…');const r=await db.rpc('search_m4d_members',{search_term:term});if(r.error){say('Search failed: '+r.error.message);return}for(const p of r.data||[])people.set(p.id,{username:p.username});showRows();say((r.data||[]).length+' matching member(s) found.')}
+ document.getElementById('m4dSafeSearchBtn').addEventListener('click',find);search.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();find()}});document.getElementById('m4dSafeRefresh').addEventListener('click',refresh);
+ form.addEventListener('submit',async e=>{e.preventDefault();if(!user){say('Sign in first.');return}const id=picker.value,reason=document.getElementById('m4dReportReason').value,details=document.getElementById('m4dReportDetails').value.trim();if(!id||id===user||!reason)return;const btn=form.querySelector('[type=submit]');btn.disabled=true;try{const {error}=await db.from('m4d_reports').insert({reporter_id:user,reported_user_id:id,reason,details,status:'open'});if(error)throw error;say('Report submitted. Thank you.');form.reset()}catch(err){say('Could not submit report: '+err.message)}finally{btn.disabled=false}});
+ if(!db){say('Supabase connection unavailable.');return}
+ db.auth.getUser().then(({data})=>{user=data?.user?.id||null;refresh()}).catch(()=>say('Unable to check sign-in.'));
+ db.auth.onAuthStateChange((_event,session)=>{const id=session?.user?.id||null;if(user!==id){user=id;refresh()}});
+})();
+</script>
+
 </body>
 </html>
