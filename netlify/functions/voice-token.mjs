@@ -16,21 +16,34 @@ export default async function handler(request){
   if(!userResponse.ok)return reply(401,{error:'Session expired. Sign in again.'});
   const user=await userResponse.json();if(!uuid.test(user?.id||'')||user.id===body.friendId)return reply(403,{error:'Invalid friend'});
   // Authenticate as the caller and reuse the site's existing friend/block rules.
-  const permission=await fetch(url+'/rest/v1/rpc/m4d_can_message',{method:'POST',headers:{apikey:anon,authorization:'Bearer '+jwt,'content-type':'application/json'},body:JSON.stringify({other_member_id:body.friendId})
-
-
-
  
+const permission = await fetch(
+  url + '/rest/v1/rpc/m4d_can_message',
+  {
+    method: 'POST',
+    headers: {
+      apikey: anon,
+      authorization: 'Bearer ' + jwt,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      other_member_id: body.friendId
+    })
+  }
+);
+
 if (!permission.ok) {
   console.error(
     'Voice permission RPC failed',
     'HTTP status:', permission.status,
     'Supabase error:', await permission.text()
   );
+
   return reply(403, {
     error: 'Cannot verify friendship and blocking permissions.'
   });
 }
+
 
   const allowed=await permission.json();if(allowed!==true)return reply(403,{error:'You can only call accepted, unblocked friends.'});
   // Same pair always joins same room; random usernames and phone numbers not used.
