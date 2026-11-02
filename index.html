@@ -512,7 +512,7 @@ checkM4DLive();
 </style>
 <section id="m4dFriends"><div class="wrap m4d-friends-panel">
  <div class="eyebrow">M4D COMMUNITY</div><h2>Friends &amp; Requests</h2>
- <p class="lead">Accept or decline incoming requests and see who you've added. Private messages will be available after the messaging feature launches.</p>
+ <p class="lead">Accept or decline incoming requests and see who you've added. You can message friends from the Private Messages section below.</p>
  <button id="m4dRefreshFriends" class="m4d-friends-action" type="button">↻ Refresh Requests</button>
  <p id="m4dFriendsStatus" role="status" aria-live="polite">Sign in to see your friend requests.</p>
  <div class="m4d-request-columns">
@@ -585,6 +585,76 @@ checkM4DLive();
  if(!client){reset();refresh.disabled=true;return}
  client.auth.getUser().then(({data})=>{userId=data?.user?.id||null;load()}).catch(()=>{reset();status.textContent='Unable to check sign-in status.'});
  client.auth.onAuthStateChange((_event,session)=>{const newId=session?.user?.id||null;if(userId!==newId){userId=newId;load()}});
+})();
+</script>
+
+
+<!-- M4D Private Messages: only accepted friends can send -->
+<style>
+#m4dMessages{background:#0d0e12;border-top:1px solid #303038}
+.m4d-chat-shell{display:grid;grid-template-columns:minmax(210px,300px) 1fr;border:1px solid #34353e;border-radius:13px;overflow:hidden;background:#191a21;min-height:420px}
+.m4d-chat-sidebar{border-right:1px solid #34353e;padding:16px;background:#15161d}
+.m4d-chat-sidebar h3{font-size:16px;margin:0 0 12px}.m4d-chat-contacts{display:grid;gap:7px}
+.m4d-chat-contact{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:1px solid transparent;background:#24252e;color:#fff;padding:11px;border-radius:8px;cursor:pointer}
+.m4d-chat-contact.active{border-color:#e50914;background:#362029}.m4d-chat-contact img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+.m4d-chat-main{display:flex;flex-direction:column;min-width:0}.m4d-chat-title{padding:15px 18px;border-bottom:1px solid #34353e;font-weight:750}
+.m4d-chat-stream{flex:1;min-height:270px;max-height:480px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m4d-chat-bubble{max-width:83%;align-self:flex-start;background:#30313c;padding:10px 13px;border-radius:12px;overflow-wrap:anywhere;white-space:pre-wrap;font-size:14px}
+.m4d-chat-bubble.mine{align-self:flex-end;background:#a5101c}.m4d-chat-bubble small{display:block;font-size:10px;opacity:.7;margin-top:5px}
+.m4d-chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid #34353e}.m4d-chat-compose input{min-width:0;flex:1;background:#24252f;border:1px solid #444650;color:white;padding:12px;border-radius:7px}
+.m4d-chat-compose button,.m4d-chat-refresh{border:0;background:#e50914;color:white;border-radius:7px;padding:11px 15px;font-weight:750;cursor:pointer}
+.m4d-chat-compose button:disabled{opacity:.5;cursor:not-allowed}.m4d-chat-note{font-size:12px;color:#b5b7c2;margin:10px 0}
+@media(max-width:680px){.m4d-chat-shell{grid-template-columns:1fr}.m4d-chat-sidebar{border-right:0;border-bottom:1px solid #34353e}.m4d-chat-contacts{display:flex;overflow-x:auto}.m4d-chat-contact{min-width:140px}.m4d-chat-stream{max-height:360px}}
+</style>
+<section id="m4dMessages"><div class="wrap"><div class="eyebrow">M4D COMMUNITY</div><h2>Private Messages</h2><p class="lead">Chat privately with accepted friends. Only the two people in a conversation can read it.</p>
+<button id="m4dChatRefresh" class="m4d-chat-refresh" type="button">↻ Refresh friends</button>
+<p id="m4dChatStatus" class="m4d-chat-note" role="status" aria-live="polite">Sign in to message friends.</p>
+<div class="m4d-chat-shell"><aside class="m4d-chat-sidebar"><h3>Your friends</h3><div id="m4dChatContacts" class="m4d-chat-contacts"></div></aside><div class="m4d-chat-main"><div id="m4dChatTitle" class="m4d-chat-title">Choose a friend to begin</div><div id="m4dChatStream" class="m4d-chat-stream" aria-live="polite"></div><form id="m4dChatForm" class="m4d-chat-compose"><input id="m4dChatInput" maxlength="2000" placeholder="Message a friend..." autocomplete="off" aria-label="Message text" disabled required/><button id="m4dChatSend" type="submit" disabled>Send</button></form></div></div>
+<p class="m4d-chat-note">Messages are stored in Supabase. Don't share passwords or sensitive personal information in chat.</p></div></section>
+<script>
+(function(){
+ 'use strict';
+ const client=window.supabaseClient, contacts=document.getElementById('m4dChatContacts'),stream=document.getElementById('m4dChatStream'),title=document.getElementById('m4dChatTitle'),status=document.getElementById('m4dChatStatus'),input=document.getElementById('m4dChatInput'),send=document.getElementById('m4dChatSend'),form=document.getElementById('m4dChatForm'),refresh=document.getElementById('m4dChatRefresh');
+ const nav=document.querySelector('header nav');if(nav){const a=document.createElement('a');a.href='#m4dMessages';a.textContent='Messages';nav.appendChild(a)}
+ let uid=null,active=null,friends=[],seq=0,busy=false,lastSignature='';
+ function note(t){status.textContent=t}
+ function clearStream(t){stream.replaceChildren();const e=document.createElement('p');e.className='m4d-chat-note';e.textContent=t;stream.append(e)}
+ function syncForm(){input.disabled=send.disabled=!uid||!active||busy}
+ function reset(){active=null;friends=[];lastSignature='';contacts.replaceChildren();title.textContent='Choose a friend to begin';clearStream('Select a friend from the list.');syncForm()}
+ async function loadFriends(){
+  const token=++seq;reset();if(!uid){note('Sign in to see your messages.');return}
+  note('Loading accepted friends…');
+  try{const {data,error}=await client.rpc('get_m4d_friendships');if(error)throw error;if(token!==seq)return;
+   friends=(data||[]).filter(x=>x.request_status==='accepted');
+   if(!friends.length){note('No accepted friends yet. Visit Friends & Requests to add one.');return}
+   for(const friend of friends){const b=document.createElement('button');b.type='button';b.className='m4d-chat-contact';
+    if(friend.other_avatar_url){const img=document.createElement('img');img.alt='';img.src=friend.other_avatar_url;img.referrerPolicy='no-referrer';b.append(img)}
+    const label=document.createElement('span');label.textContent=friend.other_username||'Member';b.append(label);
+    b.addEventListener('click',()=>{active=friend;lastSignature='';for(const x of contacts.children)x.classList.toggle('active',x===b);title.textContent='Chat with '+(friend.other_username||'Member');syncForm();loadMessages(true)});contacts.append(b)}
+   note('Choose a friend to start a private conversation.');
+  }catch(e){if(token===seq)note('Could not load friends: '+e.message)}
+ }
+ async function loadMessages(force){
+  if(!uid||!active)return;const current=active.other_user_id,member=uid;
+  try{const {data,error}=await client.from('m4d_messages').select('id,sender_id,recipient_id,body,created_at').or('and(sender_id.eq.'+member+',recipient_id.eq.'+current+'),and(sender_id.eq.'+current+',recipient_id.eq.'+member+')').order('created_at',{ascending:true}).limit(200);
+   if(error)throw error;if(uid!==member||active?.other_user_id!==current)return;
+   const rows=data||[],signature=rows.map(r=>r.id).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
+   stream.replaceChildren();if(!rows.length){clearStream('No messages yet. Say hello!');return}
+   for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.body;
+    const ts=document.createElement('small');ts.textContent=new Date(r.created_at).toLocaleString();bubble.append(ts);stream.append(bubble)}stream.scrollTop=stream.scrollHeight;
+  }catch(e){note('Could not load messages: '+e.message)}
+ }
+ form.addEventListener('submit',async e=>{e.preventDefault();if(!uid||!active||busy)return;const body=input.value.trim();if(!body||body.length>2000)return;
+  const recipient=active.other_user_id;busy=true;syncForm();
+  try{const {error}=await client.from('m4d_messages').insert({sender_id:uid,recipient_id:recipient,body});if(error)throw error;input.value='';note('Message sent.');await loadMessages(true)}catch(err){note('Could not send message: '+err.message)}finally{busy=false;syncForm()}
+ });
+ refresh.addEventListener('click',loadFriends);
+ if(!client){note('Supabase is not available.');refresh.disabled=true;reset();return}
+ client.auth.getUser().then(({data})=>{uid=data?.user?.id||null;loadFriends()}).catch(()=>note('Could not check sign-in status.'));
+ client.auth.onAuthStateChange((_event,session)=>{const id=session?.user?.id||null;if(id!==uid){uid=id;loadFriends()}});
+ // Poll while the page is visible for fresh messages without requiring Realtime publication changes.
+ setInterval(()=>{if(document.visibilityState==='visible'&&uid&&active&&!busy)loadMessages(false)},4000);
+ reset();
 })();
 </script>
 
