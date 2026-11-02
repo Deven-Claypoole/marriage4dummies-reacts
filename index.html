@@ -1767,5 +1767,69 @@ updateComposer();
  if(reduced.addEventListener)reduced.addEventListener('change',start);
  show(0);start();
 })();
-</script></body>
+</script><!-- M4D private voice calling: Stage 1 -->
+<style>
+#m4dVoiceCallButton{border:1px solid #7a5366;background:#573142;color:#fff;border-radius:9px;padding:9px 12px;font-weight:800;margin-left:9px;cursor:pointer}
+#m4dVoiceCallButton:disabled{opacity:.5;cursor:not-allowed}
+#m4dVoiceOverlay[hidden]{display:none!important}
+#m4dVoiceOverlay{position:fixed;inset:0;z-index:3000;background:rgba(5,5,11,.8);display:grid;place-items:center;padding:18px}
+#m4dVoiceCard{background:#1a1b25;border:1px solid #57515d;box-shadow:0 22px 100px #000c;border-radius:18px;padding:24px;width:min(440px,100%);color:white;text-align:center}
+#m4dVoiceCard h2{font-size:24px;margin:0 0 8px}#m4dVoiceCard p{color:#c5c6d2;line-height:1.5}
+#m4dVoiceButtons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#m4dVoiceButtons button{background:#363947;color:#fff;border:1px solid #616270;border-radius:40px;padding:12px 17px;font-weight:800;cursor:pointer}
+#m4dVoiceButtons #m4dVoiceHangup{background:#c22138;border-color:#c22138}
+#m4dVoiceParticipants{margin:12px 0;color:#b9e8ce;font-size:13px}
+</style>
+<div id="m4dVoiceOverlay" hidden role="dialog" aria-modal="true" aria-label="Voice call">
+  <div id="m4dVoiceCard"><h2>🎙️ Private voice call</h2><p id="m4dVoiceTitle">Select a friend to call.</p>
+   <p id="m4dVoiceStatus" aria-live="polite">Ready</p><div id="m4dVoiceParticipants"></div>
+   <div id="m4dVoiceAudio" hidden></div>
+   <div id="m4dVoiceButtons"><button type="button" id="m4dVoiceMute" disabled>🎤 Mute</button><button type="button" id="m4dVoiceDeafen" disabled>🔊 Deafen</button><button type="button" id="m4dVoiceHangup">☎️ Leave call</button></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<script>
+(()=>{
+ 'use strict';
+ const db=window.supabaseClient, title=document.getElementById('m4dChatTitle'),contacts=document.getElementById('m4dChatContacts');
+ const overlay=document.getElementById('m4dVoiceOverlay'),status=document.getElementById('m4dVoiceStatus'),callTitle=document.getElementById('m4dVoiceTitle');
+ const mute=document.getElementById('m4dVoiceMute'),deafen=document.getElementById('m4dVoiceDeafen'),hangup=document.getElementById('m4dVoiceHangup'),audioHost=document.getElementById('m4dVoiceAudio'),people=document.getElementById('m4dVoiceParticipants');
+ if(!db||!title||!contacts)return;
+ const button=document.createElement('button');button.type='button';button.id='m4dVoiceCallButton';button.textContent='📞 Voice call';button.title='Join a private voice room with the selected friend';button.disabled=true;title.insertAdjacentElement('afterend',button);
+ let room=null,muted=false,deafened=false,connecting=false;
+ const setStatus=s=>status.textContent=s;
+ const activeFriend=()=>window.m4dGroupActive?null:contacts.querySelector('.m4d-chat-contact.active');
+ const refresh=()=>{button.disabled=!activeFriend()||!!room||connecting};
+ const observer=new MutationObserver(refresh);observer.observe(contacts,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
+ function count(){if(room)people.textContent=(room.remoteParticipants.size+1)+' participant(s) connected';else people.textContent=''}
+ function cleanAudio(){audioHost.replaceChildren()}
+ async function leave(){const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}cleanAudio();overlay.hidden=true;mute.disabled=deafen.disabled=true;muted=deafened=false;refresh()}
+ button.addEventListener('click',async()=>{
+   const friend=activeFriend();const id=friend?.dataset.m4dFriendId;
+   if(!id||connecting||room)return;
+   if(!window.LivekitClient){alert('Voice chat library failed to load. Try refreshing.');return}
+   connecting=true;overlay.hidden=false;refresh();callTitle.textContent='Call with '+(friend.innerText||'friend').trim();setStatus('Checking call permissions…');people.textContent='';
+   try{
+    const {data:{session},error}=await db.auth.getSession();if(error||!session?.access_token)throw Error('Please sign in again.');
+    const response=await fetch('/.netlify/functions/voice-token',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({type:'private',friendId:id})});
+    const result=await response.json();if(!response.ok)throw Error(result.error||'Could not start call');
+    if(!connecting)return;
+    const r=new window.LivekitClient.Room({adaptiveStream:true});room=r;
+    r.on(window.LivekitClient.RoomEvent.TrackSubscribed,(track)=>{if(track.kind==='audio'){const el=track.attach();audioHost.append(el);el.muted=deafened}});
+    r.on(window.LivekitClient.RoomEvent.TrackUnsubscribed,(track)=>{track.detach().forEach(el=>el.remove())});
+    r.on(window.LivekitClient.RoomEvent.ParticipantConnected,count);r.on(window.LivekitClient.RoomEvent.ParticipantDisconnected,count);
+    r.on(window.LivekitClient.RoomEvent.Disconnected,()=>{if(room===r)leave()});
+    setStatus('Connecting to voice room…');await r.connect(result.url,result.token);
+    await r.localParticipant.setMicrophoneEnabled(true);
+    if(room!==r)return;
+    connecting=false;mute.disabled=deafen.disabled=false;count();setStatus('Connected. Your friend can join by opening your chat and pressing Voice call.');refresh();
+   }catch(e){setStatus(e.message||'Voice connection failed');const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}refresh()}
+ });
+ mute.addEventListener('click',async()=>{if(!room)return;try{await room.localParticipant.setMicrophoneEnabled(muted);muted=!muted;mute.textContent=muted?'🔇 Unmute':'🎤 Mute'}catch(e){setStatus(e.message)}});
+ deafen.addEventListener('click',()=>{deafened=!deafened;audioHost.querySelectorAll('audio').forEach(a=>a.muted=deafened);deafen.textContent=deafened?'🔇 Undeafen':'🔊 Deafen'});
+ hangup.addEventListener('click',leave);window.addEventListener('beforeunload',()=>room?.disconnect());db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT')leave()});
+ refresh();
+})();
+</script>
+</body>
 </html>
