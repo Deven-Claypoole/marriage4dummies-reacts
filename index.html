@@ -326,7 +326,7 @@ header nav#m4dOrganizedNav{flex:1 1 auto!important;min-width:0;display:flex!impo
   nav.id='m4dOrganizedNav';
   const routes={
     '#latest':'reactions','#weekly':'reactions','#featured':'reactions','#library':'reactions','#video-search':'reactions','#m4dMyList':'reactions',
-    '#m4dFeed':'community','#m4dFriends':'community','#m4dMessages':'community','#m4dChannels':'community','#m4dSafety':'community',
+    '#m4dSongRequests':'community','#m4dFeed':'community','#m4dFriends':'community','#m4dMessages':'community','#m4dChannels':'community','#m4dSafety':'community',
     '#m4dDashboard':'members','#m4dMembers':'members','#meet-the-couple':'members','#m4dModeration':'members',
     '#merch':'members','#contact':'members'
   };
@@ -1564,6 +1564,25 @@ form.addEventListener('submit',async e=>{
  <div class="m4d-feed-center"><button type="button" id="m4dFeedMore" class="m4d-feed-secondary" hidden>Load more posts</button></div>
 </div></div>
 </section>
+<section id="m4dSongRequests" class="m4d-secondary-page m4d-song-page" aria-labelledby="m4dSongTitle">
+ <div class="wrap"><div class="m4d-song-heading"><div><div class="eyebrow">M4D COMMUNITY</div><h2 id="m4dSongTitle">Live Song Request Queue</h2><p class="lead">Submit a YouTube link and a donation screenshot. The request enters the queue only after an admin confirms the donation.</p></div></div>
+ <div class="m4d-song-grid">
+  <div class="m4d-song-panel"><h3>Request a reaction</h3><p class="m4d-song-muted">You must be signed in. One pending or approved song per member.</p>
+   <form id="m4dSongForm">
+    <label for="m4dSongVideo">YouTube video link</label><input id="m4dSongVideo" type="url" placeholder="https://www.youtube.com/watch?v=..." maxlength="2048" required>
+    <label for="m4dSongName">Song title</label><input id="m4dSongName" maxlength="150" placeholder="Rental" required>
+    <label for="m4dSongArtist">Artist</label><input id="m4dSongArtist" maxlength="100" placeholder="Juice WRLD" required>
+    <label for="m4dSongNote">Note (optional)</label><textarea id="m4dSongNote" maxlength="400" rows="3" placeholder="Version or special instructions"></textarea>
+    <label for="m4dSongReceipt">Donation receipt photo <span class="m4d-song-muted">(required)</span></label><input id="m4dSongReceipt" type="file" accept="image/png,image/jpeg,image/webp" required>
+    <p class="m4d-song-muted">PNG, JPG or WebP, up to 5 MB. Please hide unnecessary personal information. Screenshots are private, accessible to you and authorized M4D admins.</p>
+    <button class="m4d-song-btn" id="m4dSongSubmit" type="submit">Submit for verification</button><p id="m4dSongFormNotice" role="status" aria-live="polite" class="m4d-song-note"></p>
+   </form>
+  </div>
+  <div class="m4d-song-panel"><h3>Approved queue</h3><p class="m4d-song-muted">Songs appear here after admin verification. No audio or video files are uploaded.</p><div id="m4dSongPublicQueue" class="m4d-song-list"></div>
+   <h3 style="margin-top:24px">My request</h3><div id="m4dSongMine" class="m4d-song-list"></div><button type="button" id="m4dSongRefresh" class="m4d-song-btn secondary">↻ Refresh queue</button>
+  </div>
+ </div></div>
+</section>
 <section aria-label="Admin Moderation Dashboard" id="m4dModeration">
 <div class="wrap">
 <div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Admin Center</h2><p class="lead">Everything you need to manage the M4D community, in one organized place.</p></div></div>
@@ -1573,9 +1592,16 @@ form.addEventListener('submit',async e=>{
 
 
 <div aria-label="Admin tools" class="m4d-admin-tabs" id="m4dAdminTabs" role="tablist">
+<button aria-controls="m4dAdminPaneSongqueue" aria-selected="false" data-pane="songqueue" id="m4dAdminTabSongqueue" role="tab" tabindex="-1" type="button">🎵 Song Queue</button>
+
 <button aria-controls="m4dAdminPaneAnnouncements" aria-selected="true" data-pane="announcements" id="m4dAdminTabAnnouncements" role="tab" tabindex="0" type="button">📣 Announcements</button>
 <button aria-controls="m4dAdminPaneModeration" aria-selected="false" data-pane="moderation" id="m4dAdminTabModeration" role="tab" tabindex="-1" type="button">🛡️ Moderation</button>
 <button aria-controls="m4dAdminPaneMilestones" aria-selected="false" data-pane="milestones" id="m4dAdminTabMilestones" role="tab" tabindex="-1" type="button">🎯 Milestones</button>
+</div>
+<div aria-labelledby="m4dAdminTabSongqueue" class="m4d-admin-pane" hidden id="m4dAdminPaneSongqueue" role="tabpanel" tabindex="0">
+  <div class="m4d-song-heading"><div><h3>🎵 Payment Verification &amp; Song Queue</h3><p>Check the donation in your payment account before verifying a screenshot. Approved songs join the public queue.</p></div><button class="m4d-song-btn secondary" id="m4dSongAdminRefresh" type="button">↻ Refresh</button></div>
+  <p class="m4d-song-note" id="m4dSongAdminNotice" role="status" aria-live="polite"></p>
+  <div id="m4dSongAdminList" class="m4d-song-list"></div>
 </div>
 <div aria-labelledby="m4dAdminTabAnnouncements" class="m4d-admin-pane" id="m4dAdminPaneAnnouncements" role="tabpanel" tabindex="0"><p class="m4d-admin-pane-note">Create and send updates to the community. Your announcement creator is here.</p><div id="m4dAnnouncementSlot"></div></div>
 <div aria-labelledby="m4dAdminTabModeration" class="m4d-admin-pane" hidden="" id="m4dAdminPaneModeration" role="tabpanel" tabindex="0"><div class="m4d-admin-pane-top"><h3>Member Reports</h3><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div><div aria-label="Report statistics" class="mod-stats" id="m4dModStats"></div><div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div><p aria-live="polite" class="mod-status" id="m4dModStatus" role="status"></p><div class="mod-list" id="m4dModList"></div></div>
@@ -1614,7 +1640,7 @@ form.addEventListener('submit',async e=>{
 const section=document.getElementById('m4dModeration');
 const tablist=document.getElementById('m4dAdminTabs');
 if(!section||!tablist)return;
-const names=['announcements','moderation','milestones','livestream'];
+const names=['announcements','moderation','milestones','livestream','songqueue'];
 function select(name,focus){
  if(!names.includes(name))name='announcements';
  for(const n of names){
@@ -2880,6 +2906,181 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
     const result = await db.rpc('m4d_is_admin');
     if (result.data === true) loadSettings();
   });
+})();
+</script>
+<style id="m4d-song-queue-style">
+#m4dSongRequests{background:#10131b;border-block:1px solid #292f3c;scroll-margin-top:130px}
+.m4d-song-heading{display:flex;justify-content:space-between;align-items:start;gap:15px;flex-wrap:wrap;margin-bottom:22px}
+.m4d-song-heading h3{margin:0 0 8px}.m4d-song-heading p{font-size:13px;color:#b9becc;line-height:1.6;margin:0}
+.m4d-song-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start}
+.m4d-song-panel,.m4d-song-card{background:#1b1f2a;border:1px solid #3a3e4e;border-radius:14px;padding:22px;min-width:0}
+.m4d-song-panel h3{margin:0 0 9px;font-size:20px}.m4d-song-panel form{display:grid;gap:8px}
+.m4d-song-panel label{font-size:13px;font-weight:750;margin-top:9px;color:#e8eaf1}
+.m4d-song-panel input,.m4d-song-panel textarea{width:100%;min-width:0;border:1px solid #494d5e;border-radius:9px;background:#11141b;color:#fff;padding:12px;font:inherit}
+.m4d-song-panel input[type=file]{padding:10px;font-size:12px}
+.m4d-song-muted{font-size:12px;color:#b6bdca;line-height:1.6}
+.m4d-song-note{font-size:13px;color:#ffd2d8;min-height:18px;overflow-wrap:anywhere}
+.m4d-song-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:10px 13px;min-height:40px;border:1px solid #f04e66;background:#d92d48;color:#fff;font-weight:800;border-radius:9px;cursor:pointer;font-size:13px}
+.m4d-song-btn.secondary{background:#292e3d;border-color:#4c5364;color:#fff}
+.m4d-song-btn.approve{background:#187545;border-color:#46a578}
+.m4d-song-btn.danger{background:#64313a;border-color:#ab4a5d}
+.m4d-song-btn:disabled{opacity:.5;cursor:not-allowed}
+.m4d-song-list{display:grid;gap:12px}.m4d-song-card{padding:15px}
+.m4d-song-title{font-size:16px;font-weight:850;color:#fff;overflow-wrap:anywhere}
+.m4d-song-line{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.m4d-song-meta{color:#aab2c0;font-size:12px;margin-top:5px;overflow-wrap:anywhere}
+.m4d-song-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.m4d-song-pill{display:inline-block;font-size:11px;color:#ffd3d9;background:#4a2631;border:1px solid #7b3c4c;padding:5px 9px;border-radius:30px;font-weight:750}
+.m4d-song-link{color:#ff9eac;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+@media(max-width:820px){.m4d-song-grid{grid-template-columns:1fr}.m4d-song-panel{padding:16px}}
+</style>
+<script id="m4d-song-queue-script">
+(() => {
+  'use strict';
+  const db=window.supabaseClient;
+  const $=id=>document.getElementById(id);
+  if (!db || !$('m4dSongRequests')) return;
+  let activeUser=null, isAdmin=false, working=false;
+  const bucket='m4d-song-proof';
+  const fmt=status=>({pending:'Pending verification',approved:'Approved',played:'Played',rejected:'Rejected'})[status]||status;
+  const notice=(id,message)=>{const el=$(id);if(el)el.textContent=message};
+  const el=(tag,className,text)=>{const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=String(text);return node};
+  const button=(label,cls,action)=>{const b=el('button','m4d-song-btn '+(cls||''),label);b.type='button';b.addEventListener('click',action);return b};
+  function safeVideo(raw){
+    try{const u=new URL(raw);if(u.protocol!=='https:')return false;
+      if(['youtu.be'].includes(u.hostname))return /^\/[a-zA-Z0-9_-]{11}$/.test(u.pathname);
+      if(!['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname))return false;
+      if(u.pathname==='/watch')return /^[a-zA-Z0-9_-]{11}$/.test(u.searchParams.get('v')||'');
+      return /^\/(shorts|live)\/[a-zA-Z0-9_-]{11}\/?$/.test(u.pathname);
+    }catch{return false}
+  }
+  function songCard(r,index,admin=false){
+    const card=el('div','m4d-song-card');const top=el('div','m4d-song-line');
+    top.append(el('div','m4d-song-title',(index!==null?'#'+index+' · ':'')+(r.song_title||'YouTube request')+' — '+(r.artist||'Artist')),
+      el('span','m4d-song-pill',fmt(r.status)));
+    card.append(top);
+    const details=el('div','m4d-song-meta','Submitted '+new Date(r.created_at).toLocaleString()+(admin?' · '+String(r.user_id).slice(0,8)+'…':''));card.append(details);
+    if(r.member_note){card.append(el('div','m4d-song-meta','Note: '+r.member_note))}
+    if(r.video_url&&safeVideo(r.video_url)){
+      const link=el('a','m4d-song-link','▶ Open YouTube video');link.href=r.video_url;link.target='_blank';link.rel='noopener noreferrer';card.append(link);
+    }
+    if(admin){
+      if(r.receipt_review==='accepted'&&!r.payment_verified)card.append(el('p','m4d-song-muted','AI-screened appearance only; actual payment is NOT confirmed.'));
+      const actions=el('div','m4d-song-actions');
+      if(r.proof_path) actions.append(button('🧾 View private receipt','secondary',()=>openProof(r)));
+      if(r.status==='pending'){
+        actions.append(button('✓ Verify payment & approve','approve',()=>manage(r,'approved')));
+        actions.append(button('Reject','danger',()=>manage(r,'rejected')));
+      }
+      if(r.status==='approved'){
+        actions.append(button('Mark played','secondary',()=>manage(r,'played')));
+        actions.append(button('Move ↑','secondary',()=>move(r,-1)));
+        actions.append(button('Move ↓','secondary',()=>move(r,1)));
+      }
+      card.append(actions);
+    }else if(r.status==='pending'&&r.user_id===activeUser?.id){
+      const actions=el('div','m4d-song-actions');actions.append(button('Cancel pending request','danger',()=>cancel(r)));card.append(actions);
+    }
+    return card;
+  }
+  async function openProof(r){
+    if(!isAdmin)return;
+    const {data,error}=await db.storage.from(bucket).createSignedUrl(r.proof_path,60);
+    if(error||!data?.signedUrl){notice('m4dSongAdminNotice','Unable to open private receipt: '+(error?.message||'Unknown error'));return}
+    window.open(data.signedUrl,'_blank','noopener,noreferrer');
+  }
+  async function getAll(){
+    const {data,error}=await db.from('m4d_song_requests').select('id,user_id,song_title,artist,member_note,video_url,proof_path,payment_verified,receipt_review,status,queue_position,created_at').order('created_at',{ascending:true}).limit(300);
+    if(error)throw error;return data||[];
+  }
+  async function refresh(){
+    const publicBox=$('m4dSongPublicQueue'),myBox=$('m4dSongMine'),adminBox=$('m4dSongAdminList');
+    if(!activeUser){publicBox.replaceChildren(el('p','m4d-song-muted','Sign in to see the queue.'));myBox.replaceChildren(el('p','m4d-song-muted','Sign in to submit a request.'));return}
+    try{
+      const rows=await getAll();
+      const approved=rows.filter(r=>r.status==='approved').sort((a,b)=>(a.queue_position??Number.MAX_SAFE_INTEGER)-(b.queue_position??Number.MAX_SAFE_INTEGER)||a.id-b.id);
+      publicBox.replaceChildren(...(approved.length?approved.map((r,i)=>songCard(r,i+1)): [el('p','m4d-song-muted','No approved requests yet.') ]));
+      const own=rows.filter(r=>r.user_id===activeUser.id).slice(-8).reverse();
+      myBox.replaceChildren(...(own.length?own.map(r=>songCard(r,null)):[el('p','m4d-song-muted','You have not submitted a request yet.')]));
+      if(isAdmin){
+        const sorted=[...rows].sort((a,b)=>({pending:0,approved:1,played:2,rejected:3}[a.status]??9)-({pending:0,approved:1,played:2,rejected:3}[b.status]??9)||a.id-b.id);
+        adminBox.replaceChildren(...(sorted.length?sorted.map(r=>songCard(r,r.status==='approved'?approved.findIndex(q=>q.id===r.id)+1:null,true)):[el('p','m4d-song-muted','No requests yet.')]));
+      }
+    }catch(err){console.error('Song queue refresh:',err);notice('m4dSongFormNotice','Could not load song requests: '+err.message)}
+  }
+  async function manage(row,status){
+    if(!isAdmin||working)return;
+    if(status==='approved'&&!window.confirm('Have you checked the actual donation in the payment account? A screenshot alone does not verify payment.'))return;
+    working=true;
+    try{
+      const values={status,updated_at:new Date().toISOString()};
+      if(status==='approved'){
+        const {data:queue,error:qerr}=await db.from('m4d_song_requests').select('queue_position').eq('status','approved').order('queue_position',{ascending:false}).limit(1);
+        if(qerr)throw qerr;
+        values.queue_position=(queue?.[0]?.queue_position||0)+1;values.payment_verified=true;
+      }else{values.queue_position=null}
+      const {data,error}=await db.from('m4d_song_requests').update(values).eq('id',row.id).eq('status',row.status).select('id');
+      if(error)throw error;if(!data?.length)throw Error('Request changed; refresh the queue.');
+      notice('m4dSongAdminNotice','Request '+fmt(status).toLowerCase()+'.');await refresh();
+    }catch(err){notice('m4dSongAdminNotice','Update failed: '+err.message)}finally{working=false}
+  }
+  async function move(row,direction){
+    if(!isAdmin||working)return;working=true;
+    try{
+      const {data,error}=await db.from('m4d_song_requests').select('id,queue_position').eq('status','approved').order('queue_position',{ascending:true});
+      if(error)throw error;const items=data||[];const i=items.findIndex(x=>x.id===row.id),next=items[i+direction];
+      if(i<0||!next)return;
+      const current=items[i].queue_position,swap=next.queue_position;
+      if(current===swap)return;
+      // Update target temporarily to avoid duplicate positions without extra SQL.
+      const temp=Date.now()+1000000000000;
+      let r=await db.from('m4d_song_requests').update({queue_position:temp}).eq('id',row.id);if(r.error)throw r.error;
+      r=await db.from('m4d_song_requests').update({queue_position:current}).eq('id',next.id);if(r.error)throw r.error;
+      r=await db.from('m4d_song_requests').update({queue_position:swap}).eq('id',row.id);if(r.error)throw r.error;
+      await refresh();
+    }catch(err){notice('m4dSongAdminNotice','Reorder failed: '+err.message);await refresh()}finally{working=false}
+  }
+  async function cancel(row){
+    if(!activeUser||!window.confirm('Cancel your pending song request?'))return;
+    const {error}=await db.from('m4d_song_requests').delete().eq('id',row.id).eq('status','pending').eq('user_id',activeUser.id);
+    if(error)notice('m4dSongFormNotice','Could not cancel: '+error.message);else await refresh();
+  }
+  $('m4dSongForm').addEventListener('submit',async e=>{
+    e.preventDefault();if(working)return;
+    const {data:{user}}=await db.auth.getUser();if(!user){notice('m4dSongFormNotice','Please sign in first.');return}
+    const url=$('m4dSongVideo').value.trim(),title=$('m4dSongName').value.trim(),artist=$('m4dSongArtist').value.trim(),note=$('m4dSongNote').value.trim(),file=$('m4dSongReceipt').files[0];
+    if(!safeVideo(url)){notice('m4dSongFormNotice','Please enter a valid YouTube watch, Shorts or livestream link.');return}
+    if(!title||title.length>150||!artist||artist.length>100||note.length>400){notice('m4dSongFormNotice','Check song title, artist, and note lengths.');return}
+    if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5242880||file.size<100){notice('m4dSongFormNotice','Upload a PNG, JPG or WebP receipt image under 5 MB.');return}
+    working=true;$('m4dSongSubmit').disabled=true;notice('m4dSongFormNotice','Uploading receipt securely…');
+    const path=user.id+'/'+crypto.randomUUID()+'.'+({ 'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[file.type]);
+    try{
+      const {data:existing,error:findError}=await db.from('m4d_song_requests').select('id').eq('user_id',user.id).in('status',['pending','approved']).limit(1);
+      if(findError)throw findError;if(existing?.length)throw Error('You already have a pending or approved request.');
+      const upload=await db.storage.from(bucket).upload(path,file,{contentType:file.type,upsert:false});if(upload.error)throw upload.error;
+      const {error}=await db.from('m4d_song_requests').insert({song_title:title,artist,member_note:note,video_url:url,proof_path:path});
+      if(error){await db.storage.from(bucket).remove([path]);throw error}
+      $('m4dSongForm').reset();notice('m4dSongFormNotice','Request submitted! An admin will review the donation before it joins the queue.');await refresh();
+    }catch(err){notice('m4dSongFormNotice','Submission failed: '+err.message)}finally{working=false;$('m4dSongSubmit').disabled=false}
+  });
+  $('m4dSongRefresh').addEventListener('click',refresh);
+  $('m4dSongAdminRefresh').addEventListener('click',refresh);
+  // Add the navigation link into the Community menu after the existing organized-navigation script has run.
+  const nav=document.getElementById('m4dOrganizedNav');
+  if(nav){const menu=nav.querySelector('[data-group="community"] .m4d-nav-menu');if(menu&&!menu.querySelector('a[href="#m4dSongRequests"]')){
+    const link=el('a','','🎵 Song Requests');link.href='#m4dSongRequests';menu.append(link);
+  }}
+  async function session(){
+    try{
+      const {data:{user}}=await db.auth.getUser();activeUser=user||null;
+      if(user){const result=await db.rpc('m4d_is_admin');isAdmin=result.data===true&&!result.error}else isAdmin=false;
+      if(isAdmin)await refresh();else if($('m4dSongAdminList'))$('m4dSongAdminList').replaceChildren();
+      await refresh();
+    }catch(err){console.error('Song queue authentication:',err)}
+  }
+  db.auth.onAuthStateChange(()=>{setTimeout(session,0)});
+  session();
+  setInterval(()=>{if(!document.hidden)refresh()},30000);
 })();
 </script>
 </body>
