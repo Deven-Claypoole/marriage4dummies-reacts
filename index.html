@@ -641,96 +641,91 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 <script>
 
 <script>
-/* M4D livestream status — automatic recovery */
-(() => {
+
+<!-- M4D LIVE INDICATOR - SINGLE HYBRID CHECKER -->
+<script>
+(function () {
   const endpoint = '/.netlify/functions/live-status';
-  const refreshEvery = 60000;
-  let checking = false;
 
-  async function checkLive() {
+  function show(live, title, url, manual) {
     const box = document.getElementById('m4d-live');
-    if (!box || checking) return;
-    checking = true;
+    if (!box) return;
+    box.replaceChildren();
 
-    function show(title, message) {
-      box.replaceChildren();
-      const heading = document.createElement('h2');
-      heading.textContent = title;
-      const description = document.createElement('p');
-      description.textContent = message;
-      box.append(heading, description);
+    const heading = document.createElement('h2');
+    heading.textContent = live ? '🔴 LIVE NOW' : 'Currently Offline';
+
+    const description = document.createElement('p');
+    description.textContent = title ||
+      (live ? 'Markis & Christian are live!' :
+       'Markis & Christian are not live right now.');
+
+    box.append(heading, description);
+
+    if (manual) {
+      const note = document.createElement('small');
+      note.textContent = 'Status set by M4D admins';
+      box.appendChild(note);
     }
 
+    if (live && typeof url === 'string' &&
+        /^https:\/\//i.test(url)) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.textContent = '▶ WATCH LIVE';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'btn';
+      box.appendChild(link);
+    }
+  }
+
+  async function check() {
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-
-      let response;
-      try {
-        response = await fetch(endpoint, {
-          cache: 'no-store',
-          signal: controller.signal
-        });
-      } finally {
-        clearTimeout(timeout);
-      }
-
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status);
-      }
+      const response = await fetch(endpoint);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
 
       const data = await response.json();
-
       if (typeof data.live !== 'boolean') {
-        throw new Error('Invalid response');
+        throw new Error('Invalid status');
       }
 
-      if (!data.live) {
-        show('Currently Offline',
-             'Markis & Christian are not live right now.');
-      } else {
-        show('🔴 LIVE NOW',
-             data.title || 'Markis & Christian are live!');
-
-        if (data.thumbnail &&
-            /^https:\/\//i.test(data.thumbnail)) {
-          const img = document.createElement('img');
-          img.src = data.thumbnail;
-          img.alt = 'Livestream thumbnail';
-          img.loading = 'lazy';
-          box.appendChild(img);
-        }
-
-        if (data.url && /^https:\/\//i.test(data.url)) {
-          const link = document.createElement('a');
-          link.href = data.url;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          link.textContent = '▶ WATCH LIVE';
-          box.appendChild(link);
-        }
-      }
+      show(data.live, data.title, data.url, false);
     } catch (error) {
-      console.error('M4D live status error:', error);
-      show('Livestream status unavailable',
-           'Connection failed. Retrying automatically.');
+      console.warn('Using manual live fallback:', error);
 
-      const retry = document.createElement('button');
-      retry.textContent = '↻ Retry Now';
-      retry.className = 'btn secondary';
-      retry.style.marginTop = '12px';
-      retry.onclick = checkLive;
-      box.appendChild(retry);
-    } finally {
-      checking = false;
+      try {
+        const db = window.supabaseClient;
+        if (!db) throw new Error('Supabase unavailable');
+
+        const { data, error: dbError } = await db
+          .from('m4d_live_settings')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (dbError) throw dbError;
+
+        if (data?.manual_enabled) {
+          show(data.manual_live, data.stream_title,
+               data.stream_url, true);
+        } else {
+          throw new Error('Manual fallback disabled');
+        }
+      } catch (fallbackError) {
+        console.error('Live fallback failed:', fallbackError);
+        const box = document.getElementById('m4d-live');
+        if (box) box.textContent =
+          'Livestream status unavailable — retrying automatically.';
+      }
     }
   }
 
   function start() {
-    checkLive();
-    setInterval(checkLive, refreshEvery);
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) checkLive();
+    check();
+    setInterval(check, 60000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) check();
     });
   }
 
@@ -741,9 +736,8 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
   }
 })();
 </script>
-}
-</script>
-<!-- Hide video results until someone searches -->
+<!-- END M4D LIVE INDICATOR -->
+
 <script>
 (function () {
   const search = document.getElementById("videoQuery");
