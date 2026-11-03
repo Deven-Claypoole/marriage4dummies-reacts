@@ -1,24 +1,42 @@
 
-const CHANNEL_ID = "UC9krtPrvVRzxBRuR7q4qeUQ";
+/* Marriage4Dummies-Reacts Livestream Checker */
+
+const CHANNEL_ID = 'UC9krtPrvVRzxBRuR7q4qeUQ';
+
+const successHeaders = {
+  'Content-Type': 'application/json; charset=utf-8',
+  'Cache-Control': 'no-cache',
+  'Netlify-CDN-Cache-Control':
+    'public, durable, max-age=1800, stale-while-revalidate=300'
+};
+
+const errorHeaders = {
+  'Content-Type': 'application/json; charset=utf-8',
+  'Cache-Control': 'no-store'
+};
 
 export default async function handler() {
-  const headers = {
-    "Content-Type": "application/json",
-    "Cache-Control": "public, max-age=120, s-maxage=300"
-  };
+  const apiKey = process.env.YOUTUBE_API_KEY;
+
+  if (!apiKey) {
+    console.error('YOUTUBE_API_KEY is missing');
+
+    return new Response(
+      JSON.stringify({
+        live: null,
+        error: 'Livestream status unavailable'
+      }),
+      { status: 503, headers: errorHeaders }
+    );
+  }
 
   try {
-    const apiKey = process.env.YOUTUBE_API_KEY;
-    if (!apiKey) {
-      throw new Error("YouTube API key is not configured");
-    }
-
     const params = new URLSearchParams({
-      part: "snippet",
+      part: 'snippet',
       channelId: CHANNEL_ID,
-      eventType: "live",
-      type: "video",
-      maxResults: "5",
+      eventType: 'live',
+      type: 'video',
+      maxResults: '1',
       key: apiKey
     });
 
@@ -30,30 +48,43 @@ export default async function handler() {
 
     if (!response.ok) {
       throw new Error(
-        data.error?.message || "YouTube API request failed"
+        data?.error?.message ||
+        `YouTube API returned ${response.status}`
       );
     }
 
     const video = data.items?.[0];
+    const videoId = video?.id?.videoId;
 
-    return new Response(JSON.stringify({
-      live: Boolean(video),
+    const result = {
+      live: Boolean(videoId),
       title: video?.snippet?.title || null,
-      thumbnail: video?.snippet?.thumbnails?.high?.url || null,
-      url: video
-        ? `https://www.youtube.com/watch?v=${video.id.videoId}`
+      thumbnail:
+        video?.snippet?.thumbnails?.high?.url ||
+        video?.snippet?.thumbnails?.default?.url ||
+        null,
+      url: videoId
+        ? `https://www.youtube.com/watch?v=${videoId}`
         : null
-    }), { status: 200, headers });
+    };
+
+    return new Response(
+      JSON.stringify(result),
+      { status: 200, headers: successHeaders }
+    );
 
   } catch (error) {
-    console.error("Live status check failed:", error.message);
+    console.error(
+      'Live status check failed:',
+      error?.message || error
+    );
 
-    return new Response(JSON.stringify({
-      live: null,
-      error: "Unable to check livestream status"
-    }), { status: 503, headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store"
-    }});
+    return new Response(
+      JSON.stringify({
+        live: null,
+        error: 'Livestream status unavailable'
+      }),
+      { status: 503, headers: errorHeaders }
+    );
   }
 }
