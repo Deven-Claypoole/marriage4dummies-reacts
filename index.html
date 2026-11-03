@@ -1580,6 +1580,38 @@ form.addEventListener('submit',async e=>{
  <div class="m4d-feed-center"><button type="button" id="m4dFeedMore" class="m4d-feed-secondary" hidden>Load more posts</button></div>
 </div></div>
 </section>
+
+<style id="m4d-rewards-style">
+#m4dRewards{background:radial-gradient(ellipse at 90% 5%,#4b1726 0%,transparent 48%),#101219;border-top:1px solid #2d303b;padding:65px 0}
+#m4dRewards .wrap{max-width:1200px}.m4d-rewards-hero{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:27px;margin:25px 0 34px;background:linear-gradient(110deg,#29202d,#1a1c27);border:1px solid #65404b;border-radius:18px}.m4d-rewards-icon{font-size:43px;background:#432333;border-radius:14px;padding:17px}.m4d-rewards-member{flex:1;min-width:220px}.m4d-rewards-kicker{font-size:11px;color:#ffa6b5;letter-spacing:1.5px;font-weight:850}.m4d-rewards-member h3{margin:4px 0 12px;font-size:clamp(22px,3vw,32px)}.m4d-rewards-xprow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#c5c9d2;margin-bottom:8px}.m4d-rewards-xprow strong{color:#fff}.m4d-rewards-track{height:12px;border-radius:100px;background:#373944;overflow:hidden}.m4d-rewards-track>div{width:0%;height:100%;background:linear-gradient(90deg,#e92943,#ff9d72);transition:width .3s}.m4d-rewards-status{margin:10px 0 0;color:#bbc0cd;font-size:12px;line-height:1.5}.m4d-rewards-refresh{background:#e92943;color:#fff;border:0;border-radius:9px;padding:11px 16px;font-weight:800}.m4d-rewards-subhead{margin:0 0 14px;font-size:22px}.m4d-rewards-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px}.m4d-reward-rank{display:flex;flex-direction:column;gap:9px;border:1px solid #343944;background:#1a1e28;border-radius:14px;padding:21px 14px;min-height:174px}.m4d-reward-rank>span{font-size:29px}.m4d-reward-rank>small{font-size:10px;color:#b9bfcc;letter-spacing:.5px}.m4d-reward-rank>strong{font-size:16px;line-height:1.3}.m4d-reward-rank.is-current{border-color:#f66c80;box-shadow:inset 0 0 0 1px #f66c80,0 7px 26px #e929431f;background:#32232c}.m4d-reward-rank.is-current:after{content:'CURRENT RANK';color:#ffb7c3;font-size:10px;font-weight:800;letter-spacing:1px;margin-top:auto}.m4d-rewards-info{margin-top:24px;padding:22px;border:1px solid #333843;border-radius:13px;background:#1b1f28}.m4d-rewards-info strong{font-size:17px}.m4d-rewards-info p{font-size:13px;line-height:1.65;color:#b8bfcd;margin:8px 0 0}@media(max-width:950px){.m4d-rewards-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.m4d-rewards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.m4d-rewards-hero{padding:18px}.m4d-rewards-icon{font-size:29px;padding:12px}.m4d-rewards-refresh{width:100%}}
+</style>
+
+<section id="m4dRewards" class="m4d-secondary-page m4d-rewards" aria-labelledby="m4dRewardsTitle">
+ <div class="wrap">
+  <div class="eyebrow">M4D MEMBER REWARDS</div><h2 id="m4dRewardsTitle">Rewards &amp; Levels</h2>
+  <p class="lead">Join the conversation, earn XP, and climb through the official M4D community ranks.</p>
+  <div class="m4d-rewards-hero">
+   <div class="m4d-rewards-icon" aria-hidden="true">🏆</div>
+   <div class="m4d-rewards-member">
+    <span class="m4d-rewards-kicker">YOUR CURRENT RANK</span>
+    <h3 id="m4dRewardRank">Sign in to see your level</h3>
+    <div class="m4d-rewards-xprow"><strong id="m4dRewardXP">— XP</strong><span id="m4dRewardNext">Log in to track progress</span></div>
+    <div class="m4d-rewards-track" role="progressbar" aria-label="Progress toward next M4D rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="m4dRewardsProgress"><div id="m4dRewardsFill"></div></div>
+    <p id="m4dRewardsStatus" class="m4d-rewards-status" role="status" aria-live="polite">Sign in to see the XP you've earned.</p>
+   </div>
+   <button type="button" class="m4d-rewards-refresh" id="m4dRewardsRefresh">↻ Refresh XP</button>
+  </div>
+  <h3 class="m4d-rewards-subhead">Official M4D ranks</h3>
+  <div class="m4d-rewards-grid">
+   <div class="m4d-reward-rank" data-min-xp="0"><span>⭐</span><small>LEVEL 1 · 0 XP</small><strong>Fresh Dummy</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="100"><span>🔥</span><small>LEVEL 2 · 100 XP</small><strong>Certified Dummy</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="300"><span>🎤</span><small>LEVEL 3 · 300 XP</small><strong>Unc Status</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="600"><span>⚡</span><small>LEVEL 4 · 600 XP</small><strong>M4D Veteran</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="1000"><span>🏆</span><small>LEVEL 5 · 1,000 XP</small><strong>M4D Hall of Fame</strong></div>
+  </div>
+  <div class="m4d-rewards-info"><strong>How to earn XP</strong><p>Publish a community post: +20 XP (up to 3 rewarded posts a day). Comment: +10 XP (up to 10 rewarded comments a day). Have a song request approved: +25 XP. XP is recorded by Supabase when the Rewards database triggers are installed; earlier activity is not backfilled.</p></div>
+ </div>
+</section>
 <section id="m4dSongRequests" class="m4d-secondary-page m4d-song-page" aria-labelledby="m4dSongTitle">
  <div class="wrap"><div class="m4d-song-heading"><div><div class="eyebrow">M4D COMMUNITY</div><h2 id="m4dSongTitle">Live Song Request Queue</h2><p class="lead">Submit a YouTube link and a donation screenshot. The request enters the queue only after an admin confirms the donation.</p></div></div>
  <div class="m4d-song-grid">
@@ -3225,6 +3257,63 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
   setInterval(()=>{if(!document.hidden)renderPublic()},15000);
   setInterval(()=>{if(!document.hidden&&activeUser)refresh()},60000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderPublic()});
+})();
+</script>
+
+<script id="m4d-rewards-script">
+(function(){
+ 'use strict';
+ const ranks=[{name:'Fresh Dummy',xp:0},{name:'Certified Dummy',xp:100},{name:'Unc Status',xp:300},{name:'M4D Veteran',xp:600},{name:'M4D Hall of Fame',xp:1000}];
+ const $=id=>document.getElementById(id);
+ const db=window.supabaseClient;
+ const nav=document.getElementById('m4dOrganizedNav');
+ if(nav){
+   const menu=nav.querySelector('[data-group="community"] .m4d-nav-menu');
+   if(menu&&!menu.querySelector('a[href="#m4dRewards"]')){
+     const link=document.createElement('a');link.href='#m4dRewards';link.textContent='🏆 Rewards & Levels';menu.append(link);
+   }
+ }
+ function display(xp){
+   const i=ranks.reduce((acc,r,j)=>xp>=r.xp?j:acc,0),r=ranks[i],next=ranks[i+1];
+   $('m4dRewardRank').textContent='Level '+(i+1)+' · '+r.name;
+   $('m4dRewardXP').textContent=xp.toLocaleString()+' XP';
+   $('m4dRewardNext').textContent=next?(next.xp-xp).toLocaleString()+' XP until '+next.name:'Maximum rank reached';
+   const pct=next?Math.max(0,Math.min(100,(xp-r.xp)/(next.xp-r.xp)*100)):100;
+   $('m4dRewardsFill').style.width=pct+'%';
+   $('m4dRewardsProgress').setAttribute('aria-valuenow',String(Math.round(pct)));
+   document.querySelectorAll('#m4dRewards .m4d-reward-rank').forEach((node,j)=>node.classList.toggle('is-current',j===i));
+ }
+ let nonce=0;
+ async function refresh(){
+   if(!db){$('m4dRewardsStatus').textContent='Supabase connection is unavailable.';return;}
+   const call=++nonce;
+   try{
+     const {data:{user},error:authError}=await db.auth.getUser();
+     if(call!==nonce)return;
+     if(authError||!user){
+       $('m4dRewardRank').textContent='Sign in to see your level';
+       $('m4dRewardXP').textContent='— XP';$('m4dRewardNext').textContent='Log in to track progress';
+       $('m4dRewardsFill').style.width='0%';$('m4dRewardsProgress').setAttribute('aria-valuenow','0');
+       document.querySelectorAll('#m4dRewards .m4d-reward-rank').forEach(n=>n.classList.remove('is-current'));
+       $('m4dRewardsStatus').textContent='Sign in using the Account button to view your XP.';return;
+     }
+     const {data,error}=await db.rpc('m4d_my_xp');
+     if(call!==nonce)return;
+     if(error){
+       console.warn('M4D rewards XP lookup:',error);
+       $('m4dRewardRank').textContent='Rewards setup needed';
+       $('m4dRewardXP').textContent='— XP';$('m4dRewardNext').textContent='';
+       $('m4dRewardsFill').style.width='0%';
+       $('m4dRewardsStatus').textContent='The XP function is not available yet. An admin needs to run the Rewards & Levels SQL setup in Supabase.';return;
+     }
+     const xp=Math.max(0,Number(data)||0);
+     display(xp);$('m4dRewardsStatus').textContent='XP reflects eligible activities after the rewards triggers were enabled.';
+   }catch(err){if(call===nonce){console.warn('M4D rewards:',err);$('m4dRewardsStatus').textContent='Unable to load XP. Try Refresh XP.';}}
+ }
+ $('m4dRewardsRefresh').addEventListener('click',refresh);
+ if(db)db.auth.onAuthStateChange(()=>setTimeout(refresh,0));
+ window.addEventListener('hashchange',()=>{if(location.hash==='#m4dRewards')refresh();});
+ refresh();
 })();
 </script>
 </body>
