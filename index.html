@@ -1696,7 +1696,7 @@ form.addEventListener('submit',async e=>{
 const section=document.getElementById('m4dModeration');
 const tablist=document.getElementById('m4dAdminTabs');
 if(!section||!tablist)return;
-const names=['announcements','moderation','milestones'];
+const names=['announcements','moderation','milestones','livestream'];
 function select(name,focus){
  if(!names.includes(name))name='announcements';
  for(const n of names){
@@ -2758,6 +2758,210 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
    const href=a.getAttribute('href');
    if(href&&href===window.location.hash)requestAnimationFrame(openView);
  });
+})();
+</script>
+
+
+<style>
+#m4dLiveAdminForm {
+  display:grid;
+  gap:16px;
+  max-width:680px;
+}
+#m4dLiveAdminForm label {
+  display:grid;
+  gap:7px;
+  font-size:13px;
+  font-weight:700;
+  color:#e4e4e9;
+}
+#m4dLiveAdminForm input,
+#m4dLiveAdminForm select {
+  width:100%;
+  padding:12px;
+  background:#171922;
+  color:white;
+  border:1px solid #50515e;
+  border-radius:9px;
+}
+#m4dLiveAdminForm input[type=checkbox] {
+  width:20px;
+  height:20px;
+}
+#m4dLiveAdminForm .m4d-live-switch {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+#m4dLiveAdminForm button {
+  background:#dc2037;
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:13px 18px;
+  font-weight:800;
+}
+#m4dLiveAdminMessage {
+  color:#ffc5cf;
+  font-size:13px;
+}
+</style>
+
+<script>
+(() => {
+  const db = window.supabaseClient;
+  const tabs = document.getElementById('m4dAdminTabs');
+  const section = document.getElementById('m4dModeration');
+
+  if (!db || !tabs || !section) return;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.id = 'm4dAdminTabLivestream';
+  button.dataset.pane = 'livestream';
+  button.setAttribute('role', 'tab');
+  button.setAttribute('aria-selected', 'false');
+  button.setAttribute('aria-controls', 'm4dAdminPaneLivestream');
+  button.tabIndex = -1;
+  button.textContent = '🔴 Livestream';
+
+  tabs.appendChild(button);
+
+  const pane = document.createElement('div');
+  pane.id = 'm4dAdminPaneLivestream';
+  pane.className = 'm4d-admin-pane';
+  pane.setAttribute('role', 'tabpanel');
+  pane.setAttribute('aria-labelledby', button.id);
+  pane.tabIndex = 0;
+  pane.hidden = true;
+
+  pane.innerHTML = `
+    <h3>🔴 Livestream Controls</h3>
+    <p class="m4d-admin-pane-note">
+      Set the backup livestream status used when
+      YouTube's automatic checker is unavailable.
+    </p>
+
+    <form id="m4dLiveAdminForm">
+      <label class="m4d-live-switch">
+        <input type="checkbox" id="m4dLiveEnabled">
+        Enable manual fallback
+      </label>
+
+      <label>
+        Backup livestream status
+        <select id="m4dLiveManualStatus">
+          <option value="false">Currently Offline</option>
+          <option value="true">🔴 LIVE NOW</option>
+        </select>
+      </label>
+
+      <label>
+        Stream title
+        <input id="m4dLiveTitle" maxlength="200"
+          placeholder="Marriage4Dummies Live Reactions">
+      </label>
+
+      <label>
+        YouTube watch link
+        <input id="m4dLiveUrl" type="url"
+          placeholder="https://www.youtube.com/watch?v=...">
+      </label>
+
+      <label>
+        Thumbnail URL (optional)
+        <input id="m4dLiveThumbnail" type="url"
+          placeholder="https://...">
+      </label>
+
+      <button type="submit" id="m4dLiveSave">
+        Save Livestream Settings
+      </button>
+      <p id="m4dLiveAdminMessage"
+         role="status" aria-live="polite"></p>
+    </form>
+  `;
+
+  tabs.parentNode.insertBefore(pane, tabs.nextSibling);
+
+  const $ = id => document.getElementById(id);
+  const form = $('m4dLiveAdminForm');
+  const message = $('m4dLiveAdminMessage');
+
+  async function loadSettings() {
+    const {data, error} = await db
+      .from('m4d_live_settings')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error) {
+      message.textContent = 'Unable to load settings: ' + error.message;
+      return;
+    }
+
+    $('m4dLiveEnabled').checked = data.manual_enabled;
+    $('m4dLiveManualStatus').value = String(data.manual_live);
+    $('m4dLiveTitle').value = data.stream_title || '';
+    $('m4dLiveUrl').value = data.stream_url || '';
+    $('m4dLiveThumbnail').value = data.thumbnail_url || '';
+    message.textContent = 'Livestream settings loaded.';
+  }
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const {data: auth} = await db.auth.getUser();
+    if (!auth?.user) {
+      message.textContent = 'Please sign in as an admin.';
+      return;
+    }
+
+    const {data: isAdmin, error: adminError} =
+      await db.rpc('m4d_is_admin');
+
+    if (adminError || isAdmin !== true) {
+      message.textContent = 'Admin access required.';
+      return;
+    }
+
+    const values = {
+      manual_enabled: $('m4dLiveEnabled').checked,
+      manual_live: $('m4dLiveManualStatus').value === 'true',
+      stream_title: $('m4dLiveTitle').value.trim(),
+      stream_url: $('m4dLiveUrl').value.trim(),
+      thumbnail_url: $('m4dLiveThumbnail').value.trim(),
+      updated_at: new Date().toISOString()
+    };
+
+    const save = $('m4dLiveSave');
+    save.disabled = true;
+    message.textContent = 'Saving livestream settings...';
+
+    try {
+      const {data, error} = await db
+        .from('m4d_live_settings')
+        .update(values)
+        .eq('id', 1)
+        .select('id')
+        .single();
+
+      if (error) throw error;
+      if (!data) throw new Error('Settings were not updated.');
+
+      message.textContent = '✅ Livestream settings saved!';
+    } catch (error) {
+      message.textContent = 'Save failed: ' + error.message;
+    } finally {
+      save.disabled = false;
+    }
+  });
+
+  db.auth.getUser().then(async ({data}) => {
+    if (!data?.user) return;
+    const result = await db.rpc('m4d_is_admin');
+    if (result.data === true) loadSettings();
+  });
 })();
 </script>
 </body>
