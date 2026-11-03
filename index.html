@@ -4439,5 +4439,106 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
  window.addEventListener('resize',()=>groups.forEach(place),{passive:true});
 })();
 </script>
+
+<style id="m4d-mobile-working-swipe-v2">
+/* The viewport scrolls; the menu itself is a single row wider than the screen. */
+.m4d-nav-carousel {display:contents}
+.m4d-nav-viewport {display:contents}
+.m4d-nav-scroll-control {display:none}
+@media(max-width:850px) {
+ header > .wrap {min-width:0!important;max-width:100%!important}
+ header .m4d-nav-carousel {
+   display:flex!important;order:3!important;flex:0 0 100%!important;
+   width:100%!important;max-width:100%!important;min-width:0!important;
+   align-items:center!important;gap:4px!important;
+ }
+ header .m4d-nav-viewport {
+   display:block!important;flex:1 1 0!important;
+   min-width:0!important;width:0!important;max-width:100%!important;
+   overflow-x:scroll!important;overflow-y:hidden!important;
+   overscroll-behavior-x:contain!important;
+   -webkit-overflow-scrolling:touch!important;
+   touch-action:pan-x!important;
+   scrollbar-width:none!important;
+   scroll-behavior:smooth;
+   padding:5px 0 10px!important;
+ }
+ header .m4d-nav-viewport::-webkit-scrollbar {display:none}
+ header nav#m4dOrganizedNav {
+   display:flex!important;flex-wrap:nowrap!important;
+   position:relative!important;align-items:stretch!important;
+   justify-content:flex-start!important;
+   flex:0 0 auto!important;
+   width:max-content!important;min-width:max-content!important;
+   max-width:none!important;
+   overflow:visible!important;
+   margin:0!important;padding:0!important;gap:10px!important;
+   white-space:nowrap!important;
+   scroll-snap-type:none!important;
+ }
+ header nav#m4dOrganizedNav > .m4d-main-home,
+ header nav#m4dOrganizedNav > .m4d-main-juice,
+ header nav#m4dOrganizedNav > .m4d-main-christian,
+ header nav#m4dOrganizedNav > .m4d-nav-group {
+   flex:0 0 162px!important;width:162px!important;
+   min-width:162px!important;max-width:162px!important;
+ }
+ header nav#m4dOrganizedNav > .m4d-nav-group > summary,
+ header nav#m4dOrganizedNav > .m4d-main-home,
+ header nav#m4dOrganizedNav > .m4d-main-juice,
+ header nav#m4dOrganizedNav > .m4d-main-christian{
+   min-height:56px!important;white-space:normal!important;
+   overflow-wrap:normal!important;word-break:normal!important;
+ }
+ header .m4d-nav-scroll-control {
+   display:flex!important;flex:0 0 30px!important;
+   width:30px!important;height:49px!important;
+   align-items:center!important;justify-content:center!important;
+   background:#242831!important;border:1px solid #4b4e5e!important;
+   color:#f4f4fa!important;border-radius:10px!important;
+   font-size:22px!important;font-weight:700!important;
+   padding:0!important;cursor:pointer;
+ }
+ header .m4d-nav-scroll-control:disabled{opacity:.28!important;cursor:default}
+}
+</style>
+<script id="m4d-mobile-working-swipe-v2-script">
+(function(){
+ function init(){
+  const nav=document.getElementById('m4dOrganizedNav');
+  if(!nav || nav.closest('.m4d-nav-carousel'))return;
+  const viewport=document.createElement('div');
+  viewport.className='m4d-nav-viewport';
+  viewport.setAttribute('aria-label','Swipe to browse navigation tabs');
+  const carousel=document.createElement('div');
+  carousel.className='m4d-nav-carousel';
+  const prev=document.createElement('button'),next=document.createElement('button');
+  prev.type=next.type='button';
+  prev.className=next.className='m4d-nav-scroll-control';
+  prev.textContent='‹';next.textContent='›';
+  prev.setAttribute('aria-label','Previous navigation tabs');
+  next.setAttribute('aria-label','Next navigation tabs');
+  nav.parentNode.insertBefore(carousel,nav);
+  viewport.appendChild(nav);
+  carousel.append(prev,viewport,next);
+  const refresh=()=>{
+   prev.disabled=viewport.scrollLeft<=2;
+   next.disabled=viewport.scrollLeft+viewport.clientWidth>=viewport.scrollWidth-3;
+  };
+  prev.addEventListener('click',()=>viewport.scrollBy({left:-220,behavior:'smooth'}));
+  next.addEventListener('click',()=>viewport.scrollBy({left:220,behavior:'smooth'}));
+  viewport.addEventListener('scroll',refresh,{passive:true});
+  window.addEventListener('resize',refresh,{passive:true});
+  const closeMenus=()=>nav.querySelectorAll('.m4d-nav-group[open]').forEach(g=>g.open=false);
+  viewport.addEventListener('scroll',closeMenus,{passive:true});
+  // Native touch scrolling works on this overflow container; arrow buttons are
+  // also provided for browser embeds that intercept touch swipes.
+  refresh();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+ else init();
+})();
+</script>
+
 </body>
 </html>
