@@ -472,9 +472,6 @@ function renderSchedule(){const box=$('scheduleEvents');box.replaceChildren();co
 function renderAdvanced(){const q=$('videoQuery').value.toLowerCase().trim();const results=$('videoResults');results.replaceChildren();const all=[...playlists.map(p=>({title:p.title,category:p.cat,url:'https://www.youtube.com/playlist?list='+p.id,type:'Playlist'})),...videoIndex.map(v=>({...v,type:'Video'}))];const matches=all.filter(v=>[v.title,v.artist||'',v.category||'',v.type].join(' ').toLowerCase().includes(q));matches.forEach(v=>{const a=document.createElement('a');a.className='upgrade-result';a.href=v.url;a.target='_blank';a.rel='noopener noreferrer';const label=document.createElement('strong');label.textContent=v.title;const small=document.createElement('small');small.textContent=v.type+' · '+(v.category||v.artist||'Reaction');a.append(label,small);results.appendChild(a)});$('videoSearchNote').textContent=matches.length+' result'+(matches.length===1?'':'s')+' · Currently indexes 10 playlists'+(videoIndex.length?' and '+videoIndex.length+' individual videos':' (individual video titles not yet supplied)');if(!matches.length){const p=document.createElement('p');p.className='upgrade-notice';p.textContent='No matches found. Try an artist or genre.';results.appendChild(p)}}
 $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 })();
-</script>
-<!-- Marriage4Dummies NOW LIVE Indicator -->
-<style>
 
 <script>
 
