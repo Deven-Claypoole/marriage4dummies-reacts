@@ -204,7 +204,7 @@ const playlists=[
 ];
 const $=id=>document.getElementById(id);let category='All';const categories=['All','Hip-Hop','Rock','Metal','A Cappella','Classic Rock','Commentary','Worship'];
 function renderFilters(){ $('filters').innerHTML='';categories.forEach(c=>{const b=document.createElement('button');b.className='filter'+(c===category?' active':'');b.textContent=c;b.onclick=()=>{category=c;renderFilters();renderCards()};$('filters').appendChild(b)})}
-function renderCards(){const query=$('search').value.toLowerCase().trim();const matching=playlists.filter(p=>(category==='All'||p.cat===category)&&(p.title+' '+p.cat).toLowerCase().includes(query));$('cards').innerHTML='';$('empty').style.display=matching.length?'none':'block';matching.forEach(p=>{const index=playlists.indexOf(p);const el=document.createElement('article');el.className='card';el.innerHTML=`<div class="art" style="--c1:${p.colors[0]};--c2:${p.colors[1]}"><span class="number">PLAYLIST ${String(index+1).padStart(2,'0')}</span><span class="symbol">${p.symbol}</span></div><div class="cardbody"><h3>${p.title}</h3><p>${p.cat}${p.note?' · Link needs verification':''}</p><div class="cardbottom"><a class="external" target="_blank" rel="noopener" href="https://www.youtube.com/playlist?list=${encodeURIComponent(p.id)}">YouTube ↗</a></div></div>`;$('cards').appendChild(el)})}
+function renderCards(){const query=$('search').value.toLowerCase().trim();const matching=playlists.filter(p=>(category==='All'||p.cat===category)&&(p.title+' '+p.cat).toLowerCase().includes(query));$('cards').innerHTML='';$('empty').style.display=matching.length?'none':'block';matching.forEach(p=>{const el=document.createElement('article');el.className='card';el.innerHTML=`<div class="art" style="--c1:${p.colors[0]};--c2:${p.colors[1]}"><span class="symbol">${p.symbol}</span></div><div class="cardbody"><h3>${p.title}</h3><p>${p.cat}${p.note?' · Link needs verification':''}</p><div class="cardbottom"><a class="external" target="_blank" rel="noopener" href="https://www.youtube.com/playlist?list=${encodeURIComponent(p.id)}">YouTube ↗</a></div></div>`;$('cards').appendChild(el)})}
 function openPlayer(p){$('modalTitle').textContent=p.title;$('modalLink').href='https://www.youtube.com/playlist?list='+encodeURIComponent(p.id);$('modalPlayer').innerHTML='';const frame=document.createElement('iframe');frame.src='https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(p.id);frame.title=p.title;frame.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';$('modalPlayer').appendChild(frame);$('modal').classList.add('open');document.body.style.overflow='hidden'}
 function closePlayer(){$('modal').classList.remove('open');$('modalPlayer').innerHTML='';document.body.style.overflow=''}
 
@@ -1789,20 +1789,21 @@ updateComposer();
 #m4dVoiceMiniBar .m4d-mini-label small{display:block;color:#b7ebc9;font-size:11px}
 #m4dVoiceMiniBar button{background:#353a49;border:1px solid #6d7283;color:white;border-radius:9px;padding:8px 10px;font-weight:700;cursor:pointer;min-height:38px}
 #m4dVoiceMiniBar #m4dMiniLeave{background:#a9233a;border-color:#a9233a}
-#m4dVoiceMinimize:focus-visible,#m4dVoiceMiniBar button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#m4dVoiceOutputPanel[hidden]{display:none!important}#m4dVoiceOutputPanel{margin-top:15px;padding:13px;background:#262a36;border:1px solid #505567;border-radius:12px;text-align:left}#m4dVoiceOutputPanel label{display:block;font-size:13px;font-weight:800;color:#fff;margin-bottom:7px}#m4dVoiceOutputSelect{width:100%;max-width:100%;padding:10px;background:#10131d;color:#fff;border:1px solid #778097;border-radius:8px}#m4dVoiceOutputHelp{font-size:12px;color:#dce1ec!important;margin:9px 0 0!important}#m4dVoiceMinimize:focus-visible,#m4dVoiceMiniBar button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 @media(max-width:600px){#m4dVoiceMiniBar{left:12px;right:12px;bottom:78px;max-width:none}}
 </style>
 <div id="m4dVoiceOverlay" hidden role="dialog" aria-modal="true" aria-label="Voice call">
   <div id="m4dVoiceCard"><button type="button" id="m4dVoiceMinimize" aria-label="Minimize voice call">— Minimize</button><h2>🎙️ Private voice call</h2><p id="m4dVoiceTitle">Select a friend to call.</p>
    <p id="m4dVoiceStatus" aria-live="polite">Ready</p><div id="m4dVoiceParticipants"></div>
    <div id="m4dVoiceAudio" hidden></div>
-   <div id="m4dVoiceButtons"><button type="button" id="m4dVoiceMute" disabled>🎤 Mute</button><button type="button" id="m4dVoiceDeafen" disabled>🔊 Deafen</button><button type="button" id="m4dVoiceHangup">☎️ Leave call</button></div>
+   <div id="m4dVoiceButtons"><button type="button" id="m4dVoiceMute" disabled>🎤 Mute</button><button type="button" id="m4dVoiceDeafen" disabled>🔇 Deafen</button><button type="button" id="m4dVoiceSpeaker" disabled>🔊 Speaker / Output</button><button type="button" id="m4dVoiceHangup">☎️ Leave call</button></div>
+   <div id="m4dVoiceOutputPanel" hidden><label for="m4dVoiceOutputSelect">Audio output</label><select id="m4dVoiceOutputSelect"></select><p id="m4dVoiceOutputHelp" aria-live="polite"></p></div>
   </div>
 </div>
 <div id="m4dVoiceMiniBar" hidden role="region" aria-label="Ongoing voice call">
  <span aria-hidden="true">🎙️</span><div class="m4d-mini-label"><strong id="m4dMiniTitle">Voice call</strong><small id="m4dMiniStatus">Connecting…</small></div>
  <button type="button" id="m4dMiniRestore" title="Reopen call">↗ Open</button>
- <button type="button" id="m4dMiniMute" title="Toggle microphone" disabled>🎤 Mute</button>
+ <button type="button" id="m4dMiniMute" title="Toggle microphone" disabled>🎤 Mute</button><button type="button" id="m4dMiniSpeaker" title="Choose speaker" disabled>🔊 Speaker</button>
  <button type="button" id="m4dMiniLeave" title="Leave voice call">☎️ Leave</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
@@ -1812,10 +1813,11 @@ updateComposer();
  const db=window.supabaseClient, title=document.getElementById('m4dChatTitle'),contacts=document.getElementById('m4dChatContacts');
  const overlay=document.getElementById('m4dVoiceOverlay'),status=document.getElementById('m4dVoiceStatus'),callTitle=document.getElementById('m4dVoiceTitle');
  const miniBar=document.getElementById('m4dVoiceMiniBar'),miniTitle=document.getElementById('m4dMiniTitle'),miniStatus=document.getElementById('m4dMiniStatus'),miniMute=document.getElementById('m4dMiniMute'),miniRestore=document.getElementById('m4dMiniRestore'),miniLeave=document.getElementById('m4dMiniLeave'),minimize=document.getElementById('m4dVoiceMinimize');
+ const speaker=document.getElementById('m4dVoiceSpeaker'),miniSpeaker=document.getElementById('m4dMiniSpeaker'),outputPanel=document.getElementById('m4dVoiceOutputPanel'),outputSelect=document.getElementById('m4dVoiceOutputSelect'),outputHelp=document.getElementById('m4dVoiceOutputHelp');
  const mute=document.getElementById('m4dVoiceMute'),deafen=document.getElementById('m4dVoiceDeafen'),hangup=document.getElementById('m4dVoiceHangup'),audioHost=document.getElementById('m4dVoiceAudio'),people=document.getElementById('m4dVoiceParticipants');
  if(!db||!title||!contacts)return;
  const button=document.createElement('button');button.type='button';button.id='m4dVoiceCallButton';button.textContent='📞 Voice call';button.title='Join a private voice room with the selected friend';button.disabled=true;title.insertAdjacentElement('afterend',button);
- let room=null,muted=false,deafened=false,connecting=false;
+ let room=null,muted=false,deafened=false,connecting=false;let selectedSinkId="default";
  const setStatus=s=>{status.textContent=s;miniStatus.textContent=s.startsWith('Connected')?'● Connected':s};
  const showCall=()=>{miniBar.hidden=true;overlay.classList.remove('m4d-voice-minimized');overlay.hidden=false};
  const minimizeCall=()=>{if(!room&&!connecting)return;miniTitle.textContent=callTitle.textContent;overlay.classList.add('m4d-voice-minimized');miniBar.hidden=false};
@@ -1824,7 +1826,30 @@ updateComposer();
  const observer=new MutationObserver(refresh);observer.observe(contacts,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
  function count(){if(room)people.textContent=(room.remoteParticipants.size+1)+' participant(s) connected';else people.textContent=''}
  function cleanAudio(){audioHost.replaceChildren()}
- async function leave(){const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}cleanAudio();overlay.hidden=true;overlay.classList.remove('m4d-voice-minimized');miniBar.hidden=true;mute.disabled=deafen.disabled=miniMute.disabled=true;muted=deafened=false;mute.textContent=miniMute.textContent='🎤 Mute';refresh()}
+ async function setAudioOutput(id){
+   const audioEls=Array.from(audioHost.querySelectorAll('audio'));
+   if(!audioEls.length){selectedSinkId=id;return}
+   if(!audioEls.every(el=>typeof el.setSinkId==='function'))throw Error('This browser cannot change speakers from a website.');
+   await Promise.all(audioEls.map(el=>el.setSinkId(id)));
+   selectedSinkId=id;
+ }
+ async function showOutput(){
+   outputPanel.hidden=false;outputSelect.replaceChildren();
+   const supported=typeof HTMLMediaElement!=='undefined'&&'setSinkId' in HTMLMediaElement.prototype;
+   if(!supported){outputSelect.hidden=true;outputHelp.textContent='On iPhone, open Control Center, tap the audio output (AirPlay) icon, then choose iPhone or your preferred speaker. Some phones require switching audio in system or Bluetooth settings. The website cannot override the phone’s audio route.';return}
+   outputSelect.hidden=false;
+   outputHelp.textContent='Select an available speaker or headset. Some browsers require audio-device permission before listing outputs.';
+   let outputs=[];
+   try{outputs=(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind==='audiooutput')}catch(e){outputHelp.textContent='Could not list audio outputs: '+e.message}
+   if(!outputs.some(d=>d.deviceId==='default'))outputs.unshift({deviceId:'default',label:'System default speaker'});
+   for(const [i,d] of outputs.entries()){const option=document.createElement('option');option.value=d.deviceId;option.textContent=d.label||('Audio output '+(i+1));outputSelect.append(option)}
+   outputSelect.value=outputs.some(d=>d.deviceId===selectedSinkId)?selectedSinkId:'default';
+ }
+ speaker.addEventListener('click',()=>{if(outputPanel.hidden)showOutput();else outputPanel.hidden=true});
+ miniSpeaker.addEventListener('click',()=>{showCall();showOutput()});
+ outputSelect.addEventListener('change',async()=>{try{await setAudioOutput(outputSelect.value);outputHelp.textContent='Audio output changed.'}catch(e){outputHelp.textContent=e.message;outputSelect.value=selectedSinkId}});
+
+ async function leave(){const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}cleanAudio();overlay.hidden=true;overlay.classList.remove('m4d-voice-minimized');miniBar.hidden=true;mute.disabled=deafen.disabled=miniMute.disabled=true;speaker.disabled=miniSpeaker.disabled=true;outputPanel.hidden=true;muted=deafened=false;mute.textContent=miniMute.textContent='🎤 Mute';refresh()}
  button.addEventListener('click',async()=>{
    const friend=activeFriend();const id=friend?.dataset.m4dFriendId;
    if(!id||connecting||room)return;
@@ -1836,18 +1861,18 @@ updateComposer();
     const result=await response.json();if(!response.ok)throw Error(result.error||'Could not start call');
     if(!connecting)return;
     const r=new window.LivekitClient.Room({adaptiveStream:true});room=r;
-    r.on(window.LivekitClient.RoomEvent.TrackSubscribed,(track)=>{if(track.kind==='audio'){const el=track.attach();audioHost.append(el);el.muted=deafened}});
+    r.on(window.LivekitClient.RoomEvent.TrackSubscribed,(track)=>{if(track.kind==='audio'){const el=track.attach();audioHost.append(el);el.muted=deafened;if(selectedSinkId!=='default'&&typeof el.setSinkId==='function')el.setSinkId(selectedSinkId).catch(()=>{})}});
     r.on(window.LivekitClient.RoomEvent.TrackUnsubscribed,(track)=>{track.detach().forEach(el=>el.remove())});
     r.on(window.LivekitClient.RoomEvent.ParticipantConnected,count);r.on(window.LivekitClient.RoomEvent.ParticipantDisconnected,count);
     r.on(window.LivekitClient.RoomEvent.Disconnected,()=>{if(room===r)leave()});
     setStatus('Connecting to voice room…');await r.connect(result.url,result.token);
     await r.localParticipant.setMicrophoneEnabled(true);
     if(room!==r)return;
-    connecting=false;mute.disabled=deafen.disabled=miniMute.disabled=false;count();setStatus('Connected. Your friend can join by opening your chat and pressing Voice call.');refresh();
+    connecting=false;mute.disabled=deafen.disabled=miniMute.disabled=speaker.disabled=miniSpeaker.disabled=false;count();setStatus('Connected. Your friend can join by opening your chat and pressing Voice call.');refresh();
    }catch(e){setStatus(e.message||'Voice connection failed');const old=room;room=null;connecting=false;try{old?.disconnect()}catch{}refresh()}
  });
  mute.addEventListener('click',async()=>{if(!room)return;try{await room.localParticipant.setMicrophoneEnabled(muted);muted=!muted;mute.textContent=miniMute.textContent=muted?'🔇 Unmute':'🎤 Mute'}catch(e){setStatus(e.message)}});
- deafen.addEventListener('click',()=>{deafened=!deafened;audioHost.querySelectorAll('audio').forEach(a=>a.muted=deafened);deafen.textContent=deafened?'🔇 Undeafen':'🔊 Deafen'});
+ deafen.addEventListener('click',()=>{deafened=!deafened;audioHost.querySelectorAll('audio').forEach(a=>a.muted=deafened);deafen.textContent=deafened?'🔊 Undeafen':'🔇 Deafen'});
  minimize.addEventListener('click',minimizeCall);miniRestore.addEventListener('click',showCall);miniMute.addEventListener('click',()=>mute.click());miniLeave.addEventListener('click',leave);
  hangup.addEventListener('click',leave);window.addEventListener('beforeunload',()=>room?.disconnect());db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT')leave()});
  refresh();
