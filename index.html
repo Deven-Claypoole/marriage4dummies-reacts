@@ -468,59 +468,52 @@ $('weeklyTitle').textContent=pick.title;
 $('weeklyDescription').textContent='Featured '+pick.cat+' collection from the Marriage4Dummies-Reacts library.';
 $('weeklyLink').href='https://www.youtube.com/playlist?list='+encodeURIComponent(pick.id);
 const weeklyFrame=document.createElement('iframe');weeklyFrame.title='Featured '+pick.title;weeklyFrame.loading='lazy';weeklyFrame.allowFullscreen=true;weeklyFrame.allow='accelerometer; autoplay; encrypted-media; picture-in-picture; web-share';weeklyFrame.src='https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(pick.id);$('weeklyPlayer').appendChild(weeklyFrame);
-function renderSchedule(){const box=$('scheduleEvents');box.replaceChildren();const future=upcomingStreams.filter(e=>new Date(e.date)>new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date));if(!future.length){const note=document.createElement('p');note.className='upgrade-notice';note.textContent='No confirmed upcoming stream dates have been added yet. Check the channel for announcements.';box.appendChild(note);return;}future.forEach(e=>{const card=document.createElement('div');card.className='upgrade-event';const strong=document.createElement('strong');strong.textContent=e.title;const date=document.createElement('small');date.textContent=new Date(e.date).toLocaleString(undefined,{dateStyle:'full',timeStyle:'short'});card.append(strong,date);if(e.url){const a=document.createElement('a');a.href=e.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=' · Watch ↗';card.append(a)}box.append(card)})}renderSchedule();
+function renderSchedule(){const box=$('scheduleEvents');if(!box)return;box.replaceChildren();const future=upcomingStreams.filter(e=>new Date(e.date)>new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date));if(!future.length){const note=document.createElement('p');note.className='upgrade-notice';note.textContent='No confirmed upcoming stream dates have been added yet. Check the channel for announcements.';box.appendChild(note);return;}future.forEach(e=>{const card=document.createElement('div');card.className='upgrade-event';const strong=document.createElement('strong');strong.textContent=e.title;const date=document.createElement('small');date.textContent=new Date(e.date).toLocaleString(undefined,{dateStyle:'full',timeStyle:'short'});card.append(strong,date);if(e.url){const a=document.createElement('a');a.href=e.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=' · Watch ↗';card.append(a)}box.append(card)})}renderSchedule();
 function renderAdvanced(){const q=$('videoQuery').value.toLowerCase().trim();const results=$('videoResults');results.replaceChildren();const all=[...playlists.map(p=>({title:p.title,category:p.cat,url:'https://www.youtube.com/playlist?list='+p.id,type:'Playlist'})),...videoIndex.map(v=>({...v,type:'Video'}))];const matches=all.filter(v=>[v.title,v.artist||'',v.category||'',v.type].join(' ').toLowerCase().includes(q));matches.forEach(v=>{const a=document.createElement('a');a.className='upgrade-result';a.href=v.url;a.target='_blank';a.rel='noopener noreferrer';const label=document.createElement('strong');label.textContent=v.title;const small=document.createElement('small');small.textContent=v.type+' · '+(v.category||v.artist||'Reaction');a.append(label,small);results.appendChild(a)});$('videoSearchNote').textContent=matches.length+' result'+(matches.length===1?'':'s')+' · Currently indexes 10 playlists'+(videoIndex.length?' and '+videoIndex.length+' individual videos':' (individual video titles not yet supplied)');if(!matches.length){const p=document.createElement('p');p.className='upgrade-notice';p.textContent='No matches found. Try an artist or genre.';results.appendChild(p)}}
 $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 })();
 
-<script>
-
-<!-- M4D Hybrid Livestream Indicator -->
-<script>
+</script>
+<!-- M4D live indicator: one automatic check with secure manual fallback -->
+<script id="m4d-hybrid-livestream-checker">
 (() => {
   'use strict';
-
   const endpoint = '/.netlify/functions/live-status';
+  const intervalMs = 60000;
   let busy = false;
 
-  const isHttps = value =>
-    typeof value === 'string' &&
-    /^https:\/\//i.test(value);
+  function validHttps(url) {
+    if (typeof url !== 'string') return false;
+    try { return new URL(url).protocol === 'https:'; }
+    catch (_) { return false; }
+  }
 
-  function display(live, title, url, thumbnail, fallback) {
+  function render(live, title, watchUrl, thumbnailUrl, manual) {
     const box = document.getElementById('m4d-live');
     if (!box) return;
-
     box.replaceChildren();
-
     const heading = document.createElement('h2');
     heading.textContent = live ? '🔴 LIVE NOW' : 'Currently Offline';
-
     const description = document.createElement('p');
-    description.textContent =
-      title || (live
-        ? 'Markis & Christian are live!'
-        : 'Markis & Christian are not live right now.');
-
+    description.textContent = live
+      ? (title || 'Markis & Christian are live!')
+      : 'Markis & Christian are not live right now.';
     box.append(heading, description);
-
-    if (fallback) {
+    if (manual) {
       const note = document.createElement('small');
-      note.textContent = 'Status provided by M4D admins';
+      note.textContent = 'Status updated by M4D admins (automatic check unavailable)';
       box.appendChild(note);
     }
-
-    if (live && isHttps(thumbnail)) {
+    if (live && validHttps(thumbnailUrl)) {
       const image = document.createElement('img');
-      image.src = thumbnail;
+      image.src = thumbnailUrl;
       image.alt = 'Livestream thumbnail';
       image.loading = 'lazy';
       box.appendChild(image);
     }
-
-    if (live && isHttps(url)) {
+    if (live && validHttps(watchUrl)) {
       const link = document.createElement('a');
-      link.href = url;
+      link.href = watchUrl;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.className = 'btn';
@@ -529,103 +522,66 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
     }
   }
 
-  function unavailable(message) {
+  function showUnavailable() {
     const box = document.getElementById('m4d-live');
     if (!box) return;
     box.replaceChildren();
-
-    const heading = document.createElement('h2');
-    heading.textContent = 'Livestream status unavailable';
-
-    const note = document.createElement('p');
-    note.textContent = message;
-
-    box.append(heading, note);
+    const title = document.createElement('h2');
+    title.textContent = 'Livestream status unavailable';
+    const detail = document.createElement('p');
+    detail.textContent = 'Automatic check unavailable. Please check back shortly.';
+    box.append(title, detail);
   }
 
-  async function manualFallback() {
-    const db = window.supabaseClient;
-
-    if (!db) {
-      unavailable('Livestream connection unavailable.');
-      return;
-    }
-
+  async function useManualFallback() {
     try {
-      const {data, error} = await db
-        .from('m4d_live_settings')
-        .select('*')
-        .eq('id', 1)
-        .single();
-
+      const db = window.supabaseClient;
+      if (!db) throw new Error('Supabase client missing');
+      const {data, error} = await db.from('m4d_live_settings')
+        .select('manual_enabled,manual_live,stream_title,stream_url,thumbnail_url')
+        .eq('id', 1).single();
       if (error) throw error;
-
-      if (data && data.manual_enabled) {
-        display(
-          data.manual_live,
-          data.stream_title,
-          data.stream_url,
-          data.thumbnail_url,
-          true
-        );
-      } else {
-        unavailable('Automatic status unavailable. Please check back later.');
-      }
-    } catch (error) {
-      console.error('Manual livestream fallback:', error);
-      unavailable('Unable to load livestream status.');
+      if (!data || !data.manual_enabled) { showUnavailable(); return; }
+      render(Boolean(data.manual_live), data.stream_title,
+             data.stream_url, data.thumbnail_url, true);
+    } catch (err) {
+      console.warn('M4D livestream manual fallback unavailable:', err);
+      showUnavailable();
     }
   }
 
-  async function checkStatus() {
+  async function checkLivestream() {
     if (busy) return;
     busy = true;
-
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       let response;
-
       try {
-        response = await fetch(endpoint, {
-          signal: controller.signal,
-          cache: 'default'
-        });
+        response = await fetch(endpoint, {signal: controller.signal});
       } finally {
-        clearTimeout(timeout);
+        clearTimeout(timeoutId);
       }
-
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-
-      const data = await response.json();
-
-      if (typeof data.live !== 'boolean') {
-        throw new Error('Invalid automatic livestream status');
-      }
-
-      display(
-        data.live,
-        data.title,
-        data.url,
-        data.thumbnail,
-        false
-      );
-    } catch (error) {
-      console.warn('Automatic status failed; using fallback:', error);
-      await manualFallback();
+      if (!response.ok) throw new Error('Livestream HTTP ' + response.status);
+      const status = await response.json();
+      if (typeof status.live !== 'boolean') throw new Error('Invalid livestream result');
+      render(status.live, status.title, status.url, status.thumbnail, false);
+    } catch (err) {
+      console.warn('M4D automatic livestream status unavailable:', err);
+      await useManualFallback();
     } finally {
       busy = false;
     }
   }
 
   function start() {
-    checkStatus();
-    setInterval(checkStatus, 60000);
+    // The Supabase client is initialized later in the document, before DOMContentLoaded.
+    checkLivestream();
+    setInterval(checkLivestream, intervalMs);
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) checkStatus();
+      if (!document.hidden) checkLivestream();
     });
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, {once: true});
   } else {
@@ -633,110 +589,6 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
   }
 })();
 </script>
-
-</script>
-
-</style>
-
-<script>
-
-<script>
-
-<!-- M4D LIVE INDICATOR - SINGLE HYBRID CHECKER -->
-<script>
-(function () {
-  const endpoint = '/.netlify/functions/live-status';
-
-  function show(live, title, url, manual) {
-    const box = document.getElementById('m4d-live');
-    if (!box) return;
-    box.replaceChildren();
-
-    const heading = document.createElement('h2');
-    heading.textContent = live ? '🔴 LIVE NOW' : 'Currently Offline';
-
-    const description = document.createElement('p');
-    description.textContent = title ||
-      (live ? 'Markis & Christian are live!' :
-       'Markis & Christian are not live right now.');
-
-    box.append(heading, description);
-
-    if (manual) {
-      const note = document.createElement('small');
-      note.textContent = 'Status set by M4D admins';
-      box.appendChild(note);
-    }
-
-    if (live && typeof url === 'string' &&
-        /^https:\/\//i.test(url)) {
-      const link = document.createElement('a');
-      link.href = url;
-      link.textContent = '▶ WATCH LIVE';
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.className = 'btn';
-      box.appendChild(link);
-    }
-  }
-
-  async function check() {
-    try {
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-
-      const data = await response.json();
-      if (typeof data.live !== 'boolean') {
-        throw new Error('Invalid status');
-      }
-
-      show(data.live, data.title, data.url, false);
-    } catch (error) {
-      console.warn('Using manual live fallback:', error);
-
-      try {
-        const db = window.supabaseClient;
-        if (!db) throw new Error('Supabase unavailable');
-
-        const { data, error: dbError } = await db
-          .from('m4d_live_settings')
-          .select('*')
-          .eq('id', 1)
-          .single();
-
-        if (dbError) throw dbError;
-
-        if (data?.manual_enabled) {
-          show(data.manual_live, data.stream_title,
-               data.stream_url, true);
-        } else {
-          throw new Error('Manual fallback disabled');
-        }
-      } catch (fallbackError) {
-        console.error('Live fallback failed:', fallbackError);
-        const box = document.getElementById('m4d-live');
-        if (box) box.textContent =
-          'Livestream status unavailable — retrying automatically.';
-      }
-    }
-  }
-
-  function start() {
-    check();
-    setInterval(check, 60000);
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) check();
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, {once:true});
-  } else {
-    start();
-  }
-})();
-</script>
-<!-- END M4D LIVE INDICATOR -->
 
 <script>
 (function () {
