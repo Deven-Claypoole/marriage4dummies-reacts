@@ -2108,5 +2108,117 @@ updateComposer();
   db.auth.onAuthStateChange((_ev,session)=>{setTimeout(()=>verify(session?.user),0)});
 })();
 </script>
+<!-- M4D Notification Center: uses current Supabase friends + unread RPCs -->
+<style>
+#m4dNotificationShell{position:fixed;right:18px;top:82px;z-index:99998;font-family:inherit}
+#m4dNotificationBell{display:none;position:relative;width:48px;height:48px;border:1px solid #79515b;background:#231b24;color:#fff;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 7px 24px #0009}
+#m4dNotificationBell:hover{background:#41232e}
+#m4dNotificationCount{position:absolute;right:-5px;top:-6px;background:#e50914;border-radius:99px;min-width:21px;padding:2px 5px;color:white;font-size:11px;font-weight:800}
+#m4dNotificationPanel{display:none;position:absolute;right:0;top:57px;width:min(390px,calc(100vw - 28px));max-height:min(570px,calc(100dvh - 150px));overflow:auto;border:1px solid #6a4451;background:#15151e;border-radius:16px;box-shadow:0 18px 60px #000c;color:#fff}
+#m4dNotificationPanel.open{display:block}
+.m4d-notif-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:15px;border-bottom:1px solid #34313a}
+.m4d-notif-head strong{font-size:17px}.m4d-notif-head button{border:1px solid #564952;border-radius:9px;padding:7px 9px;background:#27222b;color:#fff;cursor:pointer;font:inherit;font-size:12px}
+#m4dNotificationList{padding:8px}.m4d-notif-item{display:block;width:100%;text-align:left;background:#22202a;border:1px solid #3e3742;color:#fff;border-radius:11px;margin:7px 0;padding:12px;cursor:pointer;font:inherit}
+.m4d-notif-item:hover{border-color:#ec5d71;background:#29222d}.m4d-notif-item strong{font-size:13px;display:block}.m4d-notif-item span{color:#c3bec9;font-size:12px;line-height:1.45;display:block;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
+.m4d-notif-item.unseen{border-left:4px solid #ff3d5b}.m4d-notif-empty{padding:18px;color:#bdb6c3;font-size:13px}
+#m4dAnnouncementAdmin{display:none;margin:18px 0;padding:18px;border:1px solid #684253;border-radius:14px;background:#201b25}
+#m4dAnnouncementAdmin h3{margin:0 0 12px;color:#fff}#m4dAnnouncementAdmin label{display:block;margin:9px 0 4px;color:#ddd;font-size:13px}
+#m4dAnnouncementAdmin input,#m4dAnnouncementAdmin textarea{width:100%;padding:11px;border-radius:9px;border:1px solid #655767;color:white;background:#101016;font:inherit}
+#m4dAnnouncementAdmin button{padding:10px 16px;margin-top:12px;background:#e50914;border:0;color:#fff;border-radius:9px;cursor:pointer;font-weight:700}
+#m4dAnnouncementStatus{font-size:12px;color:#ddd;margin-top:10px}
+@media(max-width:640px){#m4dNotificationShell{top:65px;right:12px}#m4dNotificationBell{width:44px;height:44px}}
+</style>
+<div id="m4dNotificationShell">
+  <button id="m4dNotificationBell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="m4dNotificationPanel">🔔<span id="m4dNotificationCount" hidden></span></button>
+  <div id="m4dNotificationPanel" role="region" aria-label="Notification center">
+    <div class="m4d-notif-head"><strong>Notifications</strong><button id="m4dMarkAnnouncementsRead" type="button">Mark announcements read</button></div>
+    <div id="m4dNotificationList" aria-live="polite"><p class="m4d-notif-empty">Loading notifications…</p></div>
+  </div>
+</div>
+<script>
+(function(){
+ 'use strict';
+ const db=window.supabaseClient;
+ if(!db)return;
+ const bell=document.getElementById('m4dNotificationBell');
+ const count=document.getElementById('m4dNotificationCount');
+ const panel=document.getElementById('m4dNotificationPanel');
+ const list=document.getElementById('m4dNotificationList');
+ const markAll=document.getElementById('m4dMarkAnnouncementsRead');
+ const adminRoot=document.getElementById('m4dModeration');
+ let userId=null, revision=0, busy=false, messages=[], requests=[], announcements=[], readIds=new Set(), announcementsReady=true;
+ const admin=document.createElement('div');
+ admin.id='m4dAnnouncementAdmin';
+ admin.innerHTML='<h3>📣 Post a community announcement</h3><form id="m4dAnnouncementForm"><label for="m4dAnnouncementTitle">Title</label><input id="m4dAnnouncementTitle" minlength="3" maxlength="100" required placeholder="Next livestream is coming!"/><label for="m4dAnnouncementBody">Message</label><textarea id="m4dAnnouncementBody" minlength="3" maxlength="1500" rows="4" required placeholder="Write your announcement…"></textarea><button type="submit">Publish announcement</button></form><p id="m4dAnnouncementStatus" role="status"></p>';
+ adminRoot?.querySelector('.wrap')?.prepend(admin);
+ function info(message){const p=document.createElement('p');p.className='m4d-notif-empty';p.textContent=message;list.appendChild(p)}
+ function setOpen(isOpen){panel.classList.toggle('open',isOpen);bell.setAttribute('aria-expanded',String(isOpen));if(isOpen)refresh()}
+ bell.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
+ document.addEventListener('click',e=>{if(!document.getElementById('m4dNotificationShell').contains(e.target))setOpen(false)});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
+ function go(hash){setOpen(false);location.hash=hash;document.getElementById(hash.slice(1))?.scrollIntoView({behavior:'smooth'})}
+ function render(){
+  const unreadAnnouncements=announcements.filter(a=>!readIds.has(a.id));
+  const total=requests.length+messages.reduce((n,m)=>n+m.unread,0)+unreadAnnouncements.length;
+  count.hidden=total===0;count.textContent=total>99?'99+':String(total);
+  bell.setAttribute('aria-label',total?total+' unread notifications':'Notifications');
+  list.replaceChildren();
+  for(const r of requests){
+   const b=document.createElement('button');b.type='button';b.className='m4d-notif-item unseen';
+   const t=document.createElement('strong');t.textContent='👥 New friend request';
+   const s=document.createElement('span');s.textContent=(r.other_username||'Someone')+' wants to be friends. Tap to respond.';
+   b.append(t,s);b.onclick=()=>go('#m4dFriends');list.appendChild(b);
+  }
+  for(const m of messages){
+   const b=document.createElement('button');b.type='button';b.className='m4d-notif-item unseen';
+   const t=document.createElement('strong');t.textContent='💬 '+m.unread+' unread message'+(m.unread===1?'':'s');
+   const s=document.createElement('span');s.textContent='From '+(m.name||'a friend')+' · Open your private chat to read';
+   b.append(t,s);b.onclick=()=>{setOpen(false);let chat=document.getElementById('m4dChatContacts');let contact=chat?.querySelector('[data-m4d-friend-id="'+m.friendId+'"]');if(contact){const bubble=document.getElementById('m4dFloatingChatButton');const messagesSection=document.getElementById('m4dMessages');if(bubble&&!messagesSection?.classList.contains('m4d-floating-open'))bubble.click();contact.click();}else go('#m4dFriends')};list.appendChild(b);
+  }
+  for(const a of announcements){
+   const b=document.createElement('button');b.type='button';b.className='m4d-notif-item'+(readIds.has(a.id)?'':' unseen');
+   const t=document.createElement('strong');t.textContent='📣 '+a.title;
+   const s=document.createElement('span');s.textContent=a.body;
+   b.append(t,s);b.onclick=async()=>{if(!readIds.has(a.id)){const {error}=await db.from('m4d_announcement_reads').upsert({user_id:userId,announcement_id:a.id},{onConflict:'user_id,announcement_id',ignoreDuplicates:true});if(!error){readIds.add(a.id);render()}}};list.appendChild(b);
+  }
+  if(!list.children.length)info(announcementsReady?'You’re all caught up!':'Could not load announcements. Check the Supabase notification setup.');
+ }
+ async function refresh(){
+  if(!userId||busy||document.visibilityState==='hidden')return;
+  busy=true;const rev=revision;
+  try{
+   const results=await Promise.allSettled([
+    db.rpc('get_m4d_friendships'), db.rpc('m4d_unread_counts'),
+    db.from('m4d_announcements').select('id,title,body,created_at').order('created_at',{ascending:false}).limit(40),
+    db.from('m4d_announcement_reads').select('announcement_id').eq('user_id',userId)
+   ]);
+   if(rev!==revision)return;
+   const got=i=>results[i].status==='fulfilled'&&!results[i].value.error?results[i].value.data:null;
+   const f=got(0),u=got(1),a=got(2),r=got(3);
+   if(f)requests=f.filter(x=>x.request_status==='pending'&&x.is_incoming);
+   if(u){const friends=new Map((f||[]).map(x=>[x.other_user_id,x.other_username]));messages=u.filter(x=>Number(x.unread_count)>0).map(x=>({friendId:x.friend_id,name:friends.get(x.friend_id),unread:Number(x.unread_count)||0}));}
+   announcementsReady=a!==null&&r!==null;
+   if(a)announcements=a;
+   if(r)readIds=new Set(r.map(x=>x.announcement_id));
+   render();
+  }catch(e){console.warn('M4D notifications:',e)}finally{busy=false}
+ }
+ async function verifyAdmin(rev){admin.style.display='none';if(!userId)return;const {data,error}=await db.rpc('m4d_is_admin');if(rev===revision&&!error&&data===true)admin.style.display='block'}
+ async function setUser(user){const next=user?.id||null;if(userId===next)return;userId=next;revision++;messages=[];requests=[];announcements=[];readIds=new Set();bell.style.display=userId?'block':'none';setOpen(false);render();if(userId){void refresh();void verifyAdmin(revision)}}
+ const form=admin.querySelector('form');
+ form?.addEventListener('submit',async e=>{
+  e.preventDefault();const status=document.getElementById('m4dAnnouncementStatus');
+  const title=document.getElementById('m4dAnnouncementTitle').value.trim(),body=document.getElementById('m4dAnnouncementBody').value.trim();
+  if(title.length<3||title.length>100||body.length<3||body.length>1500){status.textContent='Enter a title (3–100 characters) and message (3–1500 characters).';return}
+  const button=form.querySelector('button');button.disabled=true;status.textContent='Publishing…';
+  try{const {error}=await db.from('m4d_announcements').insert({title,body});if(error)throw error;status.textContent='Announcement published!';form.reset();await refresh()}
+  catch(err){status.textContent='Unable to publish: '+err.message}finally{button.disabled=false}
+ });
+ markAll.addEventListener('click',async()=>{if(!userId)return;const unread=announcements.filter(a=>!readIds.has(a.id));if(!unread.length)return;markAll.disabled=true;const {error}=await db.from('m4d_announcement_reads').upsert(unread.map(a=>({user_id:userId,announcement_id:a.id})),{onConflict:'user_id,announcement_id',ignoreDuplicates:true});markAll.disabled=false;if(!error){unread.forEach(a=>readIds.add(a.id));render()}else console.warn('Unable to mark announcements read:',error.message)});
+ db.auth.getUser().then(({data})=>setUser(data?.user)).catch(console.warn);
+ db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>setUser(session?.user),0));
+ setInterval(refresh,15000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+})();
+</script>
 </body>
 </html>
