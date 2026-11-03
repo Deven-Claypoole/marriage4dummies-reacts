@@ -1305,6 +1305,33 @@ form.addEventListener('submit',async e=>{
 #m4dMilestoneAdminStatus{margin-top:12px!important}
 @media(max-width:800px){#m4dMilestoneAdminForm{grid-template-columns:1fr}}
 </style>
+
+<style id="m4d-community-feed-css">
+#m4dFeed{background:linear-gradient(145deg,#111219,#17131b);border-block:1px solid #38303d;scroll-margin-top:100px}
+.m4d-feed-shell{max-width:970px;margin:0 auto}.m4d-feed-head{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.m4d-feed-kicker{letter-spacing:2px;text-transform:uppercase;font-weight:850;color:#ff8595;font-size:11px}.m4d-feed-head h2{margin:7px 0}.m4d-feed-head p{color:#b7b4c0;margin:0;font-size:14px}
+.m4d-feed-card{background:#1a1b23;border:1px solid #3b3742;border-radius:16px;padding:22px;margin:16px 0;box-shadow:0 12px 35px #0003}
+#m4dFeedComposer{display:none}#m4dFeedComposer textarea,#m4dFeed .m4d-feed-comment-input{display:block;width:100%;resize:vertical;min-height:90px;background:#101117;color:white;border:1px solid #55505d;border-radius:11px;padding:13px;line-height:1.55;font:inherit}
+#m4dFeed .m4d-feed-comment-input{min-height:52px}.m4d-feed-meta{display:flex;align-items:center;gap:12px;min-width:0;margin-bottom:13px}.m4d-feed-avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#74323f;color:white;font-weight:850;flex:none}
+.m4d-feed-author{font-size:14px;font-weight:850;overflow-wrap:anywhere}.m4d-feed-date{font-size:11px;color:#bcb7c2}.m4d-feed-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:#f2eef2;margin:12px 0 17px}
+.m4d-feed-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.m4d-feed-actions button,#m4dFeed button.m4d-feed-secondary{background:#292632;border:1px solid #56505d;color:white;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:750}.m4d-feed-actions button[aria-pressed="true"]{background:#65303c;border-color:#eb6375}
+.m4d-feed-actions button:hover,#m4dFeed button.m4d-feed-secondary:hover{border-color:#ed6679}.m4d-feed-right{margin-left:auto}.m4d-feed-primary{border:0;background:#e50921;color:#fff;padding:11px 17px;border-radius:9px;font-weight:850;cursor:pointer}.m4d-feed-primary:disabled{opacity:.6;cursor:wait}
+.m4d-feed-compose-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}.m4d-feed-muted{font-size:12px;color:#bdb7c4}.m4d-feed-comments{border-top:1px solid #41404a;margin-top:15px;padding-top:12px}.m4d-feed-comment{border-bottom:1px solid #393743;padding:12px 0}.m4d-feed-comment p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;color:#e8e6eb;font-size:13px;line-height:1.5}
+.m4d-feed-comment-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.m4d-feed-comment-top strong{font-size:12px}.m4d-feed-comment-top small{color:#bbb4c0}.m4d-feed-comment-top button{margin-left:auto;color:#ff9da8;background:transparent;border:1px solid #6f3b49;border-radius:7px;padding:4px 8px;font-size:11px}
+.m4d-feed-comment-form{display:flex;gap:9px;align-items:flex-end;margin-top:12px;flex-wrap:wrap}.m4d-feed-comment-form textarea{flex:1;min-width:180px}.m4d-feed-status{color:#e8c6ce;font-size:13px;min-height:24px;margin-top:12px}.m4d-feed-center{text-align:center}.m4d-feed-empty{color:#bdb6c2;font-size:14px;padding:26px 0;text-align:center}
+@media(max-width:600px){.m4d-feed-card{padding:16px}.m4d-feed-head{align-items:flex-start}.m4d-feed-actions button{padding:9px}#m4dFeed{scroll-margin-top:140px}}
+</style>
+
+<section id="m4dFeed" aria-label="M4D Community Feed">
+<div class="wrap"><div class="m4d-feed-shell">
+ <div class="m4d-feed-head"><div><span class="m4d-feed-kicker">THE COMMUNITY</span><h2>Community Feed</h2><p>Share updates, talk music, and connect with fellow M4D fans.</p></div><button id="m4dFeedRefresh" class="m4d-feed-secondary" type="button">↻ Refresh feed</button></div>
+ <div class="m4d-feed-card" id="m4dFeedComposer"><form id="m4dFeedPostForm"><label for="m4dFeedPostText"><strong>Share something with the community</strong></label><textarea id="m4dFeedPostText" maxlength="1500" placeholder="What's on your mind?" required></textarea><div class="m4d-feed-compose-footer"><span class="m4d-feed-muted"><span id="m4dFeedPostLength">0</span>/1500 characters</span><button class="m4d-feed-primary" id="m4dFeedPublish" type="submit">Post to feed</button></div></form></div>
+ <div class="m4d-feed-card m4d-feed-center" id="m4dFeedSignIn">Sign in to view the community feed, post, react, and comment. <button class="m4d-feed-secondary" id="m4dFeedLogin" type="button">Sign in</button></div>
+ <p id="m4dFeedStatus" class="m4d-feed-status" role="status" aria-live="polite"></p>
+ <div id="m4dFeedPosts" aria-live="polite"></div>
+ <div class="m4d-feed-center"><button type="button" id="m4dFeedMore" class="m4d-feed-secondary" hidden>Load more posts</button></div>
+</div></div>
+</section>
 <section aria-label="Admin Moderation Dashboard" id="m4dModeration">
 <div class="wrap">
 <div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Admin Center</h2><p class="lead">Everything you need to manage the M4D community, in one organized place.</p></div></div>
@@ -2271,6 +2298,103 @@ updateComposer();
  db.auth.getUser().then(({data})=>setUser(data?.user)).catch(console.warn);
  db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>setUser(session?.user),0));
  setInterval(refresh,15000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+})();
+</script>
+
+<script id="m4d-community-feed-script">
+(function(){
+ 'use strict';
+ const db=window.supabaseClient, root=document.getElementById('m4dFeed');
+ if(!root||!db)return;
+ const $=id=>document.getElementById(id);
+ const feed=$('m4dFeedPosts'),status=$('m4dFeedStatus'),composer=$('m4dFeedComposer'),signin=$('m4dFeedSignIn'),more=$('m4dFeedMore');
+ let user=null,isAdmin=false,posts=[],offset=0,busy=false,revision=0;
+ const pageSize=15;
+ const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const date=x=>{try{return new Date(x).toLocaleString()}catch{return ''}};
+ const err=e=>e?.message||String(e);
+ function notice(msg){status.textContent=msg||'';}
+ function action(label,handler,cls){const b=node('button',cls||'',label);b.type='button';b.addEventListener('click',handler);return b;}
+ const name=x=>x?.author_name||'M4D Member';
+ function buildMeta(x){const meta=node('div','m4d-feed-meta');const avatar=node('div','m4d-feed-avatar',(name(x)[0]||'M').toUpperCase());const info=node('div');info.append(node('div','m4d-feed-author',name(x)),node('div','m4d-feed-date',date(x.created_at)));meta.append(avatar,info);return meta;}
+ async function setIdentity(u){revision++;user=u||null;isAdmin=false;posts=[];offset=0;feed.replaceChildren();more.hidden=true;composer.style.display=user?'block':'none';signin.hidden=!!user;notice('');if(!user)return;
+  const rev=revision;
+  const {data,error}=await db.rpc('m4d_is_admin');if(rev!==revision)return;
+  if(!error)isAdmin=data===true;
+  await load(true);
+ }
+ async function load(reset){if(!user||busy)return;busy=true;const rev=revision;
+  if(reset){offset=0;posts=[];feed.replaceChildren();}notice('Loading community posts…');
+  try{
+   const {data,error}=await db.from('m4d_feed_posts').select('id,user_id,author_name,body,created_at').order('created_at',{ascending:false}).range(offset,offset+pageSize-1);if(error)throw error;
+   if(rev!==revision)return;
+   const batch=data||[];const ids=batch.map(x=>x.id);
+   let reactions=[];
+   if(ids.length){const r=await db.from('m4d_feed_reactions').select('post_id,user_id,reaction').in('post_id',ids);if(r.error)throw r.error;reactions=r.data||[];}
+   if(rev!==revision)return;
+   for(const post of batch){post.reactions=reactions.filter(r=>r.post_id===post.id);posts.push(post);renderPost(post);}
+   offset+=batch.length;more.hidden=batch.length<pageSize;
+   if(!posts.length)feed.append(node('div','m4d-feed-empty','Be the first to start a conversation!'));
+   notice('');
+  }catch(e){if(rev===revision)notice('Could not load feed: '+err(e));}
+  finally{busy=false;}
+ }
+ function renderPost(post){
+  const article=node('article','m4d-feed-card');article.dataset.postId=post.id;article.append(buildMeta(post),node('div','m4d-feed-body',post.body));
+  const actions=node('div','m4d-feed-actions');
+  for(const [symbol,value] of [['❤️','heart'],['🔥','fire'],['😂','laugh']]){
+   const count=()=>post.reactions.filter(r=>r.reaction===value).length;
+   const own=()=>post.reactions.some(r=>r.reaction===value&&r.user_id===user?.id);
+   const button=action('',async()=>{
+    button.disabled=true;try{
+     const current=post.reactions.find(r=>r.user_id===user?.id);
+     if(current?.reaction===value){const q=await db.from('m4d_feed_reactions').delete().eq('post_id',post.id).eq('user_id',user.id);if(q.error)throw q.error;}
+     else{const q=await db.from('m4d_feed_reactions').upsert({post_id:post.id,user_id:user.id,reaction:value},{onConflict:'post_id,user_id'});if(q.error)throw q.error;}
+     const q=await db.from('m4d_feed_reactions').select('post_id,user_id,reaction').eq('post_id',post.id);if(q.error)throw q.error;post.reactions=q.data||[];sync();
+    }catch(e){notice('Could not save reaction: '+err(e));}finally{button.disabled=false;}
+   });
+   function sync(){button.textContent=symbol+' '+count();button.setAttribute('aria-pressed',String(own()));}
+   sync();actions.append(button);
+   post.syncReactions=post.syncReactions||[];post.syncReactions.push(sync);
+  }
+  const comments=node('div','m4d-feed-comments');comments.hidden=true;
+  const toggle=action('💬 Comments',async()=>{comments.hidden=!comments.hidden;if(!comments.hidden&&!comments.dataset.loaded)await loadComments();});actions.append(toggle);
+  if(post.user_id===user.id||isAdmin){const remove=action('Delete post',async()=>{
+   if(!confirm('Delete this post and all its comments?'))return;
+   remove.disabled=true;const q=await db.from('m4d_feed_posts').delete().eq('id',post.id);
+   if(q.error){notice('Could not delete post: '+q.error.message);remove.disabled=false;return;}
+   article.remove();posts=posts.filter(x=>x.id!==post.id);notice('Post deleted.');
+  },'m4d-feed-right');actions.append(remove);}
+  article.append(actions,comments);feed.append(article);
+  async function loadComments(){comments.replaceChildren(node('div','m4d-feed-muted','Loading comments…'));
+   const q=await db.from('m4d_feed_comments').select('id,user_id,author_name,body,created_at').eq('post_id',post.id).order('created_at',{ascending:true}).limit(100);
+   if(q.error){comments.replaceChildren(node('p','m4d-feed-muted','Could not load comments: '+q.error.message));return;}
+   comments.replaceChildren();for(const c of q.data||[])renderComment(c);if(!(q.data||[]).length)comments.append(node('p','m4d-feed-muted','No comments yet.'));
+   const form=node('form','m4d-feed-comment-form');const input=node('textarea','m4d-feed-comment-input');input.placeholder='Write a respectful comment…';input.maxLength=700;input.required=true;input.setAttribute('aria-label','Write comment');const submit=node('button','m4d-feed-primary','Comment');submit.type='submit';form.append(input,submit);
+   form.addEventListener('submit',async e=>{e.preventDefault();const body=input.value.trim();if(!body||body.length>700)return;submit.disabled=true;
+    const q=await db.from('m4d_feed_comments').insert({post_id:post.id,user_id:user.id,body}).select('id,user_id,author_name,body,created_at').single();
+    if(q.error)notice('Could not post comment: '+q.error.message);else{comments.querySelectorAll('p.m4d-feed-muted').forEach(n=>n.remove());renderComment(q.data);input.value='';notice('');}
+    submit.disabled=false;
+   });comments.append(form);comments.dataset.loaded='true';
+  }
+  function renderComment(c){const card=node('div','m4d-feed-comment');const top=node('div','m4d-feed-comment-top');top.append(node('strong','',name(c)),node('small','',date(c.created_at)));
+   if(c.user_id===user?.id||isAdmin)top.append(action('Delete',async()=>{if(!confirm('Remove this comment?'))return;const q=await db.from('m4d_feed_comments').delete().eq('id',c.id);if(q.error)notice('Could not remove comment: '+q.error.message);else card.remove();}));
+   card.append(top,node('p','',c.body));const form=comments.querySelector('form');if(form)comments.insertBefore(card,form);else comments.append(card);
+  }
+ }
+ $('m4dFeedPostText').addEventListener('input',()=>{$('m4dFeedPostLength').textContent=String($('m4dFeedPostText').value.length)});
+ $('m4dFeedPostForm').addEventListener('submit',async e=>{e.preventDefault();if(!user)return;const text=$('m4dFeedPostText').value.trim();if(!text||text.length>1500)return;
+  const button=$('m4dFeedPublish');button.disabled=true;notice('Publishing post…');
+  const q=await db.from('m4d_feed_posts').insert({user_id:user.id,body:text});button.disabled=false;
+  if(q.error){notice('Could not publish: '+q.error.message);return;}
+  $('m4dFeedPostText').value='';$('m4dFeedPostLength').textContent='0';notice('Post published!');await load(true);
+ });
+ $('m4dFeedRefresh').addEventListener('click',()=>load(true));more.addEventListener('click',()=>load(false));
+ $('m4dFeedLogin').addEventListener('click',()=>{const b=document.querySelector('.m4d-account-button');if(b)b.click();else notice('Use the account button at the top of the page to sign in.');});
+ const nav=document.querySelector('header nav');if(nav&&!nav.querySelector('a[href="#m4dFeed"]')){const link=document.createElement('a');link.href='#m4dFeed';link.textContent='Community Feed';nav.append(link);}
+ db.auth.getUser().then(({data})=>setIdentity(data?.user)).catch(()=>notice('Could not check sign-in status.'));
+ db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>{if(user?.id!==session?.user?.id)setIdentity(session?.user)},0));
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&user&&!busy)load(true)});
 })();
 </script>
 </body>
