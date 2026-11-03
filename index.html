@@ -504,51 +504,49 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 </style>
 
 <script>
+/* M4D livestream: show valid offline responses as offline, not as failures. */
 async function checkM4DLive() {
-  const box = document.getElementById("m4d-live");
-  try {
-    const response = await fetch(
-      "/.netlify/functions/live-status"
-    );
-    if (!response.ok) throw new Error("Status unavailable");
-
-    const data = await response.json();
+  const box = document.getElementById('m4d-live');
+  if (!box) return;
+  const label = (heading, message) => {
     box.replaceChildren();
-
-    const heading = document.createElement("h2");
-    heading.textContent = data.live
-      ? "🔴 LIVE NOW"
-      : "Currently Offline";
-    box.appendChild(heading);
-
-    const message = document.createElement("p");
-    message.textContent = data.live
-      ? data.title || "Markis & Christian are live!"
-      : "Markis & Christian are not live right now.";
-    box.appendChild(message);
-
-    if (data.live && data.url) {
-      if (data.thumbnail) {
-        const img = document.createElement("img");
-        img.src = data.thumbnail;
-        img.alt = "Livestream thumbnail";
-        box.appendChild(img);
-      }
-
-      const link = document.createElement("a");
-      link.href = data.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "▶ WATCH LIVE";
-      box.appendChild(link);
+    const h = document.createElement('h2'); h.textContent = heading;
+    const p = document.createElement('p'); p.textContent = message;
+    box.append(h, p);
+  };
+  try {
+    const response = await fetch('/.netlify/functions/live-status', {cache:'no-store', headers:{Accept:'application/json'}});
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (typeof data.live !== 'boolean') throw new Error('Unexpected livestream response');
+    if (!data.live) {
+      label('Currently Offline', 'Markis & Christian are not live right now.');
+      return;
+    }
+    label('🔴 LIVE NOW', data.title || 'Markis & Christian are live!');
+    if (data.thumbnail && /^https:\/\//i.test(data.thumbnail)) {
+      const img = document.createElement('img');
+      img.src = data.thumbnail;
+      img.alt = 'Livestream thumbnail';
+      img.loading = 'lazy';
+      box.appendChild(img);
+    }
+    if (data.url && /^https:\/\//i.test(data.url)) {
+      const a = document.createElement('a');
+      a.href = data.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.textContent = '▶ WATCH LIVE';
+      box.appendChild(a);
     }
   } catch (error) {
-    box.textContent =
-      "Livestream status temporarily unavailable.";
+    console.error('M4D livestream status:', error);
+    label('Livestream status unavailable', 'Could not check YouTube right now. Please refresh to retry.');
   }
 }
-
-checkM4DLive();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkM4DLive, {once:true});
+} else {
+  checkM4DLive();
+}
 </script>
 <!-- Hide video results until someone searches -->
 <script>
