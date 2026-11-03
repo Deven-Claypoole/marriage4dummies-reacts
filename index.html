@@ -431,7 +431,7 @@ header nav#m4dOrganizedNav{flex:1 1 auto!important;min-width:0;display:flex!impo
   nav.replaceChildren(home,juice,...Object.keys(names).map(k=>menus[k].parentElement));
   const known=new Set(['#home','#m4dJuiceArchive']);
   function arrange(link){
-    if(!link||link.tagName!=='A'||link===home)return;
+    if(!link||link.tagName!=='A'||link===home||link===juice)return;
     const href=link.getAttribute('href')||'';
     if(href==='#home'){link.remove();return;}
     const key=routes[href]||'community';
