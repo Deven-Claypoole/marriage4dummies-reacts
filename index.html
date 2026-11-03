@@ -1300,6 +1300,8 @@ form.addEventListener('submit',async e=>{
 #m4dMilestoneAdminForm input:focus-visible{outline:2px solid #fb7384;outline-offset:2px}
 #m4dMilestoneAdminSave{background:#dc2644;border:0;border-radius:10px;padding:13px 18px;color:white;font-weight:800;min-height:44px}
 #m4dMilestoneAdminSave:disabled{opacity:.55;cursor:wait}
+#m4dMilestoneAdminForm .m4d-use-live-count{border:1px solid #a36373;border-radius:9px;background:#35212d;color:#fff;padding:10px;cursor:pointer;font-size:12px;font-weight:700;min-height:40px}
+#m4dMilestoneAdminForm .m4d-use-live-count:hover{background:#4f2a3a}
 #m4dMilestoneAdminStatus{margin-top:12px!important}
 @media(max-width:800px){#m4dMilestoneAdminForm{grid-template-columns:1fr}}
 </style>
@@ -1312,7 +1314,7 @@ form.addEventListener('submit',async e=>{
   <form id="m4dMilestoneAdminForm">
     <label>Goal name <input id="m4dMilestoneAdminName" type="text" maxlength="70" minlength="3" required placeholder="UNCS DREADS COME OFF" autocomplete="off"></label>
     <label>Goal subscriber count <input id="m4dMilestoneAdminTarget" type="number" min="1" max="1000000000" step="1" required placeholder="10000"></label>
-    <label>Starting subscriber count <input id="m4dMilestoneAdminStart" type="number" min="0" max="999999999" step="1" required value="0"></label>
+    <label>Starting subscriber count <input id="m4dMilestoneAdminStart" type="number" min="0" max="999999999" step="1" required value="0"><button type="button" id="m4dUseLiveSubscribers" class="m4d-use-live-count">Use current subscriber count</button></label>
     <button type="submit" id="m4dMilestoneAdminSave">Save subscriber goal</button>
   </form>
   <p id="m4dMilestoneAdminStatus" role="status" aria-live="polite">Loading milestone settings…</p>
@@ -1985,7 +1987,7 @@ updateComposer();
     milestoneBar.setAttribute('aria-valuetext',format.format(count)+' of '+format.format(next)+' subscribers');
     milestoneCurrent.textContent='Current: '+format.format(count);
     milestoneRemaining.textContent=left===0?'🎉 Goal reached!':format.format(left)+' to '+format.format(next)+' subscribers';
-    milestoneNote.textContent='Progress since '+format.format(previous)+' subscribers · based on YouTube’s rounded public count';
+    milestoneNote.textContent='Gained since goal started: +'+format.format(Math.max(0,count-previous))+' subscribers · based on YouTube’s rounded public count';
   }
   async function reloadGoal(){
     const db=window.supabaseClient;
@@ -2048,6 +2050,8 @@ updateComposer();
   const start=document.getElementById('m4dMilestoneAdminStart');
   const status=document.getElementById('m4dMilestoneAdminStatus');
   const save=document.getElementById('m4dMilestoneAdminSave');
+  const useLive=document.getElementById('m4dUseLiveSubscribers');
+  const displayedCount=document.getElementById('m4dSubscriberCount');
   let authorized=false;
   let generation=0;
   async function verify(user){
@@ -2067,6 +2071,22 @@ updateComposer();
     name.value=data.goal_name;target.value=data.target_subscribers;start.value=data.start_subscribers;
     status.textContent='Goal loaded. Changes are shared with everyone.';
   }
+  useLive?.addEventListener('click',()=>{
+    const raw=(displayedCount?.textContent||'').trim().replace(/,/g,'');
+    const current=Number(raw);
+    if(!raw || !Number.isSafeInteger(current) || current<0){
+      status.textContent='Live subscriber count is not loaded yet. Refresh the counter and try again.';
+      return;
+    }
+    start.value=String(current);
+    if(!Number.isSafeInteger(Number(target.value)) || Number(target.value)<=current){
+      const roundedGoal=Math.max(100,Math.ceil((current+1)/100)*100);
+      target.value=String(roundedGoal);
+      status.textContent='Starting count set to '+current.toLocaleString('en-US')+'. Target adjusted to '+roundedGoal.toLocaleString('en-US')+'. You can change it before saving.';
+    }else{
+      status.textContent='Starting count set to '+current.toLocaleString('en-US')+'. Save to begin counting gains from here.';
+    }
+  });
   form.addEventListener('submit',async e=>{
     e.preventDefault();if(!authorized)return;
     const goal_name=name.value.trim();
