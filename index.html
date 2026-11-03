@@ -477,38 +477,122 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 <style>
 
 <script>
-/* Marriage4Dummies livestream checker */
-(function () {
+
+<!-- M4D Hybrid Livestream Indicator -->
+<script>
+(() => {
+  'use strict';
+
   const endpoint = '/.netlify/functions/live-status';
-  let checking = false;
+  let busy = false;
 
-  async function updateLiveStatus() {
+  const isHttps = value =>
+    typeof value === 'string' &&
+    /^https:\/\//i.test(value);
+
+  function display(live, title, url, thumbnail, fallback) {
     const box = document.getElementById('m4d-live');
-    if (!box || checking) return;
+    if (!box) return;
 
-    checking = true;
+    box.replaceChildren();
 
-    function showStatus(title, description) {
-      box.replaceChildren();
+    const heading = document.createElement('h2');
+    heading.textContent = live ? '🔴 LIVE NOW' : 'Currently Offline';
 
-      const heading = document.createElement('h2');
-      heading.textContent = title;
+    const description = document.createElement('p');
+    description.textContent =
+      title || (live
+        ? 'Markis & Christian are live!'
+        : 'Markis & Christian are not live right now.');
 
-      const paragraph = document.createElement('p');
-      paragraph.textContent = description;
+    box.append(heading, description);
 
-      box.append(heading, paragraph);
+    if (fallback) {
+      const note = document.createElement('small');
+      note.textContent = 'Status provided by M4D admins';
+      box.appendChild(note);
     }
+
+    if (live && isHttps(thumbnail)) {
+      const image = document.createElement('img');
+      image.src = thumbnail;
+      image.alt = 'Livestream thumbnail';
+      image.loading = 'lazy';
+      box.appendChild(image);
+    }
+
+    if (live && isHttps(url)) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'btn';
+      link.textContent = '▶ WATCH LIVE';
+      box.appendChild(link);
+    }
+  }
+
+  function unavailable(message) {
+    const box = document.getElementById('m4d-live');
+    if (!box) return;
+    box.replaceChildren();
+
+    const heading = document.createElement('h2');
+    heading.textContent = 'Livestream status unavailable';
+
+    const note = document.createElement('p');
+    note.textContent = message;
+
+    box.append(heading, note);
+  }
+
+  async function manualFallback() {
+    const db = window.supabaseClient;
+
+    if (!db) {
+      unavailable('Livestream connection unavailable.');
+      return;
+    }
+
+    try {
+      const {data, error} = await db
+        .from('m4d_live_settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+      if (error) throw error;
+
+      if (data && data.manual_enabled) {
+        display(
+          data.manual_live,
+          data.stream_title,
+          data.stream_url,
+          data.thumbnail_url,
+          true
+        );
+      } else {
+        unavailable('Automatic status unavailable. Please check back later.');
+      }
+    } catch (error) {
+      console.error('Manual livestream fallback:', error);
+      unavailable('Unable to load livestream status.');
+    }
+  }
+
+  async function checkStatus() {
+    if (busy) return;
+    busy = true;
 
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
-
       let response;
+
       try {
         response = await fetch(endpoint, {
-          cache: 'no-store',
-          signal: controller.signal
+          signal: controller.signal,
+          cache: 'default'
         });
       } finally {
         clearTimeout(timeout);
@@ -517,51 +601,42 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
       if (!response.ok) throw new Error('HTTP ' + response.status);
 
       const data = await response.json();
+
       if (typeof data.live !== 'boolean') {
-        throw new Error('Invalid status response');
+        throw new Error('Invalid automatic livestream status');
       }
 
-      if (data.live) {
-        showStatus('🔴 LIVE NOW', data.title || 'Markis & Christian are live!');
-
-        if (typeof data.url === 'string' &&
-            /^https:\/\//i.test(data.url)) {
-          const link = document.createElement('a');
-          link.href = data.url;
-          link.textContent = '▶ WATCH LIVE';
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          box.appendChild(link);
-        }
-      } else {
-        showStatus('Currently Offline',
-          'Markis & Christian are not live right now.');
-      }
-
+      display(
+        data.live,
+        data.title,
+        data.url,
+        data.thumbnail,
+        false
+      );
     } catch (error) {
-      console.error('Livestream checker:', error);
-      showStatus('Status Unavailable',
-        'Unable to check livestream. Retrying automatically.');
+      console.warn('Automatic status failed; using fallback:', error);
+      await manualFallback();
     } finally {
-      checking = false;
+      busy = false;
     }
   }
 
-  function startChecker() {
-    updateLiveStatus();
-    setInterval(updateLiveStatus, 60000);
-
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) updateLiveStatus();
+  function start() {
+    checkStatus();
+    setInterval(checkStatus, 60000);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) checkStatus();
     });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startChecker, {once:true});
+    document.addEventListener('DOMContentLoaded', start, {once: true});
   } else {
-    startChecker();
+    start();
   }
 })();
+</script>
+
 </script>
 
 </style>
