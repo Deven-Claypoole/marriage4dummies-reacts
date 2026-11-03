@@ -1936,5 +1936,143 @@ updateComposer();
   setInterval(()=>refresh(),120000);
 })();
 </script>
+  
+<!-- M4D Subscriber Milestone Tracker -->
+<style>
+#m4dMilestone {
+  margin-top: 18px;
+  padding: 22px;
+  border: 1px solid #8e4054;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #351a2a, #181923);
+  color: white;
+  max-width: 650px;
+}
+#m4dMilestone h3 {
+  margin: 8px 0 14px;
+  font-size: clamp(20px, 3vw, 30px);
+  color: #fff;
+}
+#m4dMilestone .milestone-label {
+  color: #ff9eb2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+#m4dMilestoneBar {
+  height: 16px;
+  background: #41333f;
+  border-radius: 20px;
+  overflow: hidden;
+}
+#m4dMilestoneFill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #e50914, #ff6689);
+  border-radius: 20px;
+  transition: width 1s ease;
+}
+#m4dMilestoneDetails {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: #f3d7df;
+  font-size: 13px;
+  margin-top: 12px;
+}
+</style>
+
+<script>
+(() => {
+  const subscriberPanel =
+    document.querySelector('.m4d-subscriber-panel');
+
+  const countElement =
+    document.getElementById('m4dSubscriberCount');
+
+  if (!subscriberPanel || !countElement) return;
+
+  const tracker = document.createElement('div');
+  tracker.id = 'm4dMilestone';
+
+  tracker.innerHTML = `
+    <div class="milestone-label">
+      NEXT SUBSCRIBER GOAL
+    </div>
+    <h3>UNCS DREADS COME OFF</h3>
+    <div id="m4dMilestoneTarget">Loading goal...</div>
+    <div id="m4dMilestoneBar"
+         role="progressbar"
+         aria-label="Subscriber milestone progress"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         aria-valuenow="0">
+      <div id="m4dMilestoneFill"></div>
+    </div>
+    <div id="m4dMilestoneDetails">
+      <span id="m4dMilestoneCurrent">Loading...</span>
+      <span id="m4dMilestoneRemaining"></span>
+    </div>
+  `;
+
+  subscriberPanel.insertAdjacentElement(
+    'afterend', tracker
+  );
+
+  const format = n => n.toLocaleString('en-US');
+
+  function updateMilestone() {
+    const raw = countElement.textContent
+      .replace(/,/g, '').trim();
+
+    const subscribers = Number(raw);
+
+    if (!raw || !Number.isFinite(subscribers)
+        || subscribers < 0) return;
+
+    let step = 100;
+    if (subscribers >= 1000) step = 1000;
+    if (subscribers >= 10000) step = 5000;
+    if (subscribers >= 100000) step = 10000;
+
+    const target =
+      (Math.floor(subscribers / step) + 1) * step;
+
+    const start = target - step;
+    const remaining = target - subscribers;
+
+    const progress = Math.max(0, Math.min(100,
+      ((subscribers - start) / step) * 100
+    ));
+
+    document.getElementById('m4dMilestoneTarget')
+      .textContent = `Goal: ${format(target)} subscribers`;
+
+    document.getElementById('m4dMilestoneCurrent')
+      .textContent = `${format(subscribers)} subscribers`;
+
+    document.getElementById('m4dMilestoneRemaining')
+      .textContent = `${format(remaining)} to go`;
+
+    document.getElementById('m4dMilestoneFill')
+      .style.width = progress + '%';
+
+    document.getElementById('m4dMilestoneBar')
+      .setAttribute('aria-valuenow', progress.toFixed(1));
+  }
+
+  new MutationObserver(updateMilestone).observe(
+    countElement, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    }
+  );
+
+  updateMilestone();
+})();
+</script>
+
 </body>
 </html>
