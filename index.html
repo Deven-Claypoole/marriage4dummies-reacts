@@ -1307,24 +1307,77 @@ form.addEventListener('submit',async e=>{
 </style>
 <section aria-label="Admin Moderation Dashboard" id="m4dModeration">
 <div class="wrap">
-<div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Moderation Center</h2><p class="lead">Review community reports and track their status. Original report details remain unchanged.</p></div><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div>
+<div class="mod-top"><div><div class="eyebrow">M4D ADMINISTRATION · RESTRICTED ACCESS</div><h2>Admin Center</h2><p class="lead">Everything you need to manage the M4D community, in one organized place.</p></div></div>
 
-<div id="m4dMilestoneAdminPanel" style="display:none" class="m4d-milestone-admin">
-  <div class="m4d-milestone-admin-top"><div><h3>🎯 Subscriber milestone settings</h3><p>Only authorized M4D admins can edit the shared goal. Changes appear for visitors automatically.</p></div></div>
-  <form id="m4dMilestoneAdminForm">
-    <label>Goal name <input id="m4dMilestoneAdminName" type="text" maxlength="70" minlength="3" required placeholder="UNCS DREADS COME OFF" autocomplete="off"></label>
-    <label>Goal subscriber count <input id="m4dMilestoneAdminTarget" type="number" min="1" max="1000000000" step="1" required placeholder="10000"></label>
-    <label>Starting subscriber count <input id="m4dMilestoneAdminStart" type="number" min="0" max="999999999" step="1" required value="0"><button type="button" id="m4dUseLiveSubscribers" class="m4d-use-live-count">Use current subscriber count</button></label>
-    <button type="submit" id="m4dMilestoneAdminSave">Save subscriber goal</button>
-  </form>
-  <p id="m4dMilestoneAdminStatus" role="status" aria-live="polite">Loading milestone settings…</p>
+
+
+
+
+<div aria-label="Admin tools" class="m4d-admin-tabs" id="m4dAdminTabs" role="tablist">
+<button aria-controls="m4dAdminPaneAnnouncements" aria-selected="true" data-pane="announcements" id="m4dAdminTabAnnouncements" role="tab" tabindex="0" type="button">📣 Announcements</button>
+<button aria-controls="m4dAdminPaneModeration" aria-selected="false" data-pane="moderation" id="m4dAdminTabModeration" role="tab" tabindex="-1" type="button">🛡️ Moderation</button>
+<button aria-controls="m4dAdminPaneMilestones" aria-selected="false" data-pane="milestones" id="m4dAdminTabMilestones" role="tab" tabindex="-1" type="button">🎯 Milestones</button>
 </div>
-<div aria-label="Report statistics" class="mod-stats" id="m4dModStats"></div>
-<div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div>
-<p aria-live="polite" class="mod-status" id="m4dModStatus" role="status"></p>
-<div class="mod-list" id="m4dModList"></div>
-</div>
+<div aria-labelledby="m4dAdminTabAnnouncements" class="m4d-admin-pane" id="m4dAdminPaneAnnouncements" role="tabpanel" tabindex="0"><p class="m4d-admin-pane-note">Create and send updates to the community. Your announcement creator is here.</p><div id="m4dAnnouncementSlot"></div></div>
+<div aria-labelledby="m4dAdminTabModeration" class="m4d-admin-pane" hidden="" id="m4dAdminPaneModeration" role="tabpanel" tabindex="0"><div class="m4d-admin-pane-top"><h3>Member Reports</h3><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div><div aria-label="Report statistics" class="mod-stats" id="m4dModStats"></div><div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div><p aria-live="polite" class="mod-status" id="m4dModStatus" role="status"></p><div class="mod-list" id="m4dModList"></div></div>
+<div aria-labelledby="m4dAdminTabMilestones" class="m4d-admin-pane" hidden="" id="m4dAdminPaneMilestones" role="tabpanel" tabindex="0"><p class="m4d-admin-pane-note">Manage the public subscriber milestone and starting count.</p><div class="m4d-milestone-admin" id="m4dMilestoneAdminPanel" style="display:none">
+<div class="m4d-milestone-admin-top"><div><h3>🎯 Subscriber milestone settings</h3><p>Only authorized M4D admins can edit the shared goal. Changes appear for visitors automatically.</p></div></div>
+<form id="m4dMilestoneAdminForm">
+<label>Goal name <input autocomplete="off" id="m4dMilestoneAdminName" maxlength="70" minlength="3" placeholder="UNCS DREADS COME OFF" required="" type="text"/></label>
+<label>Goal subscriber count <input id="m4dMilestoneAdminTarget" max="1000000000" min="1" placeholder="10000" required="" step="1" type="number"/></label>
+<label>Starting subscriber count <input id="m4dMilestoneAdminStart" max="999999999" min="0" required="" step="1" type="number" value="0"/><button class="m4d-use-live-count" id="m4dUseLiveSubscribers" type="button">Use current subscriber count</button></label>
+<button id="m4dMilestoneAdminSave" type="submit">Save subscriber goal</button>
+</form>
+<p aria-live="polite" id="m4dMilestoneAdminStatus" role="status">Loading milestone settings…</p>
+</div></div></div>
 </section>
+
+<style id="m4d-admin-center-styles">
+#m4dModeration{padding:58px 0 72px}
+#m4dModeration .mod-top{margin-bottom:21px}
+#m4dModeration .mod-top h2{font-size:clamp(30px,4vw,46px)}
+#m4dModeration .m4d-admin-tabs{display:flex;gap:9px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #44424a;padding:0 0 14px;margin-bottom:22px}
+#m4dModeration .m4d-admin-tabs button{background:#21222b;border:1px solid #42434c;color:#dfdfe5;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:800}
+#m4dModeration .m4d-admin-tabs button[aria-selected="true"]{background:#d91b30;border-color:#ff5d70;color:white;box-shadow:0 4px 17px #ec21322b}
+#m4dModeration .m4d-admin-tabs button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#m4dModeration .m4d-admin-pane{min-height:180px;border:1px solid #373841;border-radius:15px;background:linear-gradient(155deg,#1c1c25,#12131a);padding:22px;box-shadow:0 12px 34px #0003}
+#m4dModeration .m4d-admin-pane[hidden]{display:none!important}
+#m4dModeration .m4d-admin-pane-note{color:#c3c2ca;font-size:13px;margin:0 0 15px;line-height:1.6}
+#m4dModeration .m4d-admin-pane-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px}
+#m4dModeration .m4d-admin-pane-top h3{margin:0;font-size:21px}
+#m4dModeration #m4dAnnouncementAdmin{margin:0;max-width:900px}
+#m4dModeration #m4dMilestoneAdminPanel{margin:0}
+@media(max-width:600px){#m4dModeration .m4d-admin-tabs{display:grid;grid-template-columns:1fr 1fr}#m4dModeration .m4d-admin-tabs button{padding:11px 8px;font-size:12px}#m4dModeration .m4d-admin-pane{padding:14px}}
+</style>
+<script id="m4d-admin-center-tabs">
+(()=>{
+'use strict';
+const section=document.getElementById('m4dModeration');
+const tablist=document.getElementById('m4dAdminTabs');
+if(!section||!tablist)return;
+const names=['announcements','moderation','milestones'];
+function select(name,focus){
+ if(!names.includes(name))name='announcements';
+ for(const n of names){
+  const tab=tablist.querySelector('[data-pane="'+n+'"]');
+  const pane=document.getElementById('m4dAdminPane'+n[0].toUpperCase()+n.slice(1));
+  const active=n===name;
+  if(tab){tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;if(active&&focus)tab.focus()}
+  if(pane)pane.hidden=!active;
+ }
+}
+tablist.addEventListener('click',event=>{const tab=event.target.closest('[data-pane]');if(tab&&tablist.contains(tab))select(tab.dataset.pane,false)});
+tablist.addEventListener('keydown',event=>{
+ if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+ const active=tablist.querySelector('[aria-selected="true"]');
+ const index=Math.max(0,names.indexOf(active?.dataset.pane));
+ const next=event.key==='Home'?0:event.key==='End'?names.length-1:(index+(event.key==='ArrowRight'?1:-1)+names.length)%names.length;
+ event.preventDefault();select(names[next],true);
+});
+select('announcements',false);
+})();
+</script>
+
 <script>
 (function(){
  'use strict';
@@ -1340,7 +1393,7 @@ form.addEventListener('submit',async e=>{
  const label={open:'Open',pending:'Pending',under_review:'Under Review',resolved:'Resolved',dismissed:'Dismissed'};
  let reports=[],admin=false,generation=0;
  const nav=document.querySelector('header nav');
- const link=document.createElement('a');link.href='#m4dModeration';link.textContent='Admin Dashboard';link.hidden=true;
+ const link=document.createElement('a');link.href='#m4dModeration';link.textContent='Admin Center';link.hidden=true;
  if(nav)nav.appendChild(link);
  const el=(tag,cls,value)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=value;return n};
  const short=id=>id?String(id).slice(0,8)+'…':'Unknown';
@@ -2150,7 +2203,7 @@ updateComposer();
  const admin=document.createElement('div');
  admin.id='m4dAnnouncementAdmin';
  admin.innerHTML='<h3>📣 Post a community announcement</h3><form id="m4dAnnouncementForm"><label for="m4dAnnouncementTitle">Title</label><input id="m4dAnnouncementTitle" minlength="3" maxlength="100" required placeholder="Next livestream is coming!"/><label for="m4dAnnouncementBody">Message</label><textarea id="m4dAnnouncementBody" minlength="3" maxlength="1500" rows="4" required placeholder="Write your announcement…"></textarea><button type="submit">Publish announcement</button></form><p id="m4dAnnouncementStatus" role="status"></p>';
- adminRoot?.querySelector('.wrap')?.prepend(admin);
+ document.getElementById('m4dAnnouncementSlot')?.appendChild(admin);
  function info(message){const p=document.createElement('p');p.className='m4d-notif-empty';p.textContent=message;list.appendChild(p)}
  function setOpen(isOpen){panel.classList.toggle('open',isOpen);bell.setAttribute('aria-expanded',String(isOpen));if(isOpen)refresh()}
  bell.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
