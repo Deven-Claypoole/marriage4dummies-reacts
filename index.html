@@ -1573,6 +1573,104 @@ form.addEventListener('submit',async e=>{
 @media(max-width:600px){.m4d-feed-card{padding:16px}.m4d-feed-head{align-items:flex-start}.m4d-feed-actions button{padding:9px}#m4dFeed{scroll-margin-top:140px}}
 </style>
 
+<!-- M4D Daily Scripture: locally curated public-domain KJV verses; no API or database needed. -->
+<style id="m4d-daily-verse-style">
+#m4dDailyVerse{background:radial-gradient(ellipse at 85% 10%,rgba(154,89,51,.18),transparent 52%),linear-gradient(135deg,#171921,#11151b);padding:56px 0;border-block:1px solid #3b3540;scroll-margin-top:135px}
+#m4dDailyVerse .wrap{max-width:1200px}
+.m4d-scripture-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.45fr);gap:24px;align-items:stretch}
+.m4d-scripture-card{position:relative;overflow:hidden;background:linear-gradient(125deg,#24202b,#1a202c);border:1px solid #795366;border-radius:18px;padding:clamp(24px,4vw,41px);box-shadow:0 15px 36px #0003}
+.m4d-scripture-card:before{content:'✝';position:absolute;right:25px;top:-35px;font-size:185px;color:#ffffff09;pointer-events:none}
+.m4d-scripture-eyebrow{display:inline-flex;gap:8px;align-items:center;color:#ffc4ae;font-size:11px;font-weight:850;letter-spacing:2px;text-transform:uppercase}
+.m4d-scripture-card h2{color:#fff;font-size:clamp(29px,3.7vw,43px)!important;margin:13px 0 20px!important}
+.m4d-scripture-card blockquote{border:0;padding:0;margin:0 0 19px;max-width:790px;color:#f7f1ee;font-family:Georgia,'Times New Roman',serif;font-size:clamp(21px,2.6vw,30px);line-height:1.56;font-weight:400;position:relative}
+.m4d-scripture-reference{display:block;font-weight:850;color:#ffad97;font-size:16px;margin-bottom:18px}
+.m4d-scripture-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.m4d-scripture-copy{background:#d83b51;color:#fff;border:1px solid #ef7282;border-radius:9px;padding:11px 16px;min-height:41px;font-size:13px;font-weight:850;cursor:pointer}
+.m4d-scripture-copy:hover{filter:brightness(1.12)}
+.m4d-scripture-date{font-size:12px;color:#beb5bd}
+.m4d-scripture-aside{border-radius:18px;border:1px solid #41414f;background:#1d202a;padding:28px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.m4d-scripture-aside-icon{font-size:38px}.m4d-scripture-aside h3{margin:0;font-size:21px;color:#fff}.m4d-scripture-aside p{font-size:13px;color:#c0c3d0;line-height:1.75;margin:0}
+.m4d-scripture-aside small{font-size:11px;color:#adb0bd}
+@media(max-width:740px){.m4d-scripture-grid{grid-template-columns:1fr}.m4d-scripture-aside{padding:20px}.m4d-scripture-card{padding:23px}}
+</style>
+<section id="m4dDailyVerse" aria-labelledby="m4dDailyVerseTitle">
+ <div class="wrap"><div class="m4d-scripture-grid">
+  <div class="m4d-scripture-card">
+   <span class="m4d-scripture-eyebrow">✝ FAITH &amp; FELLOWSHIP</span>
+   <h2 id="m4dDailyVerseTitle">Daily Bible Verse</h2>
+   <blockquote id="m4dDailyVerseText">“Trust in the LORD with all thine heart; and lean not unto thine own understanding.”</blockquote>
+   <strong class="m4d-scripture-reference" id="m4dDailyVerseReference">Proverbs 3:5 · KJV</strong>
+   <div class="m4d-scripture-actions"><button class="m4d-scripture-copy" id="m4dDailyVerseCopy" type="button">Copy Verse</button><span class="m4d-scripture-date" id="m4dDailyVerseDate" aria-live="polite">New verse every day (UTC)</span></div>
+  </div>
+  <aside class="m4d-scripture-aside"><span class="m4d-scripture-aside-icon" aria-hidden="true">🕊️</span><h3>A Moment in the Word</h3><p>Take a moment to reflect, pray, and carry today's Scripture with you. Share the verse with someone who needs encouragement.</p><small>King James Version (KJV) · A new selection at midnight UTC · No sign-in required</small></aside>
+ </div></div>
+</section>
+<script id="m4d-daily-verse-script">
+(function(){
+  'use strict';
+  // Public-domain King James Version verses; every visitor sees the same UTC-day selection.
+  const verses=[
+    ['Proverbs 3:5','Trust in the LORD with all thine heart; and lean not unto thine own understanding.'],
+    ['Philippians 4:13','I can do all things through Christ which strengtheneth me.'],
+    ['Psalm 46:1','God is our refuge and strength, a very present help in trouble.'],
+    ['1 Thessalonians 5:17','Pray without ceasing.'],
+    ['Psalm 119:105','Thy word is a lamp unto my feet, and a light unto my path.'],
+    ['John 14:6','Jesus saith unto him, I am the way, the truth, and the life: no man cometh unto the Father, but by me.'],
+    ['Psalm 23:1','The LORD is my shepherd; I shall not want.'],
+    ['Romans 12:12','Rejoicing in hope; patient in tribulation; continuing instant in prayer;'],
+    ['Proverbs 17:17','A friend loveth at all times, and a brother is born for adversity.'],
+    ['Matthew 5:14','Ye are the light of the world. A city that is set on an hill cannot be hid.'],
+    ['Psalm 34:8','O taste and see that the LORD is good: blessed is the man that trusteth in him.'],
+    ['Isaiah 40:31','But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.'],
+    ['John 11:35','Jesus wept.'],
+    ['Matthew 6:33','But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you.'],
+    ['1 John 4:19','We love him, because he first loved us.'],
+    ['Psalm 56:3','What time I am afraid, I will trust in thee.'],
+    ['Galatians 6:9','And let us not be weary in well doing: for in due season we shall reap, if we faint not.'],
+    ['Psalm 118:24','This is the day which the LORD hath made; we will rejoice and be glad in it.'],
+    ['Ephesians 4:32','And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ\'s sake hath forgiven you.'],
+    ['Colossians 3:2','Set your affection on things above, not on things on the earth.'],
+    ['James 1:19','Wherefore, my beloved brethren, let every man be swift to hear, slow to speak, slow to wrath:']
+  ];
+  const text=document.getElementById('m4dDailyVerseText');
+  const ref=document.getElementById('m4dDailyVerseReference');
+  const date=document.getElementById('m4dDailyVerseDate');
+  const copy=document.getElementById('m4dDailyVerseCopy');
+  if(!text||!ref||!date||!copy)return;
+  let currentDay=null;
+  function render(){
+    const now=new Date();
+    const day=Math.floor(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())/86400000);
+    if(day===currentDay)return;
+    currentDay=day;
+    const selected=verses[((day%verses.length)+verses.length)%verses.length];
+    text.textContent='“'+selected[1]+'”';
+    ref.textContent=selected[0]+' · KJV';
+    date.textContent=now.toLocaleDateString('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · UTC';
+    copy.textContent='Copy Verse';
+  }
+  copy.addEventListener('click',async()=>{
+    const content=text.textContent+' — '+ref.textContent;
+    try{
+      if(!navigator.clipboard||!window.isSecureContext)throw Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(content);
+      copy.textContent='✓ Copied!';
+    }catch{copy.textContent='Select the verse to copy';}
+    setTimeout(()=>copy.textContent='Copy Verse',2200);
+  });
+  const nav=document.getElementById('m4dOrganizedNav');
+  if(nav){
+    const menu=nav.querySelector('[data-group="community"] .m4d-nav-menu');
+    if(menu&&!menu.querySelector('a[href="#m4dDailyVerse"]')){
+      const link=document.createElement('a');link.href='#m4dDailyVerse';link.textContent='✝ Daily Bible Verse';menu.appendChild(link);
+    }
+  }
+  render();
+  setInterval(render,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+})();
+</script>
+
 <section id="m4dLiveQueue" aria-labelledby="m4dLiveQueueHeading">
   <div class="wrap">
     <div class="m4d-song-heading">
@@ -2738,7 +2836,7 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
 <script id="m4d-focused-home-script">
 (function(){
  'use strict';
- const essentialIds=['home','latest','featured','m4dHomeQuickAccess','m4dLiveQueue'];
+ const essentialIds=['home','latest','featured','m4dHomeQuickAccess','m4dDailyVerse','m4dLiveQueue'];
  const essentials=essentialIds.map(id=>document.getElementById(id)).filter(Boolean);
  const secondary=Array.from(document.querySelectorAll('section')).filter(el=>!essentialIds.includes(el.id));
  essentials.forEach(el=>el.classList.add('m4d-home-essential'));
@@ -3386,6 +3484,118 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
   observer.observe(overlay,{attributes:true,attributeFilter:['class']});
   db.auth.onAuthStateChange(()=>{setTimeout(()=>{if(visible())refresh();},0);});
   if(visible())refresh();
+})();
+</script>
+
+<style id="m4d-levelup-celebration-style">
+.m4d-levelup-backdrop{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,5,11,.82);backdrop-filter:blur(7px)}
+.m4d-levelup-backdrop.is-open{display:flex}
+.m4d-levelup-dialog{isolation:isolate;position:relative;overflow:hidden;width:min(460px,100%);padding:36px 24px 27px;text-align:center;color:#fff;background:radial-gradient(circle at top,#53283d,#211e2d 52%,#131622);border:1px solid #f08091;border-radius:24px;box-shadow:0 24px 90px #000b,0 0 45px #ee385033;animation:m4d-levelup-pop .55s cubic-bezier(.2,1.2,.4,1) both}
+.m4d-levelup-dialog h2{margin:10px 0;font-size:clamp(27px,6vw,40px);line-height:1.12;color:white}.m4d-levelup-kicker{color:#ffc4cb;font-size:12px;letter-spacing:2px;font-weight:900}.m4d-levelup-emoji{font-size:68px;line-height:1.2;filter:drop-shadow(0 6px 19px #ef536888);animation:m4d-levelup-bounce .85s ease .2s both}.m4d-levelup-name{font-size:22px;font-weight:850;color:#ffc3cb}.m4d-levelup-copy{color:#d8ced8;font-size:14px;margin:14px 0 22px}.m4d-levelup-btn{border:0;border-radius:11px;background:#e92943;color:white;font-weight:850;padding:13px 24px;min-height:45px;cursor:pointer}.m4d-levelup-btn:focus-visible{outline:3px solid white;outline-offset:3px}.m4d-levelup-particle{position:absolute;top:-20px;width:10px;height:18px;z-index:-1;opacity:0;pointer-events:none;animation:m4d-levelup-fall 2.5s ease-in infinite;left:var(--x);background:var(--c);animation-delay:var(--d);transform:rotate(var(--a))}
+@keyframes m4d-levelup-pop{from{opacity:0;transform:translateY(20px) scale(.86)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes m4d-levelup-bounce{0%{transform:scale(.5) rotate(-12deg)}65%{transform:scale(1.18) rotate(9deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes m4d-levelup-fall{0%{top:-10%;opacity:0;transform:translateX(0) rotate(0)}15%{opacity:1}85%{opacity:1}100%{top:110%;opacity:0;transform:translateX(35px) rotate(450deg)}}
+@media(prefers-reduced-motion:reduce){.m4d-levelup-dialog,.m4d-levelup-emoji,.m4d-levelup-particle{animation:none!important}.m4d-levelup-particle{display:none}}
+</style>
+
+<div id="m4dLevelupOverlay" class="m4d-levelup-backdrop" role="presentation" aria-hidden="true">
+  <div class="m4d-levelup-dialog" role="dialog" aria-modal="true" aria-labelledby="m4dLevelupTitle" aria-describedby="m4dLevelupMessage">
+    <div class="m4d-levelup-kicker">🏆 M4D REWARDS UNLOCKED</div>
+    <div id="m4dLevelupEmoji" class="m4d-levelup-emoji" aria-hidden="true">🏆</div>
+    <h2 id="m4dLevelupTitle">LEVEL UP!</h2>
+    <div id="m4dLevelupName" class="m4d-levelup-name"></div>
+    <p id="m4dLevelupMessage" class="m4d-levelup-copy"></p>
+    <button id="m4dLevelupClose" type="button" class="m4d-levelup-btn">Awesome! 🎉</button>
+  </div>
+</div>
+
+<script id="m4d-levelup-celebrations-script">
+(function(){
+ 'use strict';
+ const db=window.supabaseClient;
+ const overlay=document.getElementById('m4dLevelupOverlay');
+ if(!db||!overlay)return;
+ const ranks=[
+   {name:'Fresh Dummy',xp:0,icon:'⭐'},
+   {name:'Certified Dummy',xp:500,icon:'🔥'},
+   {name:'Unc Status',xp:1500,icon:'🎤'},
+   {name:'M4D Veteran',xp:3500,icon:'⚡'},
+   {name:'M4D Hall of Fame',xp:7500,icon:'🏆'}
+ ];
+ const $=id=>document.getElementById(id);
+ const levelFor=xp=>ranks.reduce((level,r,i)=>xp>=r.xp?i:level,0);
+ let activeUser=null,checking=false,previousFocus=null,hasShown=false;
+ const remembered=new Map();
+ function close(){
+   overlay.classList.remove('is-open');
+   overlay.setAttribute('aria-hidden','true');
+   overlay.querySelectorAll('.m4d-levelup-particle').forEach(n=>n.remove());
+   if(previousFocus&&document.contains(previousFocus))previousFocus.focus();
+ }
+ function celebrate(level,xp){
+   if(hasShown)return;
+   hasShown=true;
+   const rank=ranks[level];
+   $('m4dLevelupEmoji').textContent=rank.icon;
+   $('m4dLevelupName').textContent='Level '+(level+1)+' · '+rank.name;
+   $('m4dLevelupMessage').textContent='Congratulations! You now have '+xp.toLocaleString()+' XP. Keep being part of the M4D community!';
+   previousFocus=document.activeElement;
+   const dialog=overlay.querySelector('.m4d-levelup-dialog');
+   for(let i=0;i<24;i++){
+     const confetti=document.createElement('span');
+     confetti.className='m4d-levelup-particle';
+     confetti.style.setProperty('--x',((i*37)%100)+'%');
+     confetti.style.setProperty('--d',((i*13)%18/10)+'s');
+     confetti.style.setProperty('--c',['#ff6b83','#ffd271','#7dd9f4','#fff','#ce9df8'][i%5]);
+     confetti.style.setProperty('--a',(i*31)+'deg');
+     dialog.appendChild(confetti);
+   }
+   overlay.setAttribute('aria-hidden','false');
+   overlay.classList.add('is-open');
+   $('m4dLevelupClose').focus();
+ }
+ function storedLevel(key){
+   try{const raw=localStorage.getItem(key);return raw===null?null:Number(raw)}catch{return remembered.has(key)?remembered.get(key):null}
+ }
+ function setLevel(key,value){
+   remembered.set(key,value);
+   try{localStorage.setItem(key,String(value))}catch{}
+ }
+ async function check(){
+   if(checking||document.hidden)return;
+   checking=true;
+   try{
+     const {data:auth,error:authError}=await db.auth.getUser();
+     const user=auth?.user;
+     if(authError||!user){activeUser=null;return}
+     const {data,error}=await db.rpc('m4d_my_xp');
+     if(error)return;
+     const xp=Math.max(0,Number(data)||0);
+     if(!Number.isFinite(xp))return;
+     const level=levelFor(xp);
+     // Per-account and per-browser baseline. The first visit does not replay old level-ups.
+     const key='m4d-levelup-seen-v1:'+user.id;
+     const old=storedLevel(key);
+     activeUser=user.id;
+     if(old===null||!Number.isInteger(old)||old<0||old>=ranks.length){setLevel(key,level);return}
+     if(level>old){setLevel(key,level);celebrate(level,xp)}
+     else if(level<old){setLevel(key,level)}
+   }catch(err){console.warn('M4D level check:',err)}
+   finally{checking=false}
+ }
+ $('m4dLevelupClose').addEventListener('click',close);
+ overlay.addEventListener('click',event=>{if(event.target===overlay)close()});
+ document.addEventListener('keydown',event=>{
+   if(!overlay.classList.contains('is-open'))return;
+   if(event.key==='Escape'){event.preventDefault();close()}
+   if(event.key==='Tab'){event.preventDefault();$('m4dLevelupClose').focus()}
+ });
+ // Check after authentication, when coming back to the tab and while on the site.
+ db.auth.onAuthStateChange(()=>setTimeout(()=>{hasShown=false;check()},0));
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+ window.addEventListener('focus',check);
+ setInterval(check,20000);
+ check();
 })();
 </script>
 </body>
