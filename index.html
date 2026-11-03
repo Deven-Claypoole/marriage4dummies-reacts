@@ -4780,5 +4780,111 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
 })();
 </script>
 
+
+<style id="m4d-mobile-dropdown-portal-fix">
+[id="m4dMobileDropdownBackdrop"][hidden],[id="m4dMobileDropdownPortal"][hidden]{display:none!important}
+@media(max-width:850px){
+  /* Keep the swipe navigation but render its expanded menu outside the clipped rail. */
+  header nav#m4dOrganizedNav .m4d-nav-group > .m4d-nav-menu{display:none!important}
+  #m4dMobileDropdownBackdrop{
+    position:fixed!important;inset:0!important;z-index:9996!important;
+    background:rgba(5,7,12,.32)!important;
+  }
+  #m4dMobileDropdownPortal{
+    position:fixed!important;z-index:9997!important;
+    display:flex!important;flex-direction:column!important;gap:4px!important;
+    padding:10px!important;box-sizing:border-box!important;
+    background:#191b22!important;border:1px solid #535563!important;
+    border-radius:14px!important;box-shadow:0 24px 65px #000d!important;
+    overflow-y:auto!important;overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #m4dMobileDropdownPortal a{
+    display:block!important;min-height:47px!important;width:100%!important;
+    box-sizing:border-box!important;padding:13px 14px!important;
+    border-radius:9px!important;text-decoration:none!important;
+    color:#f4f4f8!important;background:#282b35!important;
+    font-size:14px!important;font-weight:700!important;
+    white-space:normal!important;overflow-wrap:break-word!important;
+  }
+  #m4dMobileDropdownPortal a:active,#m4dMobileDropdownPortal a:focus-visible{
+    background:#46303c!important;outline:2px solid #ee768b!important;
+  }
+  #m4dMobileDropdownPortal a[hidden]{display:none!important}
+}
+@media(min-width:851px){
+  #m4dMobileDropdownBackdrop,#m4dMobileDropdownPortal{display:none!important}
+}
+</style>
+<script id="m4d-mobile-dropdown-portal-script">
+(function(){
+ function boot(){
+  const nav=document.getElementById('m4dOrganizedNav');
+  if(!nav||nav.dataset.portalFixInstalled)return;
+  nav.dataset.portalFixInstalled='1';
+  const groups=[...nav.querySelectorAll('.m4d-nav-group')];
+  let active=null;
+  const shade=document.createElement('div');
+  shade.id='m4dMobileDropdownBackdrop';
+  shade.hidden=true;
+  const panel=document.createElement('div');
+  panel.id='m4dMobileDropdownPortal';
+  panel.setAttribute('role','menu');
+  panel.setAttribute('aria-label','Site navigation options');
+  panel.hidden=true;
+  document.body.append(shade,panel);
+  const hide=()=>{active=null;panel.hidden=true;shade.hidden=true;panel.replaceChildren();};
+  function position(){
+    if(!active||panel.hidden)return;
+    const summary=active.querySelector('summary');
+    if(!summary)return;
+    const r=summary.getBoundingClientRect();
+    const w=Math.min(310,Math.max(225,window.innerWidth-24));
+    const left=Math.max(12,Math.min(r.left,window.innerWidth-w-12));
+    const top=Math.max(8,Math.min(r.bottom+8,window.innerHeight-90));
+    panel.style.left=left+'px';panel.style.top=top+'px';
+    panel.style.width=w+'px';
+    panel.style.maxHeight=Math.max(80,window.innerHeight-top-12)+'px';
+  }
+  function show(group){
+    if(window.innerWidth>850||!group.open){hide();return;}
+    active=group;panel.replaceChildren();
+    const menu=group.querySelector('.m4d-nav-menu');
+    if(!menu){hide();return;}
+    [...menu.children].forEach((node)=>{
+      if(node.hidden||node.matches?.('[hidden]'))return;
+      const item=node.cloneNode(true);
+      // Forward clicks through the real menu so existing site handlers still run.
+      item.addEventListener('click',e=>{
+        e.preventDefault();
+        node.click();
+        group.open=false;
+        hide();
+      });
+      panel.appendChild(item);
+    });
+    if(!panel.children.length){hide();return;}
+    shade.hidden=false;panel.hidden=false;position();
+  }
+  groups.forEach(group=>{
+    group.addEventListener('toggle',()=>{
+      if(window.innerWidth>850){hide();return;}
+      if(group.open){groups.forEach(other=>{if(other!==group)other.open=false;});
+        // Run after preexisting toggle handlers have finished.
+        requestAnimationFrame(()=>{if(group.open)show(group);});
+      } else if(active===group)hide();
+    });
+  });
+  shade.addEventListener('click',()=>{if(active)active.open=false;hide();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&active){active.open=false;hide();}});
+  window.addEventListener('resize',()=>{if(window.innerWidth>850){if(active)active.open=false;hide();}else position();},{passive:true});
+  // Scrolling the navigation rail closes the popup cleanly.
+  const viewport=document.querySelector('.m4d-nav-viewport');
+  if(viewport)viewport.addEventListener('scroll',()=>{if(active){active.open=false;hide();}},{passive:true});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+ else boot();
+})();
+</script>
 </body>
 </html>
