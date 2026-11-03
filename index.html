@@ -504,48 +504,108 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
 </style>
 
 <script>
-/* M4D livestream: show valid offline responses as offline, not as failures. */
-async function checkM4DLive() {
-  const box = document.getElementById('m4d-live');
-  if (!box) return;
-  const label = (heading, message) => {
-    box.replaceChildren();
-    const h = document.createElement('h2'); h.textContent = heading;
-    const p = document.createElement('p'); p.textContent = message;
-    box.append(h, p);
-  };
-  try {
-    const response = await fetch('/.netlify/functions/live-status', {cache:'no-store', headers:{Accept:'application/json'}});
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    const data = await response.json();
-    if (typeof data.live !== 'boolean') throw new Error('Unexpected livestream response');
-    if (!data.live) {
-      label('Currently Offline', 'Markis & Christian are not live right now.');
-      return;
+
+<script>
+/* M4D livestream status — automatic recovery */
+(() => {
+  const endpoint = '/.netlify/functions/live-status';
+  const refreshEvery = 60000;
+  let checking = false;
+
+  async function checkLive() {
+    const box = document.getElementById('m4d-live');
+    if (!box || checking) return;
+    checking = true;
+
+    function show(title, message) {
+      box.replaceChildren();
+      const heading = document.createElement('h2');
+      heading.textContent = title;
+      const description = document.createElement('p');
+      description.textContent = message;
+      box.append(heading, description);
     }
-    label('🔴 LIVE NOW', data.title || 'Markis & Christian are live!');
-    if (data.thumbnail && /^https:\/\//i.test(data.thumbnail)) {
-      const img = document.createElement('img');
-      img.src = data.thumbnail;
-      img.alt = 'Livestream thumbnail';
-      img.loading = 'lazy';
-      box.appendChild(img);
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+
+      let response;
+      try {
+        response = await fetch(endpoint, {
+          cache: 'no-store',
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+
+      const data = await response.json();
+
+      if (typeof data.live !== 'boolean') {
+        throw new Error('Invalid response');
+      }
+
+      if (!data.live) {
+        show('Currently Offline',
+             'Markis & Christian are not live right now.');
+      } else {
+        show('🔴 LIVE NOW',
+             data.title || 'Markis & Christian are live!');
+
+        if (data.thumbnail &&
+            /^https:\/\//i.test(data.thumbnail)) {
+          const img = document.createElement('img');
+          img.src = data.thumbnail;
+          img.alt = 'Livestream thumbnail';
+          img.loading = 'lazy';
+          box.appendChild(img);
+        }
+
+        if (data.url && /^https:\/\//i.test(data.url)) {
+          const link = document.createElement('a');
+          link.href = data.url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = '▶ WATCH LIVE';
+          box.appendChild(link);
+        }
+      }
+    } catch (error) {
+      console.error('M4D live status error:', error);
+      show('Livestream status unavailable',
+           'Connection failed. Retrying automatically.');
+
+      const retry = document.createElement('button');
+      retry.textContent = '↻ Retry Now';
+      retry.className = 'btn secondary';
+      retry.style.marginTop = '12px';
+      retry.onclick = checkLive;
+      box.appendChild(retry);
+    } finally {
+      checking = false;
     }
-    if (data.url && /^https:\/\//i.test(data.url)) {
-      const a = document.createElement('a');
-      a.href = data.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      a.textContent = '▶ WATCH LIVE';
-      box.appendChild(a);
-    }
-  } catch (error) {
-    console.error('M4D livestream status:', error);
-    label('Livestream status unavailable', 'Could not check YouTube right now. Please refresh to retry.');
   }
-}
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', checkM4DLive, {once:true});
-} else {
-  checkM4DLive();
+
+  function start() {
+    checkLive();
+    setInterval(checkLive, refreshEvery);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) checkLive();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, {once:true});
+  } else {
+    start();
+  }
+})();
+</script>
 }
 </script>
 <!-- Hide video results until someone searches -->
