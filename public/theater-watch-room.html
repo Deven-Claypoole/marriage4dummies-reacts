@@ -332,17 +332,49 @@
     .view-btn:hover,.view-btn:focus-visible{background:#52222c;border-color:#f07987}
     .view-btn[aria-pressed=true]{background:#852637;border-color:#ff91a0}
     .cinema-mode{background:#a9233b;border-color:#e64a62}
-    .theater-shell:fullscreen{width:100vw;height:100dvh;min-height:0;overflow:auto;border:0;border-radius:0;background:#070708}
-    .theater-shell:fullscreen .camera-world{max-width:1220px;margin:0 auto}
-    .theater-shell:fullscreen .theater-floor{height:min(42dvh,430px)}
-    .theater-shell:fullscreen .immersive-toolbar{position:sticky;bottom:0;z-index:20}
-    .theater-shell:fullscreen .screen-frame{max-height:52dvh;margin:auto;aspect-ratio:16/9;width:min(100%,95vh)}
+    /* True edge-to-edge immersion: fullscreen the page so its floating chat stays visible. */
+    .page:fullscreen,.page.immersive-fallback{width:100vw;height:100vh;height:100dvh;min-height:0;overflow:hidden;background:#050506;display:flex;flex-direction:column}
+    .page.immersive-fallback{position:fixed;inset:0;z-index:5000}
+    body.m4d-immersive-active{overflow:hidden}
+    .page:fullscreen .topbar,.page:fullscreen .footer-note,.page:fullscreen .sidebar,
+    .page.immersive-fallback .topbar,.page.immersive-fallback .footer-note,.page.immersive-fallback .sidebar{display:none!important}
+    .page:fullscreen .layout,.page.immersive-fallback .layout{display:flex;flex:1;min-height:0;min-width:0;padding:0;gap:0;overflow:hidden}
+    .page:fullscreen .theater-shell,.page.immersive-fallback .theater-shell{width:100%;height:100%;min-height:0;min-width:0;flex:1;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;box-shadow:none;background:#050506}
+    .page:fullscreen .camera-viewport,.page.immersive-fallback .camera-viewport{flex:1 1 auto;min-height:0;width:100%;overflow:hidden}
+    .page:fullscreen .camera-world,.page.immersive-fallback .camera-world{display:flex;flex-direction:column;height:100%;min-height:0;width:100%;max-width:none;margin:0}
+    .page:fullscreen .stage-wrap,.page.immersive-fallback .stage-wrap{padding:clamp(3px,1dvh,12px) clamp(4px,1vw,16px) 0;flex:0 0 auto;min-height:0}
+    .page:fullscreen .proscenium,.page.immersive-fallback .proscenium{padding:clamp(3px,.8dvh,10px);border-radius:12px;display:flex;flex-direction:column;align-items:center}
+    .page:fullscreen .curtain-top,.page.immersive-fallback .curtain-top{height:7px;min-height:7px;width:100%;margin-bottom:clamp(2px,.7dvh,9px)}
+    .page:fullscreen .screen-frame,.page.immersive-fallback .screen-frame{flex:0 0 auto;width:min(100%, 139dvh);max-height:57dvh;aspect-ratio:16/9;margin:0 auto;border-width:clamp(2px,.55vw,8px);border-radius:12px}
+    .page:fullscreen .screen-actions,.page.immersive-fallback .screen-actions{width:100%;padding:clamp(2px,.6dvh,8px) 0 0}
+    .page:fullscreen .theater-floor,.page.immersive-fallback .theater-floor{flex:1 1 auto;height:auto;min-height:0;overflow:hidden}
+    .page:fullscreen .immersive-toolbar,.page.immersive-fallback .immersive-toolbar{flex:0 0 auto;position:relative;z-index:20;padding:6px 12px;gap:6px}
+    .page:fullscreen #m4dRoomChatOpen,.page.immersive-fallback #m4dRoomChatOpen{z-index:9999;bottom:10px;right:12px}
+    .page:fullscreen #m4dRoomChatPanel,.page.immersive-fallback #m4dRoomChatPanel{z-index:9998;bottom:64px;right:12px}
+    @media(max-width:760px){
+      .page:fullscreen .screen-frame,.page.immersive-fallback .screen-frame{width:100%;max-height:48dvh}
+      .page:fullscreen .stage-wrap,.page.immersive-fallback .stage-wrap{padding:3px 3px 0}
+      .page:fullscreen .proscenium,.page.immersive-fallback .proscenium{padding:3px}
+      .page:fullscreen .screen-actions,.page.immersive-fallback .screen-actions{padding:2px 0 0}
+      .page:fullscreen .immersive-toolbar,.page.immersive-fallback .immersive-toolbar{padding:5px 7px;gap:4px}
+      .page:fullscreen .immersive-toolbar .tool-label,.page.immersive-fallback .immersive-toolbar .tool-label{display:none}
+      .page:fullscreen .immersive-toolbar .toolset,.page.immersive-fallback .immersive-toolbar .toolset{gap:4px}
+      .page:fullscreen .view-btn,.page.immersive-fallback .view-btn{min-height:30px;padding:5px;font-size:11px}
+      .page:fullscreen .pov-chair,.page.immersive-fallback .pov-chair{height:60px}
+    }
+    @media(max-height:560px){
+      .page:fullscreen .screen-frame,.page.immersive-fallback .screen-frame{max-height:49dvh;width:min(100%,97dvh)}
+      .page:fullscreen .screen-actions .field-row,.page.immersive-fallback .screen-actions .field-row{gap:5px}
+      .page:fullscreen .screen-actions .btn,.page.immersive-fallback .screen-actions .btn{padding:5px 9px;font-size:11px}
+      .page:fullscreen .screen-actions .input,.page.immersive-fallback .screen-actions .input{padding:5px 8px}
+      .page:fullscreen .immersive-toolbar,.page.immersive-fallback .immersive-toolbar{padding:4px 8px}
+    }
     .seat.occupied{cursor:help}
     .seat.occupied:hover .seat-tag{border-color:#ffd1a2;background:#31141d;box-shadow:0 0 18px #e1444b33}
     .seat.occupied .chair{animation:arrival-pop .38s ease-out both}
     @keyframes arrival-pop{from{filter:brightness(.55);transform:translateY(7px)}to{filter:brightness(1);transform:translateY(0)}}
     @media(prefers-reduced-motion:reduce){.camera-world{transition:none!important}.seat.occupied .chair{animation:none}}
-    @media(max-width:760px){.immersive-toolbar{padding:10px;gap:10px}.immersive-toolbar .toolset{justify-content:center;width:100%}.immersive-toolbar .tool-label{width:100%;text-align:center}.view-btn{flex:1 1 auto;padding:10px 7px;font-size:12px}.theater-shell:fullscreen .theater-floor{height:35dvh}.theater-shell:fullscreen .screen-frame{width:100%;max-height:none}}
+    @media(max-width:760px){.immersive-toolbar{padding:10px;gap:10px}.immersive-toolbar .toolset{justify-content:center;width:100%}.immersive-toolbar .tool-label{width:100%;text-align:center}.view-btn{flex:1 1 auto;padding:10px 7px;font-size:12px}}
 
 
     /* M4D watch-room-only chat tablet; separate from YouTube OAuth. */
@@ -392,10 +424,10 @@
           <div class="proscenium">
             <div class="curtain-top"></div>
             <div class="screen-frame">
-              <iframe id="playerFrame" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&rel=0" allowfullscreen></iframe>
+              <iframe id="playerFrame" src="about:blank" title="M4D Theater big screen" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
               <div class="screen-overlay">
                 <div class="screen-chip"><span class="dot"></span> On The Big Screen</div>
-                <div class="screen-chip" id="streamStatusChip">Paste a stream link to change the video</div>
+                <div class="screen-chip" id="streamStatusChip">M4D TV · getting the reactions ready</div>
               </div>
             </div>
             <div class="screen-actions">
@@ -403,7 +435,10 @@
                 <input id="streamInput" class="input" type="text" placeholder="Paste a YouTube livestream or video link" />
                 <button id="loadStreamBtn" class="btn btn-red">Load On Screen</button>
               </div>
-              <div class="field-row" style="justify-content:flex-end">
+              <div class="field-row m4d-tv-row" style="justify-content:flex-end;align-items:center">
+                <button id="m4dTvBtn" class="btn btn-red" type="button">📺 Back to M4D TV</button>
+                <button id="m4dNextBtn" class="btn btn-soft" type="button">⏭ Another Reaction</button>
+                <button id="m4dSoundBtn" class="btn btn-soft" type="button">🔊 Turn Sound On</button>
                 <button id="joinSeatBtn" class="btn">Take My Seat</button>
                 <button id="fullscreenBtn" class="btn btn-soft">Fullscreen Screen</button>
               </div>
@@ -461,7 +496,8 @@
             <h3>How this room works</h3>
           </div>
           <div class="card-body help-list">
-            <div><strong>Big-screen stream:</strong> Paste a YouTube livestream or video URL and it loads on the theater screen.</div>
+            <div><strong>M4D TV:</strong> The theater starts with a rotating selection of real M4D reactions, already partway in. Tap Turn Sound On to unmute. YouTube may require you to tap Play.</div>
+            <div><strong>Choose your own:</strong> Paste any YouTube livestream or video URL to play it on your screen. Use Back to M4D TV to return to the reactions. Your custom selection does not change what other viewers see.</div>
             <div><strong>Immersive POV:</strong> Look left and right from your seat, switch between dark cinema and house lighting, or enter fullscreen cinema mode. You are watching from your own seat.</div>
             <div><strong>Real attendance:</strong> Signed-in M4D members take a seat. Seats update live for everyone when members join and leave.</div>
             <div><strong>Watch Room Chat:</strong> Take your seat to message other M4D members. This is a separate M4D chat, not YouTube live chat.</div>
@@ -474,7 +510,6 @@
     <div class="footer-note">
       M4D Theater live audience. Presence tracks connected members in this room, not YouTube viewer statistics. Your livestream continues playing through the official YouTube embedded player.
     </div>
-  </div>
 
 
   <button type="button" id="m4dRoomChatOpen" aria-controls="m4dRoomChatPanel" aria-expanded="false">💬 Watch Room Chat</button>
@@ -484,6 +519,7 @@
     <div id="m4dRoomChatStatus" role="status">Checking your M4D login…</div>
     <form id="m4dRoomChatForm" autocomplete="off"><input id="m4dRoomChatInput" maxlength="500" placeholder="Join the theater to send a message" aria-label="Chat message" disabled required /><button id="m4dRoomChatSend" type="submit" disabled>Send</button></form>
   </section>
+  </div><!-- .page: contains theater and chat for fullscreen mode -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -526,16 +562,97 @@
         return /^[a-zA-Z0-9_-]{11}$/.test(id || '') ? id : null;
       } catch { return null; }
     }
+    // Three verified public uploads by Marriage4Dummies - Reacts.
+    // Add more genuine M4D YouTube video IDs to expand the rotation.
+    const M4D_TV_VIDEOS = [
+      { id: 'HNhAk6f8Op8', title: 'Juice WRLD freestyle reaction' },
+      { id: 'kN_QzfmcXM4', title: 'Juice WRLD Black & White reaction' },
+      { id: 'OFPb_atHqSw', title: 'Kenny Chesney The Good Stuff reaction' }
+    ];
+    const M4D_TV_SLOT_MS = 20 * 60 * 1000;
+    let tvMode = true, tvSkip = 0, currentTvSlot = -1;
+    let ytPlayer = null, queuedVideo = null, soundEnabled = false;
+    const tvButton = $('m4dTvBtn'), nextButton = $('m4dNextBtn'), soundButton = $('m4dSoundBtn');
+    function showTvControls() {
+      nextButton.hidden = !tvMode;
+      tvButton.textContent = tvMode ? '📺 M4D TV Playing' : '📺 Back to M4D TV';
+      soundButton.textContent = soundEnabled ? '🔇 Mute' : '🔊 Turn Sound On';
+    }
+    function setPlayerVideo(id, startSeconds = 0) {
+      queuedVideo = { id, startSeconds };
+      if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById({videoId:id, startSeconds});
+        if (!soundEnabled) ytPlayer.mute();
+      }
+      // The IFrame API will initialize the embedded YouTube player when ready.
+    }
+    function startM4dTv(forceNext = false) {
+      tvMode = true;
+      const slot = Math.floor(Date.now() / M4D_TV_SLOT_MS);
+      if (forceNext) tvSkip += 1;
+      currentTvSlot = slot;
+      const selection = M4D_TV_VIDEOS[(slot + tvSkip) % M4D_TV_VIDEOS.length];
+      const secondsIntoSlot = Math.floor((Date.now() % M4D_TV_SLOT_MS) / 1000);
+      // Enter mid-video to create a continuous TV feel. This is not frame-exact multi-user synchronization.
+      const startAt = 20 + (secondsIntoSlot % 85);
+      setPlayerVideo(selection.id, startAt);
+      streamStatusChip.textContent = '📺 M4D TV · ' + selection.title;
+      showTvControls();
+    }
     function loadVideo(url) {
       const id = youtubeId(url);
       if (!id) { streamStatusChip.textContent = 'Invalid YouTube video URL'; return; }
-      playerFrame.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-      streamStatusChip.textContent = 'Loaded on big screen';
-      // The video selection is local for now; it does not alter other viewers' streams.
-      localStorage.setItem('m4d_theater_video', id);
+      tvMode = false;
+      setPlayerVideo(id, 0);
+      streamStatusChip.textContent = 'Your video · only on your screen';
+      showTvControls();
     }
     $('loadStreamBtn').addEventListener('click', () => loadVideo(streamInput.value));
     streamInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadVideo(streamInput.value); });
+    tvButton.addEventListener('click', () => {tvSkip = 0; startM4dTv();});
+    nextButton.addEventListener('click', () => startM4dTv(true));
+    soundButton.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (ytPlayer) {
+        if (soundEnabled) { ytPlayer.unMute(); ytPlayer.playVideo(); }
+        else ytPlayer.mute();
+      }
+      showTvControls();
+    });
+    function initializeM4dYouTubePlayer() {
+      if (!window.YT || !YT.Player) return;
+      ytPlayer = new YT.Player('playerFrame', {
+        playerVars: {autoplay:1, controls:1, rel:0, playsinline:1},
+        events: {
+          onReady(event) {
+            if (!soundEnabled) event.target.mute();
+            if (queuedVideo) event.target.loadVideoById(queuedVideo);
+          },
+          onStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED && tvMode) startM4dTv(true);
+          },
+          onError(event) {
+            if (tvMode && [100,101,150,153].includes(event.data)) {
+              streamStatusChip.textContent = 'This reaction cannot be embedded · trying another';
+              startM4dTv(true);
+            } else if (event.data) {
+              streamStatusChip.textContent = 'YouTube playback error ' + event.data + '. Try another video.';
+            }
+          }
+        }
+      });
+    }
+    window.onYouTubeIframeAPIReady = initializeM4dYouTubePlayer;
+    const youtubeApiScript = document.createElement('script');
+    youtubeApiScript.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(youtubeApiScript);
+    startM4dTv();
+    // Rotate to a new show for visitors who leave the TV on through a scheduled change.
+    setInterval(() => {
+      if (tvMode && Math.floor(Date.now() / M4D_TV_SLOT_MS) !== currentTvSlot) {
+        tvSkip = 0; startM4dTv();
+      }
+    }, 30000);
     $('fullscreenBtn').addEventListener('click', async () => {
       const frame = document.querySelector('.screen-frame');
       if (frame.requestFullscreen) try { await frame.requestFullscreen(); } catch {}
@@ -560,21 +677,34 @@
       lightButton.textContent=on?'🌙 Dim Lights':'💡 Turn Lights On';
     });
     const immersiveButton=document.getElementById('immersiveMode');
-    immersiveButton.addEventListener('click',async()=>{
-      try {
-        if(document.fullscreenElement===theaterShell){await document.exitFullscreen();}
-        else if(theaterShell.requestFullscreen){await theaterShell.requestFullscreen();}
-      }catch(err){console.warn('Fullscreen unavailable:',err);}
-    });
-    document.addEventListener('fullscreenchange',()=>{
-      immersiveButton.textContent=document.fullscreenElement===theaterShell?'↙ Exit Immersive':'⛶ Immersive Mode';
-    });
-
-    const savedVideo = localStorage.getItem('m4d_theater_video');
-    if (/^[a-zA-Z0-9_-]{11}$/.test(savedVideo || '')) {
-      playerFrame.src = 'https://www.youtube.com/embed/' + savedVideo + '?autoplay=0&rel=0';
-      streamStatusChip.textContent = 'Restored your last video';
+    const immersivePage=document.querySelector('.page');
+    const isImmersive=()=>document.fullscreenElement===immersivePage || immersivePage.classList.contains('immersive-fallback');
+    function syncImmersiveButton(){
+      immersiveButton.textContent=isImmersive()?'↙ Exit Immersive':'⛶ Immersive Mode';
+      document.body.classList.toggle('m4d-immersive-active',isImmersive());
     }
+    immersiveButton.addEventListener('click',async()=>{
+      if (immersivePage.classList.contains('immersive-fallback')) {
+        immersivePage.classList.remove('immersive-fallback');
+      } else if (document.fullscreenElement===immersivePage) {
+        try{await document.exitFullscreen();}catch(err){console.warn('Cannot exit fullscreen:',err);}
+      } else {
+        try {
+          if(!immersivePage.requestFullscreen) throw new Error('Fullscreen API unavailable');
+          await immersivePage.requestFullscreen();
+        } catch(err) {
+          // Mobile browsers such as iOS Safari may not allow element fullscreen.
+          immersivePage.classList.add('immersive-fallback');
+        }
+      }
+      syncImmersiveButton();
+    });
+    document.addEventListener('fullscreenchange',syncImmersiveButton);
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape' && immersivePage.classList.contains('immersive-fallback')){
+        immersivePage.classList.remove('immersive-fallback');syncImmersiveButton();
+      }
+    });
 
     function membersFromPresence() {
       if (!channel) return [];
