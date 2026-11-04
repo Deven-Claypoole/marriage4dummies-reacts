@@ -1,2 +1,13 @@
-[functions]
-  directory = "netlify/functions"
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/OneSignalSDKWorker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

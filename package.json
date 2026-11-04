@@ -1,6 +1,8 @@
 {
-  "name":"m4d-voice-stage1",
-  "private":true,
-  "type":"module",
-  "dependencies":{"livekit-server-sdk":"^2.0.0"}
+  "name": "m4d-notification-suite",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0"
+  }
 }

@@ -1,0 +1,57 @@
+MARRIAGE4DUMMIES — AUTOMATIC ONESIGNAL PUSH NOTIFICATIONS
+========================================================
+Included: Admin Notification Center, private message + friend request alerts,
+manual livestream ON transitions, all existing site and PWA features.
+
+IMPORTANT: You have already confirmed OneSignal manual push works. These new
+AUTOMATIC features require Netlify Functions, which require a Git-based deploy
+or supported Netlify CLI deploy with functions. Drag-and-drop HTML/ZIP to the
+Netlify deploy page will NOT activate the backend functions.
+
+STEP 1 — Database
+Supabase > SQL Editor > New Query: run M4D_NOTIFICATION_AUTOMATION.sql.
+This installs triggers and dispatch queue fields; do NOT rerun the original
+M4D_FEATURES_SETUP.sql just for these upgrades. Existing data is preserved.
+
+STEP 2 — Secret server settings
+Netlify > your existing site > Project configuration > Environment variables.
+Add the following secret variables (never paste their values into website HTML):
+  ONESIGNAL_REST_API_KEY    : OneSignal > Settings > Keys & IDs > REST API Key
+  SUPABASE_URL             : Supabase > Project Settings > API > Project URL
+  SUPABASE_SERVICE_ROLE_KEY: Supabase > Project Settings > API keys > service_role
+These keys MUST be restricted to Netlify server functions, NEVER exposed in
+client-side scripts or shared publicly. App ID already embedded in website.
+
+STEP 3 — Deploy via GitHub
+Push the CONTENTS of this package (public/, netlify/, package.json,
+netlify.toml, SQL outside public/) to the repository Netlify builds for this
+existing project. In Netlify Build settings, publish directory is 'public'
+and functions directory is 'netlify/functions' (also in netlify.toml).
+Netlify installs @supabase/supabase-js from package.json and deploys functions.
+Do NOT drag and drop only the public folder for this upgrade.
+
+STEP 4 — Test
+Netlify > Functions should show m4d-admin-notify and m4d-push-dispatch.
+Check m4d-push-dispatch has the Scheduled label.
+Sign into M4D. Open Admin Center > Push Alerts as an admin.
+Queue a test announcement, then check your phone within a few minutes.
+For personal alerts, BOTH users must open M4D signed-in so the app calls
+OneSignal.login(SupabaseUserId). They must allow notifications, and enable
+relevant preferences in Members > App Settings & Rewards.
+Send a private message or friend request; verify the recipient device receives
+an alert without exposing message contents on the lock screen.
+In Admin > Livestream, switch the manual fallback from OFFLINE to LIVE and save.
+One transition queues one broadcast. If an external YouTube live indicator
+changes without changing manual fallback, this version DOES NOT auto notify.
+
+NOTES
+- Preference toggles are enforced server-side for both individual and
+  broadcast notifications; users who never signed into OneSignal after this
+  update will not be linked to an external ID, so they need to open M4D again.
+- Notifications can't be guaranteed: device permissions/network conditions
+  still apply. Scheduled send occurs about once per minute on published deploys.
+- Admin authorization is checked server-side with the existing m4d_is_admin RPC.
+- Never put service role or OneSignal REST API key in index.html.
+- New notifications are queued in m4d_push_events. Use its delivery_status and
+  last_error columns to troubleshoot failures in Supabase Table Editor.
+- User passwords and private message contents are never included in push payloads.
