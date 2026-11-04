@@ -302,6 +302,10 @@
       .pov-chair{height:66px}.pov-arm{height:65px;width:55px;border-radius:24px 24px 0 0}.pov-seat-label{padding:10px 12px 15px;font-size:9px}.pov-hint{top:4px;font-size:9px}
       .screen-overlay{top:6px;left:6px;right:6px}.screen-chip{padding:5px 7px;font-size:9px}
     }
+    <style>
+    #theaterConnection{font-size:12px;line-height:1.4;align-self:center}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+    #memberIdentity{font-size:13px;line-height:1.4}
   </style>
 </head>
 <body>
@@ -362,12 +366,12 @@
           </div>
           <div class="card-body">
             <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-              <input id="nameInput" class="input" type="text" placeholder="Enter your name" style="min-width:0" />
+              <div class="muted" id="memberIdentity" style="align-self:center;flex:1">Sign in to M4D to join the audience</div>
               <button id="seatMeBtn" class="btn btn-red">Join Room</button>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-              <button id="fillDemoBtn" class="btn btn-soft">Fill Demo Seats</button>
-              <button id="clearSeatsBtn" class="btn btn-soft">Clear Seats</button>
+              <button id="leaveRoomBtn" class="btn btn-soft">Leave Theater</button>
+              <span id="theaterConnection" class="muted" aria-live="polite">Checking sign-in...</span>
             </div>
             <div class="member-list" id="memberList"></div>
           </div>
@@ -380,249 +384,199 @@
           <div class="card-body help-list">
             <div><strong>Big-screen stream:</strong> Paste a YouTube livestream or video URL and it loads on the theater screen.</div>
             <div><strong>First-person theater:</strong> You are sitting in your own chair, looking toward the screen past the audience.</div>
-            <div><strong>Seat filling:</strong> As people join, empty seats fill with their names.</div>
-            <div><strong>Next upgrade:</strong> This layout is ready for real M4D live presence, profile pictures, and synced room seating.</div>
+            <div><strong>Real attendance:</strong> Signed-in M4D members take a seat. Seats update live for everyone when members join and leave.</div>
+            <div><strong>Privacy:</strong> Only members who tap Join Room appear in the theater. Leaving or disconnecting removes their seat. Other viewers may see your M4D username and avatar.</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="footer-note">
-      Cinema POV prototype. Seats on this page are local demo seats, not real attendance. Next: connect signed-in M4D members using Supabase Realtime presence.
+      M4D Theater live audience. Presence tracks connected members in this room, not YouTube viewer statistics. Your livestream continues playing through the official YouTube embedded player.
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const totalSeats = 36;
+    // This page uses the SAME publishable URL/key as M4D's existing public/index.html.
+    // Never put a service-role key or notification secret in browser HTML.
+    const SUPABASE_URL = 'https://htbomdkkbnlbgzrpztsu.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Iz9R3lgqAHACO09UuDjSJg_B5O2kUUW';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const topic = 'm4d-theater-audience-v1';
     const seatsPerRow = [4,5,6,6,7,8];
-    const seatScene = document.getElementById('seatScene');
-    const memberList = document.getElementById('memberList');
-    const roomCountPill = document.getElementById('roomCountPill');
-    const audienceCountText = document.getElementById('audienceCountText');
-    const yourSeatPill = document.getElementById('yourSeatPill');
-    const nameInput = document.getElementById('nameInput');
-    const seatMeBtn = document.getElementById('seatMeBtn');
-    const fillDemoBtn = document.getElementById('fillDemoBtn');
-    const clearSeatsBtn = document.getElementById('clearSeatsBtn');
-    const joinSeatBtn = document.getElementById('joinSeatBtn');
-    const playerFrame = document.getElementById('playerFrame');
-    const streamInput = document.getElementById('streamInput');
-    const loadStreamBtn = document.getElementById('loadStreamBtn');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const streamStatusChip = document.getElementById('streamStatusChip');
+    const totalSeats = seatsPerRow.reduce((n, m) => n + m, 0);
+    const $ = id => document.getElementById(id);
+    const seatScene = $('seatScene'), memberList = $('memberList');
+    const roomCountPill = $('roomCountPill'), audienceCountText = $('audienceCountText');
+    const yourSeatPill = $('yourSeatPill'), seatMeBtn = $('seatMeBtn');
+    const joinSeatBtn = $('joinSeatBtn'), leaveRoomBtn = $('leaveRoomBtn');
+    const memberIdentity = $('memberIdentity'), connection = $('theaterConnection');
+    const playerFrame = $('playerFrame'), streamInput = $('streamInput');
+    const streamStatusChip = $('streamStatusChip');
+    let channel = null, user = null, displayName = '', avatarUrl = null;
+    let joined = false, subscribed = false, bootToken = 0;
+    let occupants = [];
 
-    const defaultNames = [
-      'DevinClay','Bologna','TestAccount','Jay','Jose Vasquez','Lil Cri',
-      'MarkisFan','ChristianFan','M4D Legend','NightWishNerd','SlipknotKing',
-      'NeneRoyalFan','Juice999','ReactionLover','VaultBreaker','LiveRegular'
-    ];
-
-    function getState() {
+    function safeName(x) { return String(x || 'M4D Member').trim().slice(0,30) || 'M4D Member'; }
+    function initials(x) { return safeName(x).split(/\s+/).slice(0,2).map(v=>v[0].toUpperCase()).join(''); }
+    function validAvatar(x) {
+      try { const u = new URL(x); return u.protocol === 'https:' &&
+        (u.hostname === new URL(SUPABASE_URL).hostname || u.hostname === location.hostname)
+        ? u.href : null; } catch { return null; }
+    }
+    function youtubeId(value) {
+      const v = String(value || '').trim();
+      if (/^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
       try {
-        return JSON.parse(localStorage.getItem('m4d_theater_state') || '{}');
-      } catch {
-        return {};
-      }
+        const u = new URL(v), host = u.hostname.toLowerCase();
+        if (!['youtube.com','www.youtube.com','m.youtube.com','youtu.be','www.youtu.be'].includes(host)) return null;
+        const segments = u.pathname.split('/').filter(Boolean);
+        const id = host.endsWith('youtu.be') ? segments[0] :
+          (u.searchParams.get('v') || ((['live','embed','shorts'].includes(segments[0])) ? segments[1] : null));
+        return /^[a-zA-Z0-9_-]{11}$/.test(id || '') ? id : null;
+      } catch { return null; }
+    }
+    function loadVideo(url) {
+      const id = youtubeId(url);
+      if (!id) { streamStatusChip.textContent = 'Invalid YouTube video URL'; return; }
+      playerFrame.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+      streamStatusChip.textContent = 'Loaded on big screen';
+      // The video selection is local for now; it does not alter other viewers' streams.
+      localStorage.setItem('m4d_theater_video', id);
+    }
+    $('loadStreamBtn').addEventListener('click', () => loadVideo(streamInput.value));
+    streamInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadVideo(streamInput.value); });
+    $('fullscreenBtn').addEventListener('click', async () => {
+      const frame = document.querySelector('.screen-frame');
+      if (frame.requestFullscreen) try { await frame.requestFullscreen(); } catch {}
+    });
+    const savedVideo = localStorage.getItem('m4d_theater_video');
+    if (/^[a-zA-Z0-9_-]{11}$/.test(savedVideo || '')) {
+      playerFrame.src = 'https://www.youtube.com/embed/' + savedVideo + '?autoplay=0&rel=0';
+      streamStatusChip.textContent = 'Restored your last video';
     }
 
-    function saveState(state) {
-      localStorage.setItem('m4d_theater_state', JSON.stringify(state));
-    }
-
-    function initials(name) {
-      return String(name || '?')
-        .trim()
-        .split(/\s+/)
-        .slice(0,2)
-        .map(p => p[0]?.toUpperCase() || '')
-        .join('') || '?';
-    }
-
-    function normalizedMembers() {
-      const state = getState();
-      return Array.isArray(state.members) ? state.members.slice(0, totalSeats) : [];
-    }
-
-    function setMembers(members, selfName) {
-      const state = getState();
-      state.members = members.slice(0, totalSeats);
-      if (selfName !== undefined) state.selfName = selfName;
-      saveState(state);
-      render();
-    }
-
-    function parseYouTubeId(value) {
-      try {
-        if (!value) return null;
-        if (/^[a-zA-Z0-9_-]{11}$/.test(value.trim())) return value.trim();
-        const url = new URL(value.trim());
-        if (!['youtube.com','www.youtube.com','m.youtube.com','youtu.be','www.youtu.be'].includes(url.hostname)) return null;
-        if (url.hostname === 'youtu.be' || url.hostname === 'www.youtu.be') {
-          return url.pathname.split('/').filter(Boolean)[0] || null;
-        }
-        if (url.searchParams.get('v')) return url.searchParams.get('v');
-        const pathParts = url.pathname.split('/').filter(Boolean);
-        const embedIndex = pathParts.indexOf('embed');
-        if (embedIndex >= 0 && pathParts[embedIndex + 1]) return pathParts[embedIndex + 1];
-        if (pathParts[0] === 'live' && pathParts[1]) return pathParts[1];
-      } catch {}
-      return null;
-    }
-
-    function loadVideo(raw) {
-      const id = parseYouTubeId(raw);
-      if (!id || !/^[a-zA-Z0-9_-]{11}$/.test(id)) {
-        streamStatusChip.textContent = 'Could not read that YouTube link';
-        return;
-      }
-      playerFrame.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-      streamStatusChip.textContent = 'Loaded on the theater screen';
-      const state = getState();
-      state.videoId = id;
-      saveState(state);
-    }
-
-    function seatName(name) {
-      return String(name || '').trim().slice(0, 18);
+    function membersFromPresence() {
+      if (!channel) return [];
+      const state = channel.presenceState();
+      const ids = new Set();
+      const list = [];
+      Object.entries(state).forEach(([key, presences]) => {
+        if (!/^[a-f0-9-]{36}$/i.test(key) || ids.has(key)) return;
+        const match = Array.isArray(presences) ? presences.find(p=>p && p.user_id === key) : null;
+        if (!match) return;
+        ids.add(key);
+        list.push({id:key, name:safeName(match.name), avatar:validAvatar(match.avatar)});
+      });
+      // Stable seats across clients: sort on persistent account UUID, not arrival order.
+      list.sort((a,b) => a.id.localeCompare(b.id));
+      return list;
     }
 
     function render() {
-      const state = getState();
-      const members = normalizedMembers();
-      const selfName = state.selfName || '';
-
-      seatScene.innerHTML = '';
-      memberList.innerHTML = '';
-
-      let used = 0;
-      let globalIndex = 0;
-
-      seatsPerRow.forEach((count, rowIndex) => {
-        const row = document.createElement('div');
-        row.className = `row row-${rowIndex + 1}`;
-
-        for (let i = 0; i < count; i++) {
-          const memberName = members[globalIndex] || '';
+      const viewerId = user?.id;
+      seatScene.replaceChildren(); memberList.replaceChildren();
+      const people = occupants;
+      let cursor = 0;
+      seatsPerRow.forEach((n, i) => {
+        const row = document.createElement('div'); row.className = `row row-${i+1}`;
+        for (let j=0;j<n;j++) {
+          const person = people[cursor++];
           const seat = document.createElement('div');
-          const empty = !memberName;
-          const isSelf = memberName && selfName && memberName.toLowerCase() === selfName.toLowerCase();
-          seat.className = 'seat ' + (empty ? 'empty' : 'occupied') + (isSelf ? ' self-seat' : '');
-          const chair = document.createElement('div');
-          chair.className = 'chair';
-          const tag = document.createElement('div');
-          tag.className = 'seat-tag';
-          tag.textContent = empty ? 'Open Seat' : seatName(memberName);
-          seat.append(chair, tag);
-          row.appendChild(seat);
-          if (memberName) used++;
-          globalIndex++;
+          seat.className = 'seat ' + (person ? 'occupied' : 'empty') + (person?.id === viewerId ? ' self-seat' : '');
+          const chair = document.createElement('div'); chair.className='chair';
+          const tag = document.createElement('div'); tag.className='seat-tag';
+          tag.textContent = person ? person.name : 'Open Seat';
+          seat.append(chair, tag); row.append(seat);
         }
-        seatScene.appendChild(row);
+        seatScene.append(row);
       });
-
-      members.filter(Boolean).forEach((name, idx) => {
-        const item = document.createElement('div');
-        item.className = 'member';
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.textContent = initials(name);
-        const detail = document.createElement('div');
-        const title = document.createElement('div');
-        title.style.fontWeight = '800';
-        title.textContent = seatName(name);
-        const sub = document.createElement('small');
-        sub.textContent = `Seat ${idx + 1}`;
-        detail.append(title, sub);
-        item.append(avatar, detail);
-        memberList.appendChild(item);
+      people.slice(0,totalSeats).forEach((person,index) => {
+        const item = document.createElement('div'); item.className='member';
+        const avatar = document.createElement('div'); avatar.className='avatar';
+        if (person.avatar) {
+          const img = document.createElement('img'); img.src = person.avatar; img.alt='';
+          img.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover';
+          img.onerror=()=>{avatar.textContent=initials(person.name)};
+          avatar.append(img);
+        } else avatar.textContent = initials(person.name);
+        const details = document.createElement('div');
+        const title = document.createElement('div'); title.style.fontWeight='800'; title.textContent=person.name;
+        const sub = document.createElement('small'); sub.textContent='Seat '+(index+1)+(person.id===viewerId ? ' · You' : '');
+        details.append(title,sub);item.append(avatar,details);memberList.append(item);
       });
-
-      if (!members.filter(Boolean).length) {
-        memberList.innerHTML = '<div class="muted" style="padding:6px 2px">No one is seated yet. Add names or join the room.</div>';
+      if (!people.length) {
+        const empty = document.createElement('div');empty.className='muted';
+        empty.textContent='No members seated yet. Be the first to join!';memberList.append(empty);
       }
-
-      roomCountPill.textContent = `${used} in theater`;
-      audienceCountText.textContent = `${used} seated`;
-      if (selfName) {
-        const found = members.findIndex(n => String(n).toLowerCase() === selfName.toLowerCase());
-        yourSeatPill.textContent = found >= 0 ? `${selfName} · Seat ${found + 1}` : `${selfName} · standing by`;
-      } else {
-        yourSeatPill.textContent = 'Not seated';
-      }
+      roomCountPill.textContent = people.length+' in theater';
+      audienceCountText.textContent = people.length+' watching in room'+(people.length>totalSeats?' · '+(people.length-totalSeats)+' beyond visible seats':'');
+      const ix = people.findIndex(p=>p.id===viewerId);
+      yourSeatPill.textContent = ix>=0 ? 'Your seat '+(ix+1) : 'Not seated';
+      joinSeatBtn.disabled = seatMeBtn.disabled = !user || !subscribed || joined;
+      leaveRoomBtn.disabled = !joined;
     }
-
-    function addMember(name, makeSelf=false) {
-      name = seatName(name);
-      if (!name) return;
-      const members = normalizedMembers();
-      const existing = members.findIndex(n => String(n).toLowerCase() === name.toLowerCase());
-      if (existing >= 0) {
-        const state = getState();
-        if (makeSelf) state.selfName = name;
-        saveState(state);
-        render();
-        return;
-      }
-      const open = members.findIndex(n => !n);
-      if (open >= 0) members[open] = name;
-      else members.push(name);
-      setMembers(members, makeSelf ? name : getState().selfName);
+    function syncPresence() { occupants=membersFromPresence(); render(); }
+    async function resolveProfile(currentUser) {
+      const {data,error} = await sb.from('profiles')
+        .select('username,avatar_url').eq('id',currentUser.id).maybeSingle();
+      if (error) console.warn('M4D theater profile:', error.message);
+      return {
+        name:safeName(data?.username || currentUser.user_metadata?.username || 'M4D Member'),
+        avatar:validAvatar(data?.avatar_url)
+      };
     }
-
-    seatMeBtn.addEventListener('click', () => {
-      const name = nameInput.value.trim();
-      if (!name) {
-        nameInput.focus();
-        return;
+    async function startSession() {
+      const ticket = ++bootToken;
+      if (channel) { const old = channel; channel=null; await sb.removeChannel(old); }
+      joined=false; subscribed=false; occupants=[]; user=null; render();
+      const {data:{user:currentUser},error} = await sb.auth.getUser();
+      if (ticket!==bootToken) return;
+      if (error || !currentUser) {
+        connection.textContent='Sign in to M4D first';
+        memberIdentity.textContent='Open the M4D homepage, sign in, then come back here.';
+        render();return;
       }
-      addMember(name, true);
-      nameInput.value = '';
-    });
-
-    joinSeatBtn.addEventListener('click', () => {
-      const existing = getState().selfName;
-      const suggested = existing || '';
-      const name = prompt('Enter the name to place on your theater seat:', suggested);
-      if (!name) return;
-      addMember(name, true);
-    });
-
-    fillDemoBtn.addEventListener('click', () => {
-      const demo = new Array(totalSeats).fill('');
-      defaultNames.forEach((n, i) => { if (i < totalSeats) demo[i] = n; });
-      const selfName = getState().selfName || defaultNames[0];
-      setMembers(demo, selfName);
-    });
-
-    clearSeatsBtn.addEventListener('click', () => {
-      const state = getState();
-      state.members = [];
-      saveState(state);
+      user=currentUser;
+      const profile=await resolveProfile(user);
+      if (ticket!==bootToken) return;
+      displayName=profile.name; avatarUrl=profile.avatar;
+      memberIdentity.textContent='Signed in as '+displayName;
+      connection.textContent='Connecting audience…';
+      const c = sb.channel(topic, {config:{private:true,presence:{key:user.id,enabled:true}}});
+      channel=c;
+      c.on('presence',{event:'sync'},syncPresence)
+       .on('presence',{event:'join'},syncPresence)
+       .on('presence',{event:'leave'},syncPresence)
+       .subscribe((status,err)=>{
+          if (ticket!==bootToken) return;
+          if (status==='SUBSCRIBED') { subscribed=true; connection.textContent='Connected · Ready to join';render(); }
+          else if (status==='CHANNEL_ERROR'||status==='TIMED_OUT') {
+            connection.textContent='Audience connection error — check Realtime SQL/setup';
+            console.warn('M4D theater presence:',status,err);
+          } else if (status==='CLOSED') connection.textContent='Audience disconnected';
+       });
       render();
+    }
+    async function joinRoom() {
+      if (!user || !channel || !subscribed) {connection.textContent='Sign in or reconnect to join';return;}
+      const result=await channel.track({user_id:user.id,name:displayName,avatar:avatarUrl,joined_at:new Date().toISOString()});
+      if (result!=='ok') {connection.textContent='Could not take seat: '+result;return;}
+      joined=true; connection.textContent='You are seated'; syncPresence();
+    }
+    async function leaveRoom() {
+      if (!channel) return;
+      await channel.untrack(); joined=false; connection.textContent='Seat released';syncPresence();
+    }
+    seatMeBtn.addEventListener('click',joinRoom);
+    joinSeatBtn.addEventListener('click',joinRoom);
+    leaveRoomBtn.addEventListener('click',leaveRoom);
+    window.addEventListener('pagehide',()=>{ if (channel) channel.untrack(); });
+    sb.auth.onAuthStateChange(event=>{
+      if (event==='SIGNED_IN'||event==='SIGNED_OUT') setTimeout(startSession,0);
     });
-
-    loadStreamBtn.addEventListener('click', () => loadVideo(streamInput.value));
-    streamInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') loadVideo(streamInput.value);
-    });
-
-    fullscreenBtn.addEventListener('click', async () => {
-      const frame = document.querySelector('.screen-frame');
-      if (frame.requestFullscreen) await frame.requestFullscreen();
-    });
-
-    (function boot() {
-      const state = getState();
-      if (state.videoId) {
-        playerFrame.src = `https://www.youtube.com/embed/${state.videoId}?autoplay=0&rel=0`;
-        streamStatusChip.textContent = 'Last selected stream restored';
-      }
-      if (!Array.isArray(state.members)) {
-        state.members = ['', '', '', '', '', '', '', ''];
-        saveState(state);
-      }
-      render();
-    })();
+    startSession();
   </script>
 </body>
 </html>
