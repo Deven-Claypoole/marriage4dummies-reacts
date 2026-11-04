@@ -1811,9 +1811,10 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
    const rows=data||[];
    const pendingIn=rows.filter(r=>r.request_status==='pending'&&r.is_incoming);
    const pendingOut=rows.filter(r=>r.request_status==='pending'&&!r.is_incoming);
+   const declinedOut=rows.filter(r=>r.request_status==='declined'&&!r.is_incoming);
    const friends=rows.filter(r=>r.request_status==='accepted');
    if(pendingIn.length)incoming.replaceChildren();
-   if(pendingOut.length)outgoing.replaceChildren();
+   if(pendingOut.length||declinedOut.length)outgoing.replaceChildren();
    if(friends.length)accepted.replaceChildren();
    for(const r of pendingIn)incoming.appendChild(card(r,group=>{
      const a=button('Accept','',()=>respond(r.friendship_id,'accepted',[a,d]));
@@ -1821,6 +1822,17 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
      group.append(a,d);
    }));
    for(const r of pendingOut)outgoing.appendChild(card(r,null));
+   for(const r of declinedOut)outgoing.appendChild(card(r,group=>{
+     const resend=button('↻ Send Friend Request Again','',async()=>{
+       resend.disabled=true;
+       resend.textContent='Sending…';
+       const {error}=await client.rpc('m4d_resend_declined_friend_request',{target_user_id:r.other_user_id});
+       if(error){resend.disabled=false;resend.textContent='↻ Send Friend Request Again';status.textContent='Could not resend request: '+error.message;return}
+       await load();
+       status.textContent='Friend request sent again!';
+     });
+     group.append(resend);
+   }));
    for(const r of friends){const friendCard=card(r,null);friendCard.dataset.m4dFriendId=r.other_user_id;accepted.appendChild(friendCard)}
    status.textContent=pendingIn.length+' incoming request(s) · '+friends.length+' friend(s).';
   }catch(e){if(token===generation)status.textContent='Could not load friends: '+(e.message||'Try again.')}
