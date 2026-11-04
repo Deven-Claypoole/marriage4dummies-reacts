@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M4D Cinema — Seated POV Watch Room</title>
+  <style>
+    :root{
+      --bg:#070708;
+      --panel:#111114;
+      --panel2:#17171c;
+      --red:#d81f26;
+      --red2:#ff4b55;
+      --text:#f4f4f6;
+      --muted:#b3b3bd;
+      --gold:#e8c977;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 18px 55px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top,#201015 0%, #0b0b0d 36%, #050506 100%);color:var(--text)}
+    body{overflow-x:hidden}
+    a{color:inherit}
+
+    .page{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .topbar{
+      position:sticky;top:0;z-index:30;
+      display:flex;justify-content:space-between;align-items:center;gap:14px;
+      padding:14px 18px;
+      background:linear-gradient(180deg,rgba(8,8,10,.95),rgba(8,8,10,.82));
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(10px);
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
+    .brand-badge{
+      width:40px;height:40px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),#8e1016);
+      box-shadow:0 8px 18px rgba(216,31,38,.34);
+      font-size:18px;
+    }
+    .brand small{display:block;color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}
+    .stats{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{padding:9px 12px;border-radius:999px;background:#131318;border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:700}
+    .live-pill{background:rgba(216,31,38,.15);border-color:rgba(216,31,38,.35);color:#fff}
+
+    .layout{
+      display:grid;
+      grid-template-columns: minmax(0,1fr) 340px;
+      gap:20px;
+      padding:20px;
+      align-items:start;
+    }
+
+    .theater-shell{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:linear-gradient(180deg,#151519,#09090c 85%);
+      min-height:760px;
+      isolation:isolate;
+    }
+
+    .theater-shell::before{
+      content:"";
+      position:absolute;inset:-30%;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(255,75,85,.18) 0%, rgba(255,75,85,0) 40%),
+        radial-gradient(circle at 0% 100%, rgba(216,31,38,.14), rgba(216,31,38,0) 35%),
+        radial-gradient(circle at 100% 100%, rgba(216,31,38,.14), rgba(216,31,38,0) 35%);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    .stage-wrap{
+      position:relative;
+      padding:24px 24px 0;
+    }
+
+    .proscenium{
+      position:relative;
+      padding:24px 24px 36px;
+      border-radius:26px 26px 40px 40px;
+      background:linear-gradient(180deg,#220e12 0%, #13090b 55%, rgba(0,0,0,.15) 100%);
+      border:1px solid rgba(255,255,255,.05);
+      box-shadow:inset 0 -40px 80px rgba(0,0,0,.4);
+    }
+
+    .curtain-top{height:20px;border-radius:999px;background:linear-gradient(180deg,#7e1016,#4d0b0f);margin-bottom:18px;box-shadow:0 10px 20px rgba(0,0,0,.25)}
+
+    .screen-frame{
+      position:relative;
+      background:#060607;
+      border:8px solid #232329;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 25px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+      aspect-ratio:16/9;
+    }
+    .screen-frame iframe{width:100%;height:100%;border:0;display:block;background:#000}
+    .screen-overlay{
+      position:absolute;left:16px;right:16px;top:14px;
+      display:flex;justify-content:space-between;gap:10px;pointer-events:none;
+    }
+    .screen-chip{pointer-events:auto;background:rgba(10,10,12,.72);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px);color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--red2);box-shadow:0 0 12px rgba(255,75,85,.9)}
+
+    .screen-actions{
+      margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap
+    }
+    .field-row{display:flex;gap:10px;flex:1;min-width:260px;flex-wrap:wrap}
+    .input{
+      flex:1;min-width:220px;background:#0f0f14;border:1px solid var(--line);color:#fff;padding:13px 14px;border-radius:14px;outline:none
+    }
+    .btn{
+      appearance:none;border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;
+      background:#1a1a20;color:#fff;border:1px solid var(--line);transition:.2s transform,.2s opacity,.2s background
+    }
+    .btn:hover{transform:translateY(-1px);opacity:.98}
+    .btn-red{background:linear-gradient(135deg,var(--red),#a51017);border-color:rgba(255,255,255,.06)}
+    .btn-soft{background:#111116}
+
+    .theater-floor{
+      position:relative;
+      padding:18px 10px 42px;
+      min-height:360px;
+      overflow:hidden;
+    }
+
+    .aisle-glow{
+      position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:26%;height:95%;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.08) 35%, rgba(255,255,255,.03) 70%, rgba(255,255,255,0));
+      filter:blur(3px);opacity:.4;pointer-events:none;
+      clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);
+    }
+
+    .seat-scene{
+      perspective:1100px;
+      transform-style:preserve-3d;
+      padding:24px 10px 0;
+      position:relative;
+    }
+
+    .row{
+      display:flex;justify-content:center;gap:10px;
+      transform-style:preserve-3d;
+      margin:0 auto;
+      width:max-content;
+      position:relative;
+    }
+
+    .row:not(:last-child){margin-bottom:12px}
+    .row-1{transform:translateY(0) scale(.68)}
+    .row-2{transform:translateY(4px) scale(.76)}
+    .row-3{transform:translateY(10px) scale(.86)}
+    .row-4{transform:translateY(16px) scale(.96)}
+    .row-5{transform:translateY(20px) scale(1.06)}
+    .row-6{transform:translateY(24px) scale(1.16)}
+
+    .seat{
+      width:84px;height:84px;position:relative;
+      display:flex;align-items:flex-end;justify-content:center;
+      filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));
+    }
+    .seat .chair{
+      position:absolute;inset:0 10px 10px 10px;
+      border-radius:18px 18px 12px 12px;
+      background:linear-gradient(180deg,#6a1117,#420d11 80%);
+      border:1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .seat .chair::before{
+      content:"";position:absolute;left:12px;right:12px;top:9px;height:30px;border-radius:10px;background:linear-gradient(180deg,#a91a22,#630d13)
+    }
+    .seat .chair::after{
+      content:"";position:absolute;left:6px;right:6px;bottom:-10px;height:26px;border-radius:50%;background:rgba(0,0,0,.33);filter:blur(8px)
+    }
+    .seat.empty .chair{background:linear-gradient(180deg,#2a2a31,#19191e 80%)}
+    .seat.empty .chair::before{background:linear-gradient(180deg,#3a3a44,#26262e)}
+    .seat-tag{
+      position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+      background:rgba(8,8,10,.92);border:1px solid var(--line);padding:5px 8px;border-radius:999px;
+      font-size:11px;font-weight:800;white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis;color:#fff;
+      box-shadow:0 10px 16px rgba(0,0,0,.2)
+    }
+    .seat.empty .seat-tag{color:#858596}
+    .self-seat .chair{box-shadow:0 0 0 2px rgba(232,201,119,.35), 0 0 22px rgba(232,201,119,.22)}
+    .self-seat .seat-tag{background:rgba(232,201,119,.15);border-color:rgba(232,201,119,.45);color:#fff}
+
+    .sidebar{
+      display:flex;flex-direction:column;gap:16px;
+    }
+    .card{
+      background:linear-gradient(180deg,#121217,#0d0d11);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card h3{margin:0;font-size:16px}
+    .card-header{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+    .card-body{padding:16px 18px}
+    .muted{color:var(--muted)}
+
+    .member-list{display:flex;flex-direction:column;gap:10px;max-height:280px;overflow:auto;padding-right:4px}
+    .member{
+      display:flex;align-items:center;gap:10px;background:#111117;border:1px solid var(--line);border-radius:16px;padding:10px 12px
+    }
+    .avatar{
+      width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(135deg,#22232a,#0d0e12);border:1px solid var(--line);font-size:12px;font-weight:800;color:#fff
+    }
+    .member small{display:block;color:var(--muted);margin-top:2px}
+
+    .help-list{display:grid;gap:10px;font-size:14px;color:var(--muted)}
+    .help-list strong{color:#fff}
+
+    .footer-note{padding:0 20px 24px;color:#9b9ba7;font-size:13px;text-align:center}
+
+    @media (max-width: 1100px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{order:-1}
+    }
+
+    @media (max-width: 760px){
+      .topbar{padding:12px 14px;align-items:flex-start;flex-direction:column}
+      .layout{padding:14px}
+      .theater-shell{min-height:0}
+      .stage-wrap{padding:14px 14px 0}
+      .proscenium{padding:16px 16px 24px}
+      .screen-actions{flex-direction:column;align-items:stretch}
+      .field-row{min-width:0}
+      .seat{width:58px;height:64px}
+      .seat .chair{inset:0 7px 8px 7px;border-radius:12px 12px 10px 10px}
+      .seat .chair::before{left:8px;right:8px;top:8px;height:22px;border-radius:8px}
+      .seat-tag{font-size:9px;max-width:72px;bottom:-14px;padding:4px 6px}
+      .theater-floor{min-height:250px;padding-bottom:26px}
+      .row{gap:6px}
+      .row-1{transform:translateY(0) scale(.62)}
+      .row-2{transform:translateY(4px) scale(.70)}
+      .row-3{transform:translateY(8px) scale(.78)}
+      .row-4{transform:translateY(12px) scale(.88)}
+      .row-5{transform:translateY(16px) scale(.98)}
+      .row-6{transform:translateY(18px) scale(1.06)}
+    }
+
+    /* CINEMA POV: camera is sitting in a chair at the back of the audience. */
+    .theater-shell{background:radial-gradient(ellipse at 50% 24%,#251518 0%,#080709 69%);}
+    .stage-wrap{padding:24px clamp(12px,4vw,55px) 0;position:relative;z-index:2}
+    .proscenium{padding:24px clamp(10px,3vw,38px) 26px;background:linear-gradient(90deg,#160608 0%,#250609 7%,#0a080a 16%,#0c090b 84%,#260609 93%,#160608 100%);box-shadow:inset 0 10px 35px #000a,0 24px 60px #0009;border-radius:55px 55px 10px 10px}
+    .curtain-top{height:25px;background:repeating-linear-gradient(90deg,#4f070b 0 14px,#741017 20px 28px,#320408 36px 45px);border-radius:5px 5px 16px 16px;box-shadow:0 12px 30px #000d}
+    .screen-frame{box-shadow:0 0 55px #c4b5a020,0 25px 85px #000;}
+    .theater-floor{height:410px;min-height:0;padding:0;perspective:900px;background:linear-gradient(180deg,#130e11 0%,#09070a 48%,#040405 100%);overflow:hidden}
+    .theater-floor:before{content:"";position:absolute;left:0;right:0;top:0;bottom:0;background:linear-gradient(110deg,#5b101c46,transparent 18% 82%,#5b101c46),radial-gradient(ellipse at center top,#faf1cf12,transparent 65%);pointer-events:none;z-index:1}
+    .seat-scene{height:100%;position:relative;transform:none;perspective:900px;padding:0;}
+    .row{position:absolute;left:50%;width:max-content;margin:0!important;display:flex;justify-content:center;transform-origin:center bottom;gap:18px!important}
+    .row-1{top:8px;transform:translateX(-50%) scale(.35);z-index:2}
+    .row-2{top:48px;transform:translateX(-50%) scale(.46);z-index:3}
+    .row-3{top:104px;transform:translateX(-50%) scale(.61);z-index:4}
+    .row-4{top:166px;transform:translateX(-50%) scale(.79);z-index:5}
+    .row-5{top:235px;transform:translateX(-50%) scale(1.01);z-index:6}
+    .row-6{top:313px;transform:translateX(-50%) scale(1.23);z-index:7}
+    /* See the BACK of audience members' heads, as from your seated eye level. */
+    .seat{width:84px;height:92px;position:relative;flex:0 0 84px;filter:drop-shadow(0 10px 14px #000a)}
+    .seat .chair{position:absolute;inset:34px 2px 0;border-radius:23px 23px 5px 5px;background:linear-gradient(100deg,#4a0710,#8a1323 42%,#49070c);border:2px solid #8c2634;box-shadow:inset 0 5px 10px #a9243550}
+    .seat .chair:before{content:"";position:absolute;left:9px;right:9px;top:7px;height:32px;background:linear-gradient(180deg,#8e2030,#4a0a13);border-radius:14px 14px 6px 6px}
+    .seat .chair:after{display:none}
+    .seat.occupied:before{content:"";position:absolute;z-index:2;left:24px;top:2px;width:36px;height:43px;border-radius:45% 45% 42% 42%;background:linear-gradient(120deg,#29252a,#141217 65%,#08090d);box-shadow:0 6px 0 7px #18161b;}
+    .seat.empty .chair{background:linear-gradient(100deg,#420810,#791320,#420810);opacity:.9}
+    .seat.empty .chair:before{background:linear-gradient(180deg,#801b2d,#4a0c16)}
+    .seat-tag{z-index:5;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#0a090de8;border:1px solid #c77d8960;color:#fff;border-radius:6px;padding:4px 7px;max-width:105px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:.01em}
+    .seat.empty .seat-tag{color:#cfb7be;font-size:9px}
+    .self-seat .seat-tag{border-color:var(--gold);color:var(--gold)}
+    /* Your own chair is in the foreground; you are not looking at its back. */
+    .pov-chair{pointer-events:none;position:absolute;z-index:10;bottom:-15px;left:0;right:0;height:120px;display:flex;align-items:flex-end;justify-content:space-between;}
+    .pov-arm{width:clamp(60px,13%,160px);height:120px;background:linear-gradient(100deg,#29060c 0%,#7b1725 38%,#2b0810 100%);border-radius:38px 38px 0 0;border:3px solid #9a3441;box-shadow:inset 8px 0 14px #ba4a4d44,0 -10px 25px #000b;transform:rotate(-10deg) translateX(-18px)}
+    .pov-arm:last-child{transform:rotate(10deg) translateX(18px)}
+    .pov-seat-label{padding:12px 26px 26px;border-radius:40px 40px 0 0;color:#e0c5cc;background:linear-gradient(180deg,#4a0d17,#21060b);font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:1px solid #6d2330;box-shadow:0 -8px 35px #0008;}
+    .pov-hint{position:absolute;left:50%;top:15px;z-index:8;transform:translateX(-50%);font-size:12px;color:#e0c5cc;background:#09070bbb;border:1px solid #ffffff1a;border-radius:100px;padding:7px 12px;white-space:nowrap;}
+    @media(max-width:760px){
+      .theater-floor{height:255px;min-height:0;padding:0}
+      .row{gap:7px!important}
+      .seat{width:44px;height:65px;flex-basis:44px}
+      .seat .chair{inset:23px 0 0;border-radius:11px 11px 2px 2px}
+      .seat .chair:before{left:5px;right:5px;top:4px;height:18px}
+      .seat.occupied:before{left:13px;top:0;width:18px;height:26px;box-shadow:0 3px 0 4px #18161b}
+      .seat-tag{font-size:7px;max-width:59px;padding:3px;bottom:6px}
+      .seat.empty .seat-tag{font-size:6px}
+      .row-1{top:12px;transform:translateX(-50%) scale(.42)}
+      .row-2{top:37px;transform:translateX(-50%) scale(.55)}
+      .row-3{top:73px;transform:translateX(-50%) scale(.73)}
+      .row-4{top:117px;transform:translateX(-50%) scale(.92)}
+      .row-5{top:159px;transform:translateX(-50%) scale(1.1)}
+      .row-6{top:202px;transform:translateX(-50%) scale(1.27)}
+      .pov-chair{height:66px}.pov-arm{height:65px;width:55px;border-radius:24px 24px 0 0}.pov-seat-label{padding:10px 12px 15px;font-size:9px}.pov-hint{top:4px;font-size:9px}
+      .screen-overlay{top:6px;left:6px;right:6px}.screen-chip{padding:5px 7px;font-size:9px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge">🎬</div>
+        <div>
+          <div>M4D Theater Watch Room</div>
+          <small>A seat inside the M4D cinema</small>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="pill live-pill"><span class="dot"></span> LIVE ROOM</div>
+        <div class="pill" id="roomCountPill">0 in theater</div>
+        <div class="pill" id="yourSeatPill">Not seated</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="theater-shell">
+        <div class="stage-wrap">
+          <div class="proscenium">
+            <div class="curtain-top"></div>
+            <div class="screen-frame">
+              <iframe id="playerFrame" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=0&rel=0" allowfullscreen></iframe>
+              <div class="screen-overlay">
+                <div class="screen-chip"><span class="dot"></span> On The Big Screen</div>
+                <div class="screen-chip" id="streamStatusChip">Paste a stream link to change the video</div>
+              </div>
+            </div>
+            <div class="screen-actions">
+              <div class="field-row">
+                <input id="streamInput" class="input" type="text" placeholder="Paste a YouTube livestream or video link" />
+                <button id="loadStreamBtn" class="btn btn-red">Load On Screen</button>
+              </div>
+              <div class="field-row" style="justify-content:flex-end">
+                <button id="joinSeatBtn" class="btn">Take My Seat</button>
+                <button id="fullscreenBtn" class="btn btn-soft">Fullscreen Screen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="theater-floor">
+          <div class="aisle-glow"></div>
+          <div class="seat-scene" id="seatScene"></div>
+          <div class="pov-hint">🎟️ YOUR VIEW FROM THE AUDIENCE</div>
+          <div class="pov-chair" aria-hidden="true"><div class="pov-arm"></div><div class="pov-seat-label">Your Seat · M4D Theater</div><div class="pov-arm"></div></div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="card">
+          <div class="card-header">
+            <h3>Audience</h3>
+            <span class="muted" id="audienceCountText">0 seated</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+              <input id="nameInput" class="input" type="text" placeholder="Enter your name" style="min-width:0" />
+              <button id="seatMeBtn" class="btn btn-red">Join Room</button>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+              <button id="fillDemoBtn" class="btn btn-soft">Fill Demo Seats</button>
+              <button id="clearSeatsBtn" class="btn btn-soft">Clear Seats</button>
+            </div>
+            <div class="member-list" id="memberList"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>How this room works</h3>
+          </div>
+          <div class="card-body help-list">
+            <div><strong>Big-screen stream:</strong> Paste a YouTube livestream or video URL and it loads on the theater screen.</div>
+            <div><strong>First-person theater:</strong> You are sitting in your own chair, looking toward the screen past the audience.</div>
+            <div><strong>Seat filling:</strong> As people join, empty seats fill with their names.</div>
+            <div><strong>Next upgrade:</strong> This layout is ready for real M4D live presence, profile pictures, and synced room seating.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Cinema POV prototype. Seats on this page are local demo seats, not real attendance. Next: connect signed-in M4D members using Supabase Realtime presence.
+    </div>
+  </div>
+
+  <script>
+    const totalSeats = 36;
+    const seatsPerRow = [4,5,6,6,7,8];
+    const seatScene = document.getElementById('seatScene');
+    const memberList = document.getElementById('memberList');
+    const roomCountPill = document.getElementById('roomCountPill');
+    const audienceCountText = document.getElementById('audienceCountText');
+    const yourSeatPill = document.getElementById('yourSeatPill');
+    const nameInput = document.getElementById('nameInput');
+    const seatMeBtn = document.getElementById('seatMeBtn');
+    const fillDemoBtn = document.getElementById('fillDemoBtn');
+    const clearSeatsBtn = document.getElementById('clearSeatsBtn');
+    const joinSeatBtn = document.getElementById('joinSeatBtn');
+    const playerFrame = document.getElementById('playerFrame');
+    const streamInput = document.getElementById('streamInput');
+    const loadStreamBtn = document.getElementById('loadStreamBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const streamStatusChip = document.getElementById('streamStatusChip');
+
+    const defaultNames = [
+      'DevinClay','Bologna','TestAccount','Jay','Jose Vasquez','Lil Cri',
+      'MarkisFan','ChristianFan','M4D Legend','NightWishNerd','SlipknotKing',
+      'NeneRoyalFan','Juice999','ReactionLover','VaultBreaker','LiveRegular'
+    ];
+
+    function getState() {
+      try {
+        return JSON.parse(localStorage.getItem('m4d_theater_state') || '{}');
+      } catch {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem('m4d_theater_state', JSON.stringify(state));
+    }
+
+    function initials(name) {
+      return String(name || '?')
+        .trim()
+        .split(/\s+/)
+        .slice(0,2)
+        .map(p => p[0]?.toUpperCase() || '')
+        .join('') || '?';
+    }
+
+    function normalizedMembers() {
+      const state = getState();
+      return Array.isArray(state.members) ? state.members.slice(0, totalSeats) : [];
+    }
+
+    function setMembers(members, selfName) {
+      const state = getState();
+      state.members = members.slice(0, totalSeats);
+      if (selfName !== undefined) state.selfName = selfName;
+      saveState(state);
+      render();
+    }
+
+    function parseYouTubeId(value) {
+      try {
+        if (!value) return null;
+        if (/^[a-zA-Z0-9_-]{11}$/.test(value.trim())) return value.trim();
+        const url = new URL(value.trim());
+        if (!['youtube.com','www.youtube.com','m.youtube.com','youtu.be','www.youtu.be'].includes(url.hostname)) return null;
+        if (url.hostname === 'youtu.be' || url.hostname === 'www.youtu.be') {
+          return url.pathname.split('/').filter(Boolean)[0] || null;
+        }
+        if (url.searchParams.get('v')) return url.searchParams.get('v');
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        const embedIndex = pathParts.indexOf('embed');
+        if (embedIndex >= 0 && pathParts[embedIndex + 1]) return pathParts[embedIndex + 1];
+        if (pathParts[0] === 'live' && pathParts[1]) return pathParts[1];
+      } catch {}
+      return null;
+    }
+
+    function loadVideo(raw) {
+      const id = parseYouTubeId(raw);
+      if (!id || !/^[a-zA-Z0-9_-]{11}$/.test(id)) {
+        streamStatusChip.textContent = 'Could not read that YouTube link';
+        return;
+      }
+      playerFrame.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+      streamStatusChip.textContent = 'Loaded on the theater screen';
+      const state = getState();
+      state.videoId = id;
+      saveState(state);
+    }
+
+    function seatName(name) {
+      return String(name || '').trim().slice(0, 18);
+    }
+
+    function render() {
+      const state = getState();
+      const members = normalizedMembers();
+      const selfName = state.selfName || '';
+
+      seatScene.innerHTML = '';
+      memberList.innerHTML = '';
+
+      let used = 0;
+      let globalIndex = 0;
+
+      seatsPerRow.forEach((count, rowIndex) => {
+        const row = document.createElement('div');
+        row.className = `row row-${rowIndex + 1}`;
+
+        for (let i = 0; i < count; i++) {
+          const memberName = members[globalIndex] || '';
+          const seat = document.createElement('div');
+          const empty = !memberName;
+          const isSelf = memberName && selfName && memberName.toLowerCase() === selfName.toLowerCase();
+          seat.className = 'seat ' + (empty ? 'empty' : 'occupied') + (isSelf ? ' self-seat' : '');
+          const chair = document.createElement('div');
+          chair.className = 'chair';
+          const tag = document.createElement('div');
+          tag.className = 'seat-tag';
+          tag.textContent = empty ? 'Open Seat' : seatName(memberName);
+          seat.append(chair, tag);
+          row.appendChild(seat);
+          if (memberName) used++;
+          globalIndex++;
+        }
+        seatScene.appendChild(row);
+      });
+
+      members.filter(Boolean).forEach((name, idx) => {
+        const item = document.createElement('div');
+        item.className = 'member';
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = initials(name);
+        const detail = document.createElement('div');
+        const title = document.createElement('div');
+        title.style.fontWeight = '800';
+        title.textContent = seatName(name);
+        const sub = document.createElement('small');
+        sub.textContent = `Seat ${idx + 1}`;
+        detail.append(title, sub);
+        item.append(avatar, detail);
+        memberList.appendChild(item);
+      });
+
+      if (!members.filter(Boolean).length) {
+        memberList.innerHTML = '<div class="muted" style="padding:6px 2px">No one is seated yet. Add names or join the room.</div>';
+      }
+
+      roomCountPill.textContent = `${used} in theater`;
+      audienceCountText.textContent = `${used} seated`;
+      if (selfName) {
+        const found = members.findIndex(n => String(n).toLowerCase() === selfName.toLowerCase());
+        yourSeatPill.textContent = found >= 0 ? `${selfName} · Seat ${found + 1}` : `${selfName} · standing by`;
+      } else {
+        yourSeatPill.textContent = 'Not seated';
+      }
+    }
+
+    function addMember(name, makeSelf=false) {
+      name = seatName(name);
+      if (!name) return;
+      const members = normalizedMembers();
+      const existing = members.findIndex(n => String(n).toLowerCase() === name.toLowerCase());
+      if (existing >= 0) {
+        const state = getState();
+        if (makeSelf) state.selfName = name;
+        saveState(state);
+        render();
+        return;
+      }
+      const open = members.findIndex(n => !n);
+      if (open >= 0) members[open] = name;
+      else members.push(name);
+      setMembers(members, makeSelf ? name : getState().selfName);
+    }
+
+    seatMeBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) {
+        nameInput.focus();
+        return;
+      }
+      addMember(name, true);
+      nameInput.value = '';
+    });
+
+    joinSeatBtn.addEventListener('click', () => {
+      const existing = getState().selfName;
+      const suggested = existing || '';
+      const name = prompt('Enter the name to place on your theater seat:', suggested);
+      if (!name) return;
+      addMember(name, true);
+    });
+
+    fillDemoBtn.addEventListener('click', () => {
+      const demo = new Array(totalSeats).fill('');
+      defaultNames.forEach((n, i) => { if (i < totalSeats) demo[i] = n; });
+      const selfName = getState().selfName || defaultNames[0];
+      setMembers(demo, selfName);
+    });
+
+    clearSeatsBtn.addEventListener('click', () => {
+      const state = getState();
+      state.members = [];
+      saveState(state);
+      render();
+    });
+
+    loadStreamBtn.addEventListener('click', () => loadVideo(streamInput.value));
+    streamInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') loadVideo(streamInput.value);
+    });
+
+    fullscreenBtn.addEventListener('click', async () => {
+      const frame = document.querySelector('.screen-frame');
+      if (frame.requestFullscreen) await frame.requestFullscreen();
+    });
+
+    (function boot() {
+      const state = getState();
+      if (state.videoId) {
+        playerFrame.src = `https://www.youtube.com/embed/${state.videoId}?autoplay=0&rel=0`;
+        streamStatusChip.textContent = 'Last selected stream restored';
+      }
+      if (!Array.isArray(state.members)) {
+        state.members = ['', '', '', '', '', '', '', ''];
+        saveState(state);
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>
