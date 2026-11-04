@@ -1895,7 +1895,7 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
    if(error)throw error;if(uid!==member||active?.other_user_id!==current)return;
    const rows=data||[],signature=rows.map(r=>r.id+':'+(r.read_at||'')+':'+(r.image_path||'')).join('|');if(!force&&signature===lastSignature)return;lastSignature=signature;
    stream.replaceChildren();if(!rows.length){clearStream('No messages yet. Say hello!');return}
-   for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'📷 Photo':r.body;if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-chat-images');
+   for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'':(r.body||'');if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-chat-images');
     const ts=document.createElement('small');ts.textContent=new Date(r.created_at).toLocaleString();bubble.append(ts);if(r.sender_id===uid){const receipt=document.createElement('small');receipt.className='m4d-receipt';receipt.textContent=r.read_at?'✓✓ Seen':'✓ Sent';receipt.setAttribute('aria-label',r.read_at?'Message seen':'Message sent');bubble.append(receipt)}stream.append(bubble)}stream.scrollTop=stream.scrollHeight;
   }catch(e){note('Could not load messages: '+e.message)}
  }
@@ -1959,7 +1959,7 @@ async function loadMessages(force){
   const {data,error}=await client.from('m4d_chat_group_messages').select('id,group_id,sender_id,body,image_path,created_at').eq('group_id',group).order('created_at',{ascending:true}).limit(200);
   if(error)throw error;if(current!==group)return;
   const rows=data||[];stream.replaceChildren();if(!rows.length){clear('No messages yet. Start the conversation!');return}
-  for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'📷 Photo':r.body;if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-group-chat-images');const meta=document.createElement('small');meta.textContent=(r.sender_id===uid?'You':(friends.find(f=>f.other_user_id===r.sender_id)?.other_username||'Group member'))+' · '+new Date(r.created_at).toLocaleString();bubble.append(meta);stream.append(bubble)}
+  for(const r of rows){const bubble=document.createElement('div');bubble.className='m4d-chat-bubble'+(r.sender_id===uid?' mine':'');bubble.textContent=r.image_path?'':(r.body||'');if(r.image_path)window.m4dRenderChatPhoto?.(bubble,r.image_path,r.sender_id,'m4d-group-chat-images');const meta=document.createElement('small');meta.textContent=(r.sender_id===uid?'You':(friends.find(f=>f.other_user_id===r.sender_id)?.other_username||'Group member'))+' · '+new Date(r.created_at).toLocaleString();bubble.append(meta);stream.append(bubble)}
   stream.scrollTop=stream.scrollHeight;
  }catch(err){say('Could not load group messages: '+err.message)}finally{loading=false}
 }
@@ -2005,8 +2005,8 @@ form.addEventListener('submit',async e=>{
  form.insertBefore(button,field);form.appendChild(choose);
  const report=t=>{if(note)note.textContent=t};
  window.m4dRenderChatPhoto=async function(bubble,path,sender,bucket){
-  if(!path||!bubble.isConnected)return;
-  const img=document.createElement('img');img.className='m4d-chat-attachment';img.alt='Photo attachment';img.loading='lazy';
+  if(!path)return; // The bubble is added to the chat immediately after this renderer starts.
+  const img=document.createElement('img');img.className='m4d-chat-attachment';img.alt='Shared chat photo';img.loading='eager';img.decoding='async';
   const placeholder=document.createElement('span');placeholder.className='m4d-chat-image-error';placeholder.textContent='Loading photo…';bubble.append(placeholder);
   const {data,error}=await db.storage.from(bucket).createSignedUrl(path,3600);
   if(!bubble.isConnected)return;
@@ -2792,6 +2792,7 @@ header nav a[href="#m4dMessages"]{display:none!important}
 <p id="m4dPublicBio"></p>
 <div id="m4dPublicActions"><button hidden="" id="m4dPublicAdd" type="button">+ Add Friend</button></div>
 <p aria-live="polite" id="m4dPublicStatus" role="status"></p>
+<small style="display:block;color:#8f93a1;font-size:10px;margin-top:6px">Friend request controls · v3</small>
 </div>
 </div>
 </div>
@@ -2800,10 +2801,24 @@ header nav a[href="#m4dMessages"]{display:none!important}
  'use strict';
  const client=window.supabaseClient;
  const $=id=>document.getElementById(id);
- const overlay=$('m4dPublicProfileOverlay'), close=$('m4dPublicClose'),avatar=$('m4dPublicAvatar'),name=$('m4dPublicName'),bio=$('m4dPublicBio'),tags=$('m4dPublicTags'),add=$('m4dPublicAdd'),status=$('m4dPublicStatus');
+ const overlay=$('m4dPublicProfileOverlay'),close=$('m4dPublicClose'),avatar=$('m4dPublicAvatar'),name=$('m4dPublicName'),bio=$('m4dPublicBio'),tags=$('m4dPublicTags'),add=$('m4dPublicAdd'),status=$('m4dPublicStatus');
  let viewed=null,viewer=null,viewedRelationStatus=null,requestNumber=0,lastFocus=null;
- function text(message){status.textContent=message}
+ const text=message=>{status.textContent=message};
  function hide(){overlay.hidden=true;viewed=null;requestNumber++;document.body.style.removeProperty('overflow');lastFocus?.focus?.()}
+ function updateFriendButton(relation){
+  viewedRelationStatus=relation?.status||null;
+  add.hidden=false;
+  add.dataset.friendStatus=viewedRelationStatus||'none';
+  if(viewedRelationStatus==='accepted'){
+   add.disabled=true;add.textContent='✓ Friends';
+  }else if(viewedRelationStatus==='pending'){
+   add.disabled=true;add.textContent=relation.requester_id===viewer.id?'Request Sent':'Request Received';
+  }else{
+   // A declined request is NOT a pending request; allow the member to resend it.
+   add.disabled=false;
+   add.textContent=viewedRelationStatus==='declined'?'↻ Send Friend Request Again':'+ Add Friend';
+  }
+ }
  close.addEventListener('click',hide);
  overlay.addEventListener('click',e=>{if(e.target===overlay)hide()});
  document.addEventListener('keydown',e=>{if(overlay.hidden)return;if(e.key==='Escape'){hide();return}if(e.key==='Tab'){const focusable=[close,...(!add.hidden&&!add.disabled?[add]:[])];if(e.shiftKey&&document.activeElement===focusable[0]){e.preventDefault();focusable[focusable.length-1].focus()}else if(!e.shiftKey&&document.activeElement===focusable[focusable.length-1]){e.preventDefault();focusable[0].focus()}}});
@@ -2814,8 +2829,7 @@ header nav a[href="#m4dMessages"]{display:none!important}
   try{
    const {data:auth,error:authError}=await client.auth.getUser();if(authError)throw authError;
    viewer=auth?.user||null;if(!viewer){text('Sign in to view member profiles.');return}
-   const {data,error}=await client.rpc('get_m4d_public_profile',{member_id:id});
-   if(error)throw error;
+   const {data,error}=await client.rpc('get_m4d_public_profile',{member_id:id});if(error)throw error;
    if(run!==requestNumber)return;
    const p=Array.isArray(data)?data[0]:data;
    if(!p){name.textContent='Profile unavailable';text('This profile is unavailable or cannot be viewed.');return}
@@ -2826,27 +2840,26 @@ header nav a[href="#m4dMessages"]{display:none!important}
    const {data:relations,error:relationError}=await client.from('friendships').select('id,requester_id,recipient_id,status').or('requester_id.eq.'+viewer.id+',recipient_id.eq.'+viewer.id);
    if(relationError)throw relationError;
    if(run!==requestNumber)return;
-   const relation=(relations||[]).find(r=>r.requester_id===p.id||r.recipient_id===p.id);
-   add.hidden=false;
-   viewedRelationStatus=relation?.status||null;
-   if(relation && (relation.status==='accepted'||relation.status==='pending')){
-    add.disabled=true;
-    add.textContent=relation.status==='accepted'?'✓ Friends':(relation.requester_id===viewer.id?'Request Sent':'Request Received');
-   }else{
-    add.disabled=false;
-    add.textContent=relation?.status==='declined'?'↻ Send Friend Request Again':'+ Add Friend';
-   }
+   // Prefer active relations if bad legacy data has more than one row for the pair.
+   const matches=(relations||[]).filter(r=>(r.requester_id===viewer.id&&r.recipient_id===p.id)||(r.recipient_id===viewer.id&&r.requester_id===p.id));
+   const relation=matches.find(r=>r.status==='accepted')||matches.find(r=>r.status==='pending')||matches.find(r=>r.status==='declined')||null;
+   updateFriendButton(relation);
   }catch(err){if(run===requestNumber){add.hidden=true;text('Could not load profile: '+(err.message||'Please try again.'))}}
  }
  add.addEventListener('click',async()=>{
   if(!client||!viewer||!viewed||add.disabled)return;
-  const id=viewed,userId=viewer.id;add.disabled=true;add.textContent='Sending…';
-  const declined=viewedRelationStatus==='declined';
-  const result=declined
-   ?await client.rpc('m4d_resend_declined_friend_request',{target_user_id:id})
-   :await client.from('friendships').insert({requester_id:userId,recipient_id:id,status:'pending'});
-  if(result.error){add.disabled=false;add.textContent=declined?'↻ Send Friend Request Again':'+ Add Friend';text('Could not send request: '+result.error.message);return}
-  viewedRelationStatus='pending';add.textContent='Request Sent';text('Friend request sent.');
+  const id=viewed,userId=viewer.id,declined=viewedRelationStatus==='declined';
+  add.disabled=true;add.textContent='Sending…';text('');
+  try{
+   const result=declined
+    ?await client.rpc('m4d_resend_declined_friend_request',{target_user_id:id})
+    :await client.from('friendships').insert({requester_id:userId,recipient_id:id,status:'pending'});
+   if(result.error)throw result.error;
+   viewedRelationStatus='pending';add.dataset.friendStatus='pending';add.disabled=true;add.textContent='Request Sent';text('Friend request sent!');
+  }catch(err){
+   updateFriendButton({status:declined?'declined':null});
+   text('Could not send request: '+(err.message||'Please try again.'));
+  }
  });
  window.m4dOpenPublicProfile=open;
  if(client)client.auth.onAuthStateChange((_event,session)=>{if(!session?.user&&!overlay.hidden)hide()});
