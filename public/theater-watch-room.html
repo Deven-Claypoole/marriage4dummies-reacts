@@ -104,7 +104,7 @@
       box-shadow:0 25px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
       aspect-ratio:16/9;
     }
-    .screen-frame iframe{width:100%;height:100%;border:0;display:block;background:#000}
+    .screen-frame iframe,.screen-frame #playerFrame{width:100%;height:100%;border:0;display:block;background:#000}
     .screen-overlay{
       position:absolute;left:16px;right:16px;top:14px;
       display:flex;justify-content:space-between;gap:10px;pointer-events:none;
@@ -424,7 +424,7 @@
           <div class="proscenium">
             <div class="curtain-top"></div>
             <div class="screen-frame">
-              <iframe id="playerFrame" src="about:blank" title="M4D Theater big screen" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+              <div id="playerFrame" aria-label="M4D Theater YouTube player"></div>
               <div class="screen-overlay">
                 <div class="screen-chip"><span class="dot"></span> On The Big Screen</div>
                 <div class="screen-chip" id="streamStatusChip">M4D TV · getting the reactions ready</div>
@@ -572,6 +572,7 @@
     const M4D_TV_SLOT_MS = 20 * 60 * 1000;
     let tvMode = true, tvSkip = 0, currentTvSlot = -1;
     let ytPlayer = null, queuedVideo = null, soundEnabled = false;
+    let tvConsecutiveErrors = 0;
     const tvButton = $('m4dTvBtn'), nextButton = $('m4dNextBtn'), soundButton = $('m4dSoundBtn');
     function showTvControls() {
       nextButton.hidden = !tvMode;
@@ -579,7 +580,7 @@
       soundButton.textContent = soundEnabled ? '🔇 Mute' : '🔊 Turn Sound On';
     }
     function setPlayerVideo(id, startSeconds = 0) {
-      queuedVideo = { id, startSeconds };
+      queuedVideo = { videoId: id, startSeconds };
       if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
         ytPlayer.loadVideoById({videoId:id, startSeconds});
         if (!soundEnabled) ytPlayer.mute();
@@ -603,6 +604,7 @@
       const id = youtubeId(url);
       if (!id) { streamStatusChip.textContent = 'Invalid YouTube video URL'; return; }
       tvMode = false;
+      tvConsecutiveErrors = 0;
       setPlayerVideo(id, 0);
       streamStatusChip.textContent = 'Your video · only on your screen';
       showTvControls();
@@ -616,25 +618,37 @@
       if (ytPlayer) {
         if (soundEnabled) { ytPlayer.unMute(); ytPlayer.playVideo(); }
         else ytPlayer.mute();
+      } else if (soundEnabled) {
+        streamStatusChip.textContent = 'Player loading — tap Play on the screen if needed';
       }
       showTvControls();
     });
     function initializeM4dYouTubePlayer() {
       if (!window.YT || !YT.Player) return;
       ytPlayer = new YT.Player('playerFrame', {
-        playerVars: {autoplay:1, controls:1, rel:0, playsinline:1},
+        width: '100%', height: '100%',
+        playerVars: {autoplay:1, controls:1, rel:0, playsinline:1, origin: location.origin},
         events: {
           onReady(event) {
             if (!soundEnabled) event.target.mute();
             if (queuedVideo) event.target.loadVideoById(queuedVideo);
           },
           onStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) tvConsecutiveErrors = 0;
             if (event.data === YT.PlayerState.ENDED && tvMode) startM4dTv(true);
           },
+          onAutoplayBlocked() {
+            streamStatusChip.textContent = 'Tap Play on the screen or Turn Sound On to begin';
+          },
           onError(event) {
-            if (tvMode && [100,101,150,153].includes(event.data)) {
-              streamStatusChip.textContent = 'This reaction cannot be embedded · trying another';
-              startM4dTv(true);
+            if (tvMode && [2,5,100,101,150,153].includes(event.data)) {
+              tvConsecutiveErrors++;
+              if (tvConsecutiveErrors >= M4D_TV_VIDEOS.length) {
+                streamStatusChip.textContent = 'M4D TV videos unavailable — paste a YouTube link below';
+              } else {
+                streamStatusChip.textContent = 'Video unavailable · trying another reaction';
+                startM4dTv(true);
+              }
             } else if (event.data) {
               streamStatusChip.textContent = 'YouTube playback error ' + event.data + '. Try another video.';
             }
@@ -645,6 +659,7 @@
     window.onYouTubeIframeAPIReady = initializeM4dYouTubePlayer;
     const youtubeApiScript = document.createElement('script');
     youtubeApiScript.src = 'https://www.youtube.com/iframe_api';
+    youtubeApiScript.onerror = () => { streamStatusChip.textContent = 'YouTube player could not load — check network or content blocker'; };
     document.head.appendChild(youtubeApiScript);
     startM4dTv();
     // Rotate to a new show for visitors who leave the TV on through a scheduled change.
