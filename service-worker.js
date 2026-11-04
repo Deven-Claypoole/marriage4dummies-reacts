@@ -1,5 +1,8 @@
+/* OneSignal + M4D PWA shared root service worker. */
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+
 /* Marriage4Dummies PWA: cache only the public site shell, never personal data. */
-const CACHE_NAME='m4d-shell-v3-icon-fix';
+const CACHE_NAME='m4d-shell-v5-onesignal';
 const SHELL=['/','/index.html','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/icon-512-maskable.png','/icons/apple-touch-icon.png','/apple-touch-icon.png','/favicon.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -20,16 +23,4 @@ self.addEventListener('fetch',event=>{
    }).catch(()=>caches.match('/index.html')));
  }else if(staticAsset){event.respondWith(caches.match(req).then(cached=>cached||fetch(req)));}
 });
-// Notification click routing is ready, but a server-side Web Push sender and
-// user subscription storage must be configured separately.
-self.addEventListener('notificationclick',event=>{
- event.notification.close();
- const dest=event.notification.data?.url || '/';
- const safeUrl=new URL(dest,self.location.origin);
- if(safeUrl.origin!==self.location.origin)return;
- event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(clients=>{
-   const existing=clients.find(client=>client.url.startsWith(self.location.origin));
-   if(existing){return existing.navigate(safeUrl.href).then(()=>existing.focus());}
-   return self.clients.openWindow(safeUrl.href);
- }));
-});
+// OneSignal SDK above handles incoming push events and notification clicks.

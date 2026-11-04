@@ -1,21 +1,32 @@
-MARRIAGE4DUMMIES INSTALLABLE WEB APP — NETLIFY
+MARRIAGE4DUMMIES — ONESIGNAL WEB PUSH UPDATE
+===========================================
+THIS IS A COMPLETE STATIC NETLIFY DEPLOYMENT PACKAGE.
+The original website, new M4D app icon, Vault, mobile fixes, member XP,
+and App Settings are included. Live Theatre is not included.
 
-1. Upload the CONTENTS of this folder to your Netlify site, or drag and drop the ZIP into Netlify Deploys.
-2. Ensure index.html, manifest.webmanifest, service-worker.js, _headers, and icons/ all appear at the site ROOT. Do not upload just index.html for the installable app.
-3. Open your Netlify HTTPS URL in Chrome/Edge on Android or desktop, then tap the “Install M4D App” button if offered. Alternatively use your browser menu.
-4. On iPhone, open your site in Safari > Share > Add to Home Screen. iOS web push requires an installed Home Screen web app.
-5. Test the app launches from the icon and that current site navigation, sign-in, Merch, Vault, and chat work.
+1. On Netlify, open your EXISTING M4D project > Deploys.
+2. Unzip Marriage4Dummies_OneSignal_Ready.zip and upload its contents
+   together (the folder containing index.html). Do not upload only HTML.
+3. Wait for Published. On https://marriage4dummies-reacts.netlify.app/ verify:
+   https://marriage4dummies-reacts.netlify.app/OneSignalSDKWorker.js
+   https://marriage4dummies-reacts.netlify.app/service-worker.js
+   Both must show JavaScript, not the homepage.
+4. Remove/reinstall the M4D Home Screen app on iPhone if notifications or icon
+   remain stale. Open the INSTALLED app and allow notifications.
+5. Go to Members > App Settings & Rewards > Enable Notifications.
+   Or use the OneSignal slide prompt after a pageview.
+6. OneSignal > Audience > Users & subscriptions should show your test device.
+7. OneSignal > Messages > Push > Create message to send a test notification.
 
-IMPORTANT
-- This package INSTALLS the site as a PWA. It does NOT yet send real push notifications. Sending push messages requires VAPID keys, a secure server-side push sender (such as Netlify Functions), per-device subscriptions, explicit permission, and Supabase storage / access policies. Do not place push private keys in the HTML.
-- An installed app does not make Supabase, YouTube, voice calls, or live messages available offline. Offline support is limited to a previously loaded app shell.
-- Google Sites HTML embedding / iframe is not a substitute for deploying the PWA files at the root of your Netlify HTTPS domain.
-- If the install prompt is unavailable, use browser menu instructions; not every browser offers the same install event.
-- If you replace an older deploy and see an old screen, reload once while online to refresh the service worker cache.
+APP ID: c43c6075-5953-4ea7-98d7-2b0e887322e5 (public ID)
 
-HOME SCREEN ICON TROUBLESHOOTING
-1. Deploy the ENTIRE extracted folder to the existing Netlify site. It must contain index.html, manifest.webmanifest, apple-touch-icon.png, favicon.png and icons/.
-2. After publishing, visit https://YOUR-SITE.netlify.app/apple-touch-icon.png directly. It MUST show the complete black-and-red Marriage4Dummies logo. If it returns the website instead, icons were not deployed to the root.
-3. Delete the OLD Home Screen shortcut/app, open the published site in Safari (iPhone) or Chrome (Android), refresh, and add/install it again.
-4. If still showing an M, clear the site's cached data or wait for the browser's icon cache to refresh and reinstall.
-5. Don't deploy only the single HTML file: the app icons are separate PNGs.
+NOTE: OneSignal is configured to use the EXISTING service-worker.js at scope
+'/' to prevent conflicting root service workers. We also include the downloaded
+OneSignalSDKWorker.js for file verification. OneSignal's SDK controls delivery
+and notification clicks; M4D PWA retains its offline shell caching.
+
+The existing member settings in Supabase aren't automatically passed to OneSignal
+when you send broadcast messages from the dashboard. Members can opt in or out;
+per-category enforcement and automatic personalized alerts require a separate
+trusted OneSignal integration. No VAPID secrets or Netlify functions are required
+for sending manual broadcasts through OneSignal.
