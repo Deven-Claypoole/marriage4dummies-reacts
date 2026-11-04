@@ -1703,13 +1703,24 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
     if(member.bio){const bio=document.createElement('div');bio.className='m4d-member-bio';bio.textContent=member.bio;details.appendChild(bio)}
     const add=document.createElement('button');add.type='button';add.className='m4d-friends-action';
     const relation=relById.get(member.id);
-    if(relation){add.disabled=true;add.textContent=relation.status==='accepted'?'✓ Friends':relation.status==='pending'?(relation.requester_id===currentUser.id?'Request Sent':'Request Received'):'Request Declined'}
-    else{add.textContent='+ Add Friend';add.addEventListener('click',async()=>{
+    if(relation && (relation.status==='accepted'||relation.status==='pending')){
+     add.disabled=true;
+     add.textContent=relation.status==='accepted'?'✓ Friends':(relation.requester_id===currentUser.id?'Request Sent':'Request Received');
+    }else{
+     const declined=relation?.status==='declined';
+     add.textContent=declined?'↻ Send Friend Request Again':'+ Add Friend';
+     add.addEventListener('click',async()=>{
       if(requestBusy||!requireUser())return;requestBusy=true;add.disabled=true;add.textContent='Sending…';
-      try{const {error:sendError}=await client.from('friendships').insert({requester_id:currentUser.id,recipient_id:member.id,status:'pending'});if(sendError)throw sendError;add.textContent='Request Sent';msg('Friend request sent to '+(member.username||'member')+'.')}
-      catch(err){add.disabled=false;add.textContent='+ Add Friend';msg('Could not send request: '+(err.message||'Please try again.'))}
+      try{
+       const result=declined
+        ?await client.rpc('m4d_resend_declined_friend_request',{target_user_id:member.id})
+        :await client.from('friendships').insert({requester_id:currentUser.id,recipient_id:member.id,status:'pending'});
+       if(result.error)throw result.error;
+       add.textContent='Request Sent';msg('Friend request sent to '+(member.username||'member')+'.');
+      }catch(err){add.disabled=false;add.textContent=declined?'↻ Send Friend Request Again':'+ Add Friend';msg('Could not send request: '+(err.message||'Please try again.'))}
       finally{requestBusy=false}
-    })}
+     });
+    }
     const view=document.createElement('button');view.type='button';view.className='m4d-public-view';view.textContent='View Profile';view.addEventListener('click',()=>window.m4dOpenPublicProfile?.(member.id));details.appendChild(view);
     avatar.classList.add('m4d-public-clickable');avatar.tabIndex=0;avatar.setAttribute('role','button');avatar.setAttribute('aria-label','View '+(member.username||'member')+' profile');avatar.addEventListener('click',()=>window.m4dOpenPublicProfile?.(member.id));avatar.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();window.m4dOpenPublicProfile?.(member.id)}});
     card.append(avatar,details,add);grid.appendChild(card);
@@ -2778,7 +2789,7 @@ header nav a[href="#m4dMessages"]{display:none!important}
  const client=window.supabaseClient;
  const $=id=>document.getElementById(id);
  const overlay=$('m4dPublicProfileOverlay'), close=$('m4dPublicClose'),avatar=$('m4dPublicAvatar'),name=$('m4dPublicName'),bio=$('m4dPublicBio'),tags=$('m4dPublicTags'),add=$('m4dPublicAdd'),status=$('m4dPublicStatus');
- let viewed=null,viewer=null,requestNumber=0,lastFocus=null;
+ let viewed=null,viewer=null,viewedRelationStatus=null,requestNumber=0,lastFocus=null;
  function text(message){status.textContent=message}
  function hide(){overlay.hidden=true;viewed=null;requestNumber++;document.body.style.removeProperty('overflow');lastFocus?.focus?.()}
  close.addEventListener('click',hide);
@@ -2787,7 +2798,7 @@ header nav a[href="#m4dMessages"]{display:none!important}
  async function open(id){
   if(!client||!id)return;
   lastFocus=document.activeElement;overlay.hidden=false;document.body.style.overflow='hidden';close.focus();
-  const run=++requestNumber;viewed=null;name.textContent='Loading profile…';bio.textContent='';tags.replaceChildren();avatar.textContent='👤';add.hidden=true;text('');
+  const run=++requestNumber;viewed=null;viewedRelationStatus=null;name.textContent='Loading profile…';bio.textContent='';tags.replaceChildren();avatar.textContent='👤';add.hidden=true;text('');
   try{
    const {data:auth,error:authError}=await client.auth.getUser();if(authError)throw authError;
    viewer=auth?.user||null;if(!viewer){text('Sign in to view member profiles.');return}
@@ -2805,16 +2816,25 @@ header nav a[href="#m4dMessages"]{display:none!important}
    if(run!==requestNumber)return;
    const relation=(relations||[]).find(r=>r.requester_id===p.id||r.recipient_id===p.id);
    add.hidden=false;
-   if(relation){add.disabled=true;add.textContent=relation.status==='accepted'?'✓ Friends':relation.status==='pending'?(relation.requester_id===viewer.id?'Request Sent':'Request Received'):'Request Declined'}
-   else{add.disabled=false;add.textContent='+ Add Friend'}
+   viewedRelationStatus=relation?.status||null;
+   if(relation && (relation.status==='accepted'||relation.status==='pending')){
+    add.disabled=true;
+    add.textContent=relation.status==='accepted'?'✓ Friends':(relation.requester_id===viewer.id?'Request Sent':'Request Received');
+   }else{
+    add.disabled=false;
+    add.textContent=relation?.status==='declined'?'↻ Send Friend Request Again':'+ Add Friend';
+   }
   }catch(err){if(run===requestNumber){add.hidden=true;text('Could not load profile: '+(err.message||'Please try again.'))}}
  }
  add.addEventListener('click',async()=>{
   if(!client||!viewer||!viewed||add.disabled)return;
   const id=viewed,userId=viewer.id;add.disabled=true;add.textContent='Sending…';
-  const {error}=await client.from('friendships').insert({requester_id:userId,recipient_id:id,status:'pending'});
-  if(error){add.disabled=false;add.textContent='+ Add Friend';text('Could not send request: '+error.message);return}
-  add.textContent='Request Sent';text('Friend request sent.');
+  const declined=viewedRelationStatus==='declined';
+  const result=declined
+   ?await client.rpc('m4d_resend_declined_friend_request',{target_user_id:id})
+   :await client.from('friendships').insert({requester_id:userId,recipient_id:id,status:'pending'});
+  if(result.error){add.disabled=false;add.textContent=declined?'↻ Send Friend Request Again':'+ Add Friend';text('Could not send request: '+result.error.message);return}
+  viewedRelationStatus='pending';add.textContent='Request Sent';text('Friend request sent.');
  });
  window.m4dOpenPublicProfile=open;
  if(client)client.auth.onAuthStateChange((_event,session)=>{if(!session?.user&&!overlay.hidden)hide()});
