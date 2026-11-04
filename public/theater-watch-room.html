@@ -302,10 +302,47 @@
       .pov-chair{height:66px}.pov-arm{height:65px;width:55px;border-radius:24px 24px 0 0}.pov-seat-label{padding:10px 12px 15px;font-size:9px}.pov-hint{top:4px;font-size:9px}
       .screen-overlay{top:6px;left:6px;right:6px}.screen-chip{padding:5px 7px;font-size:9px}
     }
-    <style>
     #theaterConnection{font-size:12px;line-height:1.4;align-self:center}
     .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
     #memberIdentity{font-size:13px;line-height:1.4}
+
+    /* Shared 3D world: camera turns; seats and screen retain their positions relative to one another. */
+    .theater-shell{--look:0;--screen-glow:.22;}
+    .camera-viewport{position:relative;overflow:hidden;perspective:1500px;perspective-origin:50% 50%;isolation:isolate;background:#050406}
+    .camera-world{position:relative;transform-style:preserve-3d;transform-origin:50% 52%;transform:rotateY(calc(var(--look) * -1deg)) scale(1.035);transition:transform .7s cubic-bezier(.22,.7,.18,1);will-change:transform}
+    /* Do not rotate or slide stage and seats separately. */
+    .theater-shell .stage-wrap,.theater-shell .seat-scene{transform:none!important}
+    .camera-viewport>.pov-chair{position:absolute;bottom:-15px;left:0;right:0;z-index:15;transform:none!important}
+    .camera-viewport::after{content:"";pointer-events:none;position:absolute;inset:0;z-index:12;background:radial-gradient(ellipse at 50% 28%,transparent 30%,rgba(0,0,0,.32) 75%,rgba(0,0,0,.7) 100%);opacity:.8;transition:opacity .45s ease}
+    /* Dim the auditorium substantially, without dimming the actual YouTube player. */
+    .theater-shell.house-lit .theater-floor{filter:brightness(1.35)}
+    .theater-shell.house-lit .camera-viewport::after{opacity:.13}
+    .theater-shell.house-lit .proscenium::after{opacity:0}
+    .theater-shell.house-lit{--screen-glow:.12}
+    .theater-shell:not(.house-lit) .theater-floor{filter:brightness(.28)}
+    .theater-shell:not(.house-lit) .camera-viewport::after{opacity:.95}
+    .proscenium{position:relative}
+    .proscenium::after{content:"";pointer-events:none;position:absolute;inset:0;z-index:1;background:rgba(0,0,0,.78);opacity:1;transition:opacity .45s ease;border-radius:inherit}
+    .proscenium .screen-frame,.proscenium .screen-actions{position:relative;z-index:2}
+    .screen-frame{box-shadow:0 0 45px rgba(255,255,255,var(--screen-glow)),0 0 115px rgba(245,47,66,.1),0 25px 85px #000!important}
+    .immersive-toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 18px 16px;border-top:1px solid #ffffff12;background:#0b0b10}
+    .immersive-toolbar .toolset{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+    .immersive-toolbar .tool-label{color:#bdc0ca;font-size:12px;font-weight:750;letter-spacing:.02em;padding-right:6px}
+    .view-btn{appearance:none;min-height:39px;border:1px solid #55515a;background:#222027;color:#fff;border-radius:10px;padding:9px 11px;font-size:13px;font-weight:750;cursor:pointer}
+    .view-btn:hover,.view-btn:focus-visible{background:#52222c;border-color:#f07987}
+    .view-btn[aria-pressed=true]{background:#852637;border-color:#ff91a0}
+    .cinema-mode{background:#a9233b;border-color:#e64a62}
+    .theater-shell:fullscreen{width:100vw;height:100dvh;min-height:0;overflow:auto;border:0;border-radius:0;background:#070708}
+    .theater-shell:fullscreen .camera-world{max-width:1220px;margin:0 auto}
+    .theater-shell:fullscreen .theater-floor{height:min(42dvh,430px)}
+    .theater-shell:fullscreen .immersive-toolbar{position:sticky;bottom:0;z-index:20}
+    .theater-shell:fullscreen .screen-frame{max-height:52dvh;margin:auto;aspect-ratio:16/9;width:min(100%,95vh)}
+    .seat.occupied{cursor:help}
+    .seat.occupied:hover .seat-tag{border-color:#ffd1a2;background:#31141d;box-shadow:0 0 18px #e1444b33}
+    .seat.occupied .chair{animation:arrival-pop .38s ease-out both}
+    @keyframes arrival-pop{from{filter:brightness(.55);transform:translateY(7px)}to{filter:brightness(1);transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){.camera-world{transition:none!important}.seat.occupied .chair{animation:none}}
+    @media(max-width:760px){.immersive-toolbar{padding:10px;gap:10px}.immersive-toolbar .toolset{justify-content:center;width:100%}.immersive-toolbar .tool-label{width:100%;text-align:center}.view-btn{flex:1 1 auto;padding:10px 7px;font-size:12px}.theater-shell:fullscreen .theater-floor{height:35dvh}.theater-shell:fullscreen .screen-frame{width:100%;max-height:none}}
   </style>
 </head>
 <body>
@@ -315,7 +352,7 @@
         <div class="brand-badge">🎬</div>
         <div>
           <div>M4D Theater Watch Room</div>
-          <small>A seat inside the M4D cinema</small>
+          <small>Immersive first-person cinema</small>
         </div>
       </div>
       <div class="stats">
@@ -327,6 +364,8 @@
 
     <div class="layout">
       <div class="theater-shell">
+        <div class="camera-viewport">
+          <div class="camera-world">
         <div class="stage-wrap">
           <div class="proscenium">
             <div class="curtain-top"></div>
@@ -353,8 +392,25 @@
         <div class="theater-floor">
           <div class="aisle-glow"></div>
           <div class="seat-scene" id="seatScene"></div>
-          <div class="pov-hint">🎟️ YOUR VIEW FROM THE AUDIENCE</div>
+          <div class="pov-hint">🎟️ YOU ARE SITTING IN THE AUDIENCE</div>
+
+        </div>
+
+          </div><!-- camera-world: stage + audience move together -->
           <div class="pov-chair" aria-hidden="true"><div class="pov-arm"></div><div class="pov-seat-label">Your Seat · M4D Theater</div><div class="pov-arm"></div></div>
+        </div><!-- camera-viewport: stationary first-person viewpoint -->
+
+        <div class="immersive-toolbar" role="group" aria-label="Theater camera and lighting controls">
+          <div class="toolset">
+            <span class="tool-label">👀 Look around your seat</span>
+            <button class="view-btn" type="button" id="lookLeft" aria-pressed="false">← Look Left</button>
+            <button class="view-btn" type="button" id="lookCenter" aria-pressed="true">◉ Center</button>
+            <button class="view-btn" type="button" id="lookRight" aria-pressed="false">Look Right →</button>
+          </div>
+          <div class="toolset">
+            <button class="view-btn" type="button" id="houseLights" aria-pressed="false">💡 Turn Lights On</button>
+            <button class="view-btn cinema-mode" type="button" id="immersiveMode">⛶ Immersive Mode</button>
+          </div>
         </div>
       </div>
 
@@ -383,7 +439,7 @@
           </div>
           <div class="card-body help-list">
             <div><strong>Big-screen stream:</strong> Paste a YouTube livestream or video URL and it loads on the theater screen.</div>
-            <div><strong>First-person theater:</strong> You are sitting in your own chair, looking toward the screen past the audience.</div>
+            <div><strong>Immersive POV:</strong> Look left and right from your seat, switch between dark cinema and house lighting, or enter fullscreen cinema mode. You are watching from your own seat.</div>
             <div><strong>Real attendance:</strong> Signed-in M4D members take a seat. Seats update live for everyone when members join and leave.</div>
             <div><strong>Privacy:</strong> Only members who tap Join Room appear in the theater. Leaving or disconnecting removes their seat. Other viewers may see your M4D username and avatar.</div>
           </div>
@@ -451,6 +507,35 @@
       const frame = document.querySelector('.screen-frame');
       if (frame.requestFullscreen) try { await frame.requestFullscreen(); } catch {}
     });
+
+    // POV camera is intentionally visual-only: don't interfere with the YouTube player.
+    const theaterShell = document.querySelector('.theater-shell');
+    const lookButtons = [document.getElementById('lookLeft'),document.getElementById('lookCenter'),document.getElementById('lookRight')];
+    function setLook(angle){
+      theaterShell.style.setProperty('--look',String(angle));
+      lookButtons.forEach((b,i)=>b.setAttribute('aria-pressed',String([ -16,0,16 ][i]===angle)));
+      try{localStorage.setItem('m4d_theater_look',String(angle));}catch{}
+    }
+    lookButtons.forEach((b,i)=>b.addEventListener('click',()=>setLook([-16,0,16][i])));
+    const initialLook = Number(localStorage.getItem('m4d_theater_look'));
+    setLook([-16,0,16].includes(initialLook)?initialLook:0);
+    const lightButton=document.getElementById('houseLights');
+    lightButton.addEventListener('click',()=>{
+      const on=theaterShell.classList.toggle('house-lit');
+      lightButton.setAttribute('aria-pressed',String(on));
+      lightButton.textContent=on?'🌙 Dim Lights':'💡 Turn Lights On';
+    });
+    const immersiveButton=document.getElementById('immersiveMode');
+    immersiveButton.addEventListener('click',async()=>{
+      try {
+        if(document.fullscreenElement===theaterShell){await document.exitFullscreen();}
+        else if(theaterShell.requestFullscreen){await theaterShell.requestFullscreen();}
+      }catch(err){console.warn('Fullscreen unavailable:',err);}
+    });
+    document.addEventListener('fullscreenchange',()=>{
+      immersiveButton.textContent=document.fullscreenElement===theaterShell?'↙ Exit Immersive':'⛶ Immersive Mode';
+    });
+
     const savedVideo = localStorage.getItem('m4d_theater_video');
     if (/^[a-zA-Z0-9_-]{11}$/.test(savedVideo || '')) {
       playerFrame.src = 'https://www.youtube.com/embed/' + savedVideo + '?autoplay=0&rel=0';
