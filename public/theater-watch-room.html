@@ -344,91 +344,27 @@
     @media(prefers-reduced-motion:reduce){.camera-world{transition:none!important}.seat.occupied .chair{animation:none}}
     @media(max-width:760px){.immersive-toolbar{padding:10px;gap:10px}.immersive-toolbar .toolset{justify-content:center;width:100%}.immersive-toolbar .tool-label{width:100%;text-align:center}.view-btn{flex:1 1 auto;padding:10px 7px;font-size:12px}.theater-shell:fullscreen .theater-floor{height:35dvh}.theater-shell:fullscreen .screen-frame{width:100%;max-height:none}}
 
-    /* Seat-side tablet stays pinned to the camera, never rotated with the auditorium. */
-    .m4d-tablet-launcher{position:absolute;z-index:24;right:15px;bottom:83px;display:flex;align-items:center;gap:8px;padding:12px 17px;border:1px solid #c7737e;border-radius:18px;background:linear-gradient(145deg,#b8253e,#54121f);box-shadow:0 12px 35px #000c,0 0 21px #cb3d5547;color:white;font-weight:900;font-size:13px;cursor:pointer}
-    .m4d-tablet-launcher:hover,.m4d-tablet-launcher:focus-visible{filter:brightness(1.15)}
-    .m4d-tablet{position:absolute;right:12px;bottom:82px;z-index:25;width:min(390px,calc(100% - 24px));height:min(570px,80%);min-height:340px;display:flex;flex-direction:column;border:8px solid #303039;border-bottom-width:12px;border-radius:27px;background:#0c0c11;color:#fff;box-shadow:0 24px 75px #000e,0 0 0 1px #9f626b77,0 0 36px #961f363d;overflow:hidden;transform-origin:bottom right;transition:transform .22s,opacity .22s}
-    .m4d-tablet[hidden],.m4d-tablet-launcher[hidden]{display:none!important}
-    .m4d-tablet-head{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;gap:8px;background:linear-gradient(100deg,#4d1520,#19171d);border-bottom:1px solid #ffffff25;flex-shrink:0}
-    .m4d-tablet-title{min-width:0;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:850}
-    .m4d-tablet-head-actions{display:flex;gap:5px}
-    .m4d-tablet-head button{border:1px solid #ffffff30;color:#fff;background:#ffffff18;border-radius:9px;min-height:32px;padding:5px 9px;cursor:pointer;font-size:12px}
-    .m4d-tablet-sub{padding:8px 12px;background:#191921;color:#c6c5d1;font-size:11px;line-height:1.4;flex-shrink:0}
-    .m4d-tablet-view{position:relative;flex:1;min-height:0;background:#101016;display:flex;flex-direction:column}
-    #m4dYouTubeChat{height:100%;width:100%;border:0;background:#fff}
-    .m4d-tablet-placeholder{flex:1;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:12px;text-align:center;padding:22px;color:#d9d9e2}
-    .m4d-tablet-placeholder strong{font-size:16px;color:#fff}
-    .m4d-tablet-placeholder p{font-size:13px;color:#babac7;line-height:1.5;margin:0}
-    .m4d-tablet-foot{padding:9px 10px;border-top:1px solid #ffffff20;display:flex;gap:8px;align-items:center;justify-content:space-between;background:#191921;flex-wrap:wrap}
-    .m4d-tablet-foot a{border:1px solid #e35267;border-radius:10px;padding:8px 10px;background:#9c263b;color:#fff;text-decoration:none;font-size:12px;font-weight:800}
-    .m4d-tablet-foot small{color:#a9a9b6;font-size:10px}
-    .m4d-tablet-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 15px;border:1px solid #be485f;border-radius:11px;background:#8d1c33;color:#fff;font-weight:800;text-decoration:none;font-size:13px}
-    .m4d-tablet-mobile{display:none}
-    @media(max-width:800px){
-      .m4d-tablet-launcher{bottom:52px;right:8px;padding:10px 12px;font-size:12px}
-      .m4d-tablet{right:0;bottom:0;left:0;width:100%;height:min(490px,85%);min-height:290px;border-width:5px;border-radius:20px 20px 0 0}
-      .m4d-tablet-mobile{display:flex}
-      .m4d-tablet-desktop{display:none!important}
-    }
-    @media(min-width:801px){.m4d-tablet-mobile{display:none!important}}
-    .theater-shell:fullscreen .m4d-tablet{height:min(650px,82dvh)}
-    @media(prefers-reduced-motion:reduce){.m4d-tablet{transition:none}}
 
-    /* V2 chat access: keep launcher visible at the edge of the viewport,
-       even when the long theater page scrolls on phones. */
-    #m4dTabletOpen {
-      position:fixed!important;
-      right:max(14px,env(safe-area-inset-right))!important;
-      bottom:calc(16px + env(safe-area-inset-bottom))!important;
-      z-index:10020!important;
-      max-width:calc(100vw - 28px);
-      visibility:visible;
-    }
-    #m4dChatTablet:not([hidden]) {
-      position:fixed!important;
-      right:max(12px,env(safe-area-inset-right))!important;
-      bottom:calc(72px + env(safe-area-inset-bottom))!important;
-      z-index:10021!important;
-      height:min(570px,calc(100dvh - 100px))!important;
-      max-height:calc(100dvh - 95px)!important;
-    }
-    @media(max-width:800px) {
-      #m4dChatTablet:not([hidden]) {
-        left:12px!important;
-        width:calc(100vw - 24px)!important;
-        height:min(590px,calc(100dvh - 95px))!important;
-        border-radius:18px!important;
-      }
-    }
-    .theater-shell:fullscreen #m4dTabletOpen,
-    .theater-shell:fullscreen #m4dChatTablet:not([hidden]) {position:fixed!important}
-    /* M4D Chat Tablet: cinematic slide, real Google-connected mobile chat. */
-    #m4dChatTablet [hidden]{display:none!important}
-    .m4d-tablet{transform:translateX(0) translateY(0) scale(1);opacity:1;transition:transform .34s cubic-bezier(.2,.8,.2,1),opacity .28s ease,visibility .34s;visibility:visible}
-    .m4d-tablet.m4d-tablet-collapsed{transform:translateX(115%) translateY(10%) scale(.86);opacity:0;visibility:hidden;pointer-events:none}
-    .m4d-tablet-launcher{transition:transform .2s ease,filter .2s ease}
-    .m4d-chat-unread{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;border-radius:999px;margin-left:5px;padding:0 5px;background:#ffe086;color:#231314;font-weight:900;font-size:11px}
-    .m4d-chat-unread[hidden]{display:none!important}
-    .m4d-chat-google-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:8px 10px;background:#12121a;border-bottom:1px solid #ffffff1d;flex-shrink:0}
-    .m4d-chat-google-controls button{border:1px solid #ac4d60;border-radius:8px;background:#712136;color:#fff;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer}
-    .m4d-chat-google-controls button:disabled{opacity:.5;cursor:default}
-    .m4d-chat-google-status{font-size:11px;color:#c7c7d3;flex:1;min-width:110px;overflow-wrap:anywhere}
-    .m4d-custom-chat{display:flex;flex:1;min-height:0;flex-direction:column;background:#0c0d12}
-    .m4d-custom-chat[hidden]{display:none!important}
-    .m4d-chat-scroll{flex:1;min-height:0;overflow:auto;padding:12px 10px;display:flex;flex-direction:column;gap:9px;overscroll-behavior:contain}
-    .m4d-chat-message{display:flex;gap:8px;align-items:flex-start;padding:5px;border-radius:8px}
-    .m4d-chat-message img{width:27px;height:27px;border-radius:50%;object-fit:cover;flex-shrink:0}
-    .m4d-chat-message .avatar-fallback{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#4b2435;flex-shrink:0;font-size:10px}
-    .m4d-chat-message-content{min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.45}
-    .m4d-chat-message-name{display:block;color:#ffb2bf;font-weight:850;margin-bottom:2px}
-    .m4d-chat-composer{display:flex;gap:7px;flex-shrink:0;padding:9px;border-top:1px solid #ffffff22;background:#191921}
-    .m4d-chat-composer input{flex:1;min-width:0;border:1px solid #55545f;border-radius:9px;background:#0c0c12;color:white;padding:10px;font-size:13px}
-    .m4d-chat-composer button{border:0;border-radius:9px;background:#da2f4a;color:#fff;padding:9px 12px;font-weight:850;cursor:pointer}
-    .m4d-chat-composer button:disabled{opacity:.45;cursor:default}
-    .m4d-chat-small{font-size:10px;color:#abaaba;padding:4px 10px;background:#111116}
-    .m4d-chat-mobile-intro{padding:14px;text-align:center;color:#d8d8e2;font-size:12px;line-height:1.5}
-    @media(max-width:800px){.m4d-tablet{height:min(590px,88dvh)}.m4d-tablet.m4d-tablet-collapsed{transform:translateY(110%) scale(.97)}}
-    @media(prefers-reduced-motion:reduce){.m4d-tablet{transition:none!important}}
+    /* M4D watch-room-only chat tablet; separate from YouTube OAuth. */
+    #m4dRoomChatOpen{position:fixed;right:18px;bottom:18px;z-index:9999;border:1px solid #ff8d9a;background:linear-gradient(135deg,#b91e35,#6f1323);color:white;border-radius:999px;box-shadow:0 8px 35px #000c;padding:13px 18px;font:800 14px Inter,Segoe UI,Arial,sans-serif;cursor:pointer}
+    #m4dRoomChatPanel{position:fixed;right:18px;bottom:78px;width:min(390px,calc(100vw - 24px));height:min(540px,calc(100dvh - 105px));z-index:9998;display:none;flex-direction:column;border:1px solid #8e3543;border-radius:18px;background:#111116;box-shadow:0 20px 80px #000e;overflow:hidden}
+    #m4dRoomChatPanel.open{display:flex}
+    .m4d-chat-head{padding:14px;background:linear-gradient(110deg,#8d1726,#31111a);display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .m4d-chat-head strong{font-size:16px}.m4d-chat-head small{display:block;color:#ffcad0;margin-top:4px;font-size:11px}
+    #m4dRoomChatClose{border:1px solid #ffffff55;background:#ffffff13;border-radius:8px;color:white;font-size:20px;cursor:pointer;width:34px;height:34px}
+    #m4dRoomChatMessages{flex:1;overflow:auto;overscroll-behavior:contain;padding:14px;display:flex;flex-direction:column;gap:12px}
+    .m4d-chat-msg{background:#1e1e26;border:1px solid #ffffff12;padding:9px 11px;border-radius:12px;overflow-wrap:anywhere}
+    .m4d-chat-msg.mine{background:#382029;border-color:#843647}
+    .m4d-chat-meta{color:#ffb6be;font-size:11px;font-weight:800;display:flex;gap:7px;align-items:center;margin-bottom:5px}
+    .m4d-chat-meta time{color:#bbb;font-weight:500}
+    .m4d-chat-body{white-space:pre-wrap;font-size:13px;line-height:1.45}
+    #m4dRoomChatStatus{font-size:12px;padding:9px 13px;color:#c6c6d0;border-top:1px solid #ffffff16;min-height:33px}
+    #m4dRoomChatForm{display:flex;gap:7px;padding:11px;border-top:1px solid #ffffff16}
+    #m4dRoomChatInput{flex:1;min-width:0;background:#25252b;border:1px solid #555;color:white;border-radius:9px;padding:11px;font:inherit;font-size:13px}
+    #m4dRoomChatSend{border:0;border-radius:9px;background:#bb233c;color:white;font-weight:800;padding:10px 13px;cursor:pointer}
+    #m4dRoomChatSend:disabled,#m4dRoomChatInput:disabled{opacity:.5;cursor:not-allowed}
+    @media(max-width:760px){#m4dRoomChatOpen{right:12px;bottom:12px}#m4dRoomChatPanel{right:12px;bottom:70px;height:min(530px,calc(100dvh - 92px))}}
+
   </style>
 </head>
 <body>
@@ -498,36 +434,7 @@
             <button class="view-btn cinema-mode" type="button" id="immersiveMode">⛶ Immersive Mode</button>
           </div>
         </div>
-        <button class="m4d-tablet-launcher" id="m4dTabletOpen" type="button" aria-controls="m4dChatTablet" aria-expanded="false">💬 Open Chat Tablet · v2 <span class="m4d-chat-unread" id="m4dChatUnread" hidden>0</span></button>
-        <aside id="m4dChatTablet" class="m4d-tablet" aria-label="YouTube live chat tablet" hidden>
-          <div class="m4d-tablet-head">
-            <span class="m4d-tablet-title">📱 M4D Seat-Side Chat</span>
-            <div class="m4d-tablet-head-actions">
-              <button id="m4dTabletReload" type="button" title="Reload YouTube chat">↻</button>
-              <button id="m4dTabletClose" type="button" aria-label="Close chat tablet">✕</button>
-            </div>
-          </div>
-          <div class="m4d-chat-google-controls">
-            <button id="m4dConnectYouTube" type="button">Connect YouTube</button>
-            <button id="m4dDisconnectYouTube" type="button" hidden>Disconnect</button>
-            <span id="m4dGoogleStatus" class="m4d-chat-google-status">YouTube sign-in is separate from your M4D account.</span>
-          </div>
-          <div class="m4d-tablet-sub" id="m4dChatStatus" role="status">Load a live YouTube stream to connect its chat.</div>
-          <div class="m4d-tablet-view">
-            <div class="m4d-tablet-placeholder m4d-tablet-desktop" id="m4dChatDesktopMessage"><strong>💬 Real YouTube Live Chat</strong><p>Load an active YouTube livestream on the big screen to open its actual live chat here.</p></div>
-            <iframe id="m4dYouTubeChat" title="YouTube live chat" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
-            <div class="m4d-tablet-placeholder m4d-tablet-mobile" id="m4dMobileChatFallback"><strong>📱 Chat from your phone</strong><p>YouTube does not allow its normal live-chat embed on mobile websites. Use the button below to participate in the real YouTube chat.</p><a id="m4dChatMobileLink" class="m4d-tablet-btn" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">Open YouTube Live Chat ↗</a></div>
-            <div class="m4d-custom-chat" id="m4dCustomChat" hidden>
-              <div id="m4dChatMessages" class="m4d-chat-scroll" role="log" aria-live="polite"><div class="m4d-chat-mobile-intro">Connect your YouTube account to read and send messages here.</div></div>
-              <div class="m4d-chat-small">Messages post to the real YouTube live chat. YouTube channel and moderation rules apply.</div>
-              <form class="m4d-chat-composer" id="m4dChatSendForm">
-                <input id="m4dChatMessageInput" type="text" maxlength="200" autocomplete="off" placeholder="Message the livestream..." aria-label="YouTube live chat message" required />
-                <button id="m4dChatSendButton" type="submit">Send</button>
-              </form>
-            </div>
-          </div>
-          <div class="m4d-tablet-foot"><small>Real YouTube chat • active livestreams only</small><a id="m4dChatYouTubeLink" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">Open on YouTube ↗</a></div>
-        </aside>
+
       </div>
 
       <div class="sidebar">
@@ -557,6 +464,7 @@
             <div><strong>Big-screen stream:</strong> Paste a YouTube livestream or video URL and it loads on the theater screen.</div>
             <div><strong>Immersive POV:</strong> Look left and right from your seat, switch between dark cinema and house lighting, or enter fullscreen cinema mode. You are watching from your own seat.</div>
             <div><strong>Real attendance:</strong> Signed-in M4D members take a seat. Seats update live for everyone when members join and leave.</div>
+            <div><strong>Watch Room Chat:</strong> Take your seat to message other M4D members. This is a separate M4D chat, not YouTube live chat.</div>
             <div><strong>Privacy:</strong> Only members who tap Join Room appear in the theater. Leaving or disconnecting removes their seat. Other viewers may see your M4D username and avatar.</div>
           </div>
         </div>
@@ -568,7 +476,15 @@
     </div>
   </div>
 
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <button type="button" id="m4dRoomChatOpen" aria-controls="m4dRoomChatPanel" aria-expanded="false">💬 Watch Room Chat</button>
+  <section id="m4dRoomChatPanel" aria-label="Watch Room Chat" aria-hidden="true">
+    <div class="m4d-chat-head"><div><strong>💬 M4D Watch Room Chat</strong><small>Chat with other M4D members in the theater</small></div><button type="button" id="m4dRoomChatClose" aria-label="Close chat">×</button></div>
+    <div id="m4dRoomChatMessages" role="log" aria-live="polite" aria-relevant="additions"><div class="muted">Join the theater to chat with members.</div></div>
+    <div id="m4dRoomChatStatus" role="status">Checking your M4D login…</div>
+    <form id="m4dRoomChatForm" autocomplete="off"><input id="m4dRoomChatInput" maxlength="500" placeholder="Join the theater to send a message" aria-label="Chat message" disabled required /><button id="m4dRoomChatSend" type="submit" disabled>Send</button></form>
+  </section>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // This page uses the SAME publishable URL/key as M4D's existing public/index.html.
@@ -610,263 +526,6 @@
         return /^[a-zA-Z0-9_-]{11}$/.test(id || '') ? id : null;
       } catch { return null; }
     }
-    // Live chat is YouTube's real chat iframe on desktop. Mobile web embeds are unsupported.
-    let m4dChatVideoId = null;
-    const m4dTablet = $('m4dChatTablet');
-    const m4dTabletOpen = $('m4dTabletOpen');
-    const m4dTabletClose = $('m4dTabletClose');
-    const m4dChatFrame = $('m4dYouTubeChat');
-    const m4dChatStatus = $('m4dChatStatus');
-    const m4dChatDesktopMessage = $('m4dChatDesktopMessage');
-    const m4dChatYouTubeLink = $('m4dChatYouTubeLink');
-    const m4dChatMobileLink = $('m4dChatMobileLink');
-    const m4dDesktop = () => window.matchMedia('(min-width:801px)').matches;
-    let m4dTabletIsOpen = false;
-    let m4dTabletCloseSeq = 0;
-    function m4dOpenTablet() {
-      m4dTabletIsOpen = true;
-      m4dTabletCloseSeq++;
-      m4dTablet.hidden = false;
-      m4dTablet.classList.add('m4d-tablet-collapsed');
-      requestAnimationFrame(() => requestAnimationFrame(() => m4dTablet.classList.remove('m4d-tablet-collapsed')));
-      m4dTabletOpen.hidden = true;
-      m4dTabletOpen.setAttribute('aria-expanded','true');
-      m4dTabletClose.focus();
-      m4dClearUnread();
-      m4dSyncChat();
-    }
-    function m4dCloseTablet() {
-      m4dTabletIsOpen = false;
-      const seq = ++m4dTabletCloseSeq;
-      m4dTablet.classList.add('m4d-tablet-collapsed');
-      m4dTabletOpen.hidden = false;
-      m4dTabletOpen.setAttribute('aria-expanded','false');
-      m4dChatFrame.hidden = true;
-      m4dChatFrame.removeAttribute('src');
-      setTimeout(() => { if (seq === m4dTabletCloseSeq && !m4dTabletIsOpen) m4dTablet.hidden = true; }, 360);
-      m4dTabletOpen.focus();
-    }
-    function m4dSyncChat(force = false) {
-      const videoId = m4dChatVideoId;
-      m4dChatFrame.hidden = true;
-      m4dChatDesktopMessage.hidden = false;
-      if (videoId) {
-        const watchUrl = 'https://www.youtube.com/watch?v=' + encodeURIComponent(videoId);
-        m4dChatYouTubeLink.href = watchUrl;
-        m4dChatMobileLink.href = watchUrl;
-      }
-      if (m4dGoogleConnected()) {
-        m4dChatDesktopMessage.hidden = true;
-        $('m4dMobileChatFallback').hidden = true;
-        $('m4dCustomChat').hidden = false;
-        if (videoId) m4dMaybeStartChat();
-        else m4dChatStatus.textContent = 'Load an active livestream to connect chat.';
-        return;
-      }
-      $('m4dCustomChat').hidden = true;
-      $('m4dMobileChatFallback').hidden = false;
-      if (!videoId) {
-        m4dChatStatus.textContent = 'Load an active livestream to connect YouTube chat.';
-        m4dChatFrame.removeAttribute('src');
-        return;
-      }
-      const watch = 'https://www.youtube.com/watch?v=' + encodeURIComponent(videoId);
-      m4dChatYouTubeLink.href = watch;
-      m4dChatMobileLink.href = watch;
-      if (!m4dDesktop()) {
-        m4dChatStatus.textContent = 'Mobile: Open YouTube to read and send live chat messages.';
-        m4dChatFrame.removeAttribute('src');
-        return;
-      }
-      if (m4dTablet.hidden) return;
-      const embed = 'https://www.youtube.com/live_chat?v=' + encodeURIComponent(videoId) +
-        '&embed_domain=' + encodeURIComponent(window.location.hostname);
-      if (force || m4dChatFrame.getAttribute('src') !== embed) m4dChatFrame.src = embed;
-      m4dChatFrame.hidden = false;
-      m4dChatDesktopMessage.hidden = true;
-      m4dChatStatus.textContent = 'YouTube Live Chat · If unavailable, check that the livestream is active and chat is enabled.';
-    }
-
-    // GOOGLE / YOUTUBE LIVE CHAT (per-user Google Identity Services token flow).
-    // Replace only this PUBLIC OAuth client ID from Google Cloud. Never use a client secret here.
-    const M4D_GOOGLE_CLIENT_ID = '599014783536-8s4mv35gad0249sijhitm19mboorah4l.apps.googleusercontent.com';
-    const M4D_GOOGLE_SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
-    let m4dGoogleAccessToken = null, m4dGoogleTokenExpiry = 0, m4dGoogleTokenClient = null;
-    let m4dLiveChatId = null, m4dLiveChatVideo = null, m4dPageToken = null;
-    let m4dChatTimer = null, m4dChatBusy = false, m4dChatRun = 0;
-    let m4dChatIds = new Set(), m4dChatHasLoaded = false, m4dUnread = 0, m4dLastSend = 0;
-    const m4dGoogleStatus = $('m4dGoogleStatus');
-    const m4dChatScroll = $('m4dChatMessages');
-    const m4dConnectButton = $('m4dConnectYouTube');
-    const m4dDisconnectButton = $('m4dDisconnectYouTube');
-    function m4dGoogleConnected() {
-      return !!m4dGoogleAccessToken && Date.now() < m4dGoogleTokenExpiry - 30000;
-    }
-    function m4dClearUnread() {
-      m4dUnread = 0;
-      $('m4dChatUnread').hidden = true;
-      $('m4dChatUnread').textContent = '0';
-    }
-    function m4dIncrementUnread(n) {
-      if (m4dTabletIsOpen || n <= 0) return;
-      m4dUnread = Math.min(99,m4dUnread+n);
-      $('m4dChatUnread').textContent = m4dUnread >= 99 ? '99+' : String(m4dUnread);
-      $('m4dChatUnread').hidden = false;
-    }
-    function m4dStopChatTimer() { if (m4dChatTimer) clearTimeout(m4dChatTimer); m4dChatTimer = null; }
-    function m4dResetChatStream() {
-      m4dChatRun++;
-      m4dStopChatTimer();
-      m4dLiveChatId = null; m4dLiveChatVideo = null; m4dPageToken = null;
-      m4dChatIds.clear(); m4dChatHasLoaded = false; m4dClearUnread();
-      m4dChatScroll.replaceChildren();
-      const msg = document.createElement('div'); msg.className = 'm4d-chat-mobile-intro';
-      msg.textContent = 'Connecting to this livestream chat...'; m4dChatScroll.appendChild(msg);
-      if (m4dGoogleConnected()) m4dMaybeStartChat();
-    }
-    function m4dYoutubeError(resp, json) {
-      const message = json?.error?.message || 'YouTube API request failed';
-      if (resp.status === 401) {
-        m4dGoogleAccessToken = null; m4dGoogleTokenExpiry = 0;
-        m4dGoogleStatus.textContent = 'Google authorization expired. Connect again.';
-        m4dConnectButton.hidden = false; m4dDisconnectButton.hidden = true;
-        m4dSyncChat();
-      }
-      return new Error(message.slice(0,220));
-    }
-    async function m4dYoutubeApi(path,options={}) {
-      if (!m4dGoogleConnected()) throw new Error('Connect your YouTube account to continue.');
-      const response = await fetch('https://www.googleapis.com/youtube/v3/'+path,{
-        ...options,
-        headers:{ Authorization:'Bearer '+m4dGoogleAccessToken, ...(options.body?{'Content-Type':'application/json'}:{}) }
-      });
-      const data = await response.json().catch(()=>({}));
-      if(!response.ok) throw m4dYoutubeError(response,data);
-      return data;
-    }
-    function m4dGoogleConfigured() {
-      return /^[0-9]+-[a-z0-9-]+\.apps\.googleusercontent\.com$/i.test(M4D_GOOGLE_CLIENT_ID);
-    }
-    m4dConnectButton.addEventListener('click',()=>{
-      if (!m4dGoogleConfigured()) {
-        m4dGoogleStatus.textContent = 'Admin setup needed: add Google OAuth Client ID to theater HTML.'; return;
-      }
-      if (!window.google?.accounts?.oauth2) {
-        m4dGoogleStatus.textContent = 'Google sign-in could not load. Try Chrome/Safari or disable blockers.'; return;
-      }
-      try {
-        if (!m4dGoogleTokenClient) {
-          m4dGoogleTokenClient = google.accounts.oauth2.initTokenClient({
-            client_id:M4D_GOOGLE_CLIENT_ID,scope:M4D_GOOGLE_SCOPE,
-            callback:(result)=>{
-              if (!result || result.error || !result.access_token) {
-                m4dGoogleStatus.textContent = 'YouTube connection canceled or denied.'; return;
-              }
-              m4dGoogleAccessToken = result.access_token;
-              m4dGoogleTokenExpiry = Date.now() + Math.max(60,Number(result.expires_in)||3600)*1000;
-              m4dConnectButton.hidden = true; m4dDisconnectButton.hidden = false;
-              m4dGoogleStatus.textContent = 'Connected to YouTube. Messages will post as your YouTube channel.';
-              m4dResetChatStream(); m4dSyncChat(true);
-            },
-            error_callback:()=>{m4dGoogleStatus.textContent='Google popup blocked or closed. Try opening this page in your browser.';}
-          });
-        }
-        m4dGoogleTokenClient.requestAccessToken({prompt:'consent'});
-      } catch(err) { m4dGoogleStatus.textContent = String(err.message||err); }
-    });
-    m4dDisconnectButton.addEventListener('click',()=>{
-      // Clear the token from JS memory; does not delete the user's Google account.
-      const token = m4dGoogleAccessToken;
-      m4dGoogleAccessToken=null; m4dGoogleTokenExpiry=0; m4dResetChatStream();
-      if(token && window.google?.accounts?.oauth2?.revoke) google.accounts.oauth2.revoke(token,()=>{});
-      m4dConnectButton.hidden=false; m4dDisconnectButton.hidden=true;
-      m4dGoogleStatus.textContent='YouTube disconnected.'; m4dSyncChat(true);
-    });
-    async function m4dFindLiveChat(run,videoId) {
-      const data = await m4dYoutubeApi('videos?part=liveStreamingDetails&id='+encodeURIComponent(videoId));
-      if (run !== m4dChatRun || m4dChatVideoId!==videoId) return null;
-      const chatId = data.items?.[0]?.liveStreamingDetails?.activeLiveChatId;
-      if (!chatId) throw new Error('No active YouTube live chat for this video. It must be live with chat enabled.');
-      m4dLiveChatId=chatId; m4dLiveChatVideo=videoId;
-      return chatId;
-    }
-    function m4dAppendMessage(item) {
-      if (!item?.id || m4dChatIds.has(item.id) || !item?.snippet?.hasDisplayContent) return false;
-      m4dChatIds.add(item.id);
-      const line = document.createElement('div');line.className='m4d-chat-message';
-      const photo = item?.authorDetails?.profileImageUrl;
-      if(photo && /^https:\/\//.test(photo)) {
-        const img=document.createElement('img'); img.alt=''; img.referrerPolicy='no-referrer';img.src=photo;line.appendChild(img);
-      } else {
-        const fallback=document.createElement('div'); fallback.className='avatar-fallback';fallback.textContent='👤';line.appendChild(fallback);
-      }
-      const content=document.createElement('div');content.className='m4d-chat-message-content';
-      const name=document.createElement('span');name.className='m4d-chat-message-name';name.textContent=String(item?.authorDetails?.displayName||'YouTube Member').slice(0,80);
-      const body=document.createElement('span');body.textContent=String(item?.snippet?.displayMessage||'').slice(0,2000);
-      content.append(name,body);line.appendChild(content);
-      const intro = m4dChatScroll.querySelector('.m4d-chat-mobile-intro'); if(intro) intro.remove();
-      m4dChatScroll.appendChild(line);
-      while (m4dChatScroll.children.length>100) m4dChatScroll.firstElementChild.remove();
-      return true;
-    }
-    async function m4dPollLiveChat(run) {
-      if (run!==m4dChatRun || !m4dGoogleConnected() || !m4dChatVideoId) return;
-      if (m4dChatBusy) return;
-      if (document.hidden) { m4dChatTimer=setTimeout(()=>m4dPollLiveChat(run),60000);return; }
-      m4dChatBusy=true;
-      let waitMs=60000; // Conservative polling protects a shared Google API project quota.
-      try {
-        if(!m4dLiveChatId || m4dLiveChatVideo!==m4dChatVideoId) await m4dFindLiveChat(run,m4dChatVideoId);
-        if (run!==m4dChatRun || !m4dLiveChatId) return;
-        const params=new URLSearchParams({liveChatId:m4dLiveChatId,part:'snippet,authorDetails',maxResults:'50'});
-        if(m4dPageToken) params.set('pageToken',m4dPageToken);
-        const data=await m4dYoutubeApi('liveChat/messages?'+params.toString());
-        if(run!==m4dChatRun) return;
-        let fresh=0;
-        (data.items||[]).forEach(item=>{if(m4dAppendMessage(item)) fresh++});
-        m4dPageToken=data.nextPageToken || null;
-        if (m4dChatHasLoaded) m4dIncrementUnread(fresh);
-        m4dChatHasLoaded=true;
-        m4dChatScroll.scrollTop=m4dChatScroll.scrollHeight;
-        waitMs=Math.max(30000,Number(data.pollingIntervalMillis)||30000);
-        // Avoid excessive quota usage, particularly when the chat tablet is closed.
-        if(!m4dTabletIsOpen) waitMs=Math.max(60000,waitMs);
-        m4dChatStatus.textContent='YouTube chat connected. Messages refresh periodically; posting is immediate.';
-      } catch(err) {
-        m4dChatStatus.textContent='Chat: '+String(err.message||err).slice(0,180);
-        waitMs=90000;
-      } finally {
-        m4dChatBusy=false;
-        if(m4dGoogleConnected()) m4dChatTimer=setTimeout(()=>m4dPollLiveChat(m4dChatRun),run===m4dChatRun?waitMs:100);
-      }
-    }
-    function m4dMaybeStartChat(){
-      if(!m4dGoogleConnected() || !m4dChatVideoId || m4dChatTimer || m4dChatBusy) return;
-      const run=m4dChatRun;
-      m4dPollLiveChat(run);
-    }
-    $('m4dChatSendForm').addEventListener('submit',async(event)=>{
-      event.preventDefault();
-      const input=$('m4dChatMessageInput'), button=$('m4dChatSendButton');
-      const message=input.value.trim();
-      if(!message || !m4dGoogleConnected()) {m4dChatStatus.textContent='Connect YouTube first.';return;}
-      if(!m4dLiveChatId){m4dChatStatus.textContent='Load a live stream with active chat first.';return;}
-      if(Date.now()-m4dLastSend<3000){m4dChatStatus.textContent='Please wait a moment between messages.';return;}
-      m4dLastSend=Date.now(); button.disabled=true;
-      try {
-        await m4dYoutubeApi('liveChat/messages?part=snippet',{
-          method:'POST',body:JSON.stringify({snippet:{liveChatId:m4dLiveChatId,type:'textMessageEvent',textMessageDetails:{messageText:message}}})
-        });
-        input.value='';m4dChatStatus.textContent='Message posted to YouTube live chat.';
-        m4dStopChatTimer(); m4dChatTimer=setTimeout(()=>m4dPollLiveChat(m4dChatRun),5000);
-      } catch(err){m4dChatStatus.textContent='Could not send: '+String(err.message||err).slice(0,180);}
-      finally{button.disabled=false;}
-    });
-
-    m4dTabletOpen.addEventListener('click',m4dOpenTablet);
-    m4dTabletClose.addEventListener('click',m4dCloseTablet);
-    $('m4dTabletReload').addEventListener('click',()=>m4dSyncChat(true));
-    window.addEventListener('resize',()=>{ if (!m4dTablet.hidden) m4dSyncChat(); });
     function loadVideo(url) {
       const id = youtubeId(url);
       if (!id) { streamStatusChip.textContent = 'Invalid YouTube video URL'; return; }
@@ -874,10 +533,6 @@
       streamStatusChip.textContent = 'Loaded on big screen';
       // The video selection is local for now; it does not alter other viewers' streams.
       localStorage.setItem('m4d_theater_video', id);
-      m4dChatVideoId = id;
-      m4dResetChatStream();
-      m4dSyncChat(true);
-      if (m4dDesktop()) m4dOpenTablet();
     }
     $('loadStreamBtn').addEventListener('click', () => loadVideo(streamInput.value));
     streamInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadVideo(streamInput.value); });
@@ -886,8 +541,6 @@
       if (frame.requestFullscreen) try { await frame.requestFullscreen(); } catch {}
     });
 
-    m4dChatVideoId = youtubeId(localStorage.getItem('m4d_theater_video') || '');
-    m4dSyncChat();
 
     // POV camera is intentionally visual-only: don't interfere with the YouTube player.
     const theaterShell = document.querySelector('.theater-shell');
@@ -993,10 +646,76 @@
         avatar:validAvatar(data?.avatar_url)
       };
     }
+
+    // Local M4D chat: uses existing Supabase Auth; NO Google/YouTube OAuth.
+    const chatOpenBtn=$('m4dRoomChatOpen'), chatPanel=$('m4dRoomChatPanel'), chatCloseBtn=$('m4dRoomChatClose');
+    const chatMessages=$('m4dRoomChatMessages'), chatStatus=$('m4dRoomChatStatus');
+    const chatForm=$('m4dRoomChatForm'),chatInput=$('m4dRoomChatInput'),chatSend=$('m4dRoomChatSend');
+    let chatRows=[],chatSub=null,chatRefreshBusy=false,chatPending=false;
+    const chatTable='m4d_theater_chat_messages';
+    function chatState(){
+      const allowed=!!(user&&joined);
+      chatInput.disabled=chatSend.disabled=!allowed||chatPending;
+      chatInput.placeholder=!user?'Sign in to M4D first':!joined?'Take your seat to chat':'Message theater members…';
+      if(!user)chatStatus.textContent='Sign in to your M4D account to chat.';
+      else if(!joined)chatStatus.textContent='Join Room / Take My Seat to chat.';
+      else if(!chatRefreshBusy)chatStatus.textContent='M4D members chat · not YouTube chat';
+    }
+    function renderChat(){
+      const atBottom=chatMessages.scrollHeight-chatMessages.scrollTop-chatMessages.clientHeight < 75;
+      chatMessages.replaceChildren();
+      if(!chatRows.length){const n=document.createElement('div');n.className='muted';n.textContent='No messages yet. Say hello!';chatMessages.append(n);}
+      for(const msg of chatRows){
+        const item=document.createElement('article');item.className='m4d-chat-msg'+(msg.user_id===user?.id?' mine':'');
+        const meta=document.createElement('div');meta.className='m4d-chat-meta';
+        const author=document.createElement('span');author.textContent=String(msg.username||'M4D Member').slice(0,40);
+        const time=document.createElement('time');time.dateTime=msg.created_at;time.textContent=new Date(msg.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+        const body=document.createElement('div');body.className='m4d-chat-body';body.textContent=msg.body;
+        meta.append(author,time);item.append(meta,body);chatMessages.append(item);
+      }
+      if(atBottom)chatMessages.scrollTop=chatMessages.scrollHeight;
+    }
+    async function refreshChat(){
+      if(!user||chatRefreshBusy)return;
+      chatRefreshBusy=true;
+      try{
+        const {data,error}=await sb.from(chatTable).select('id,user_id,username,body,created_at').order('created_at',{ascending:false}).limit(75);
+        if(error)throw error;
+        const signature=JSON.stringify(data);
+        if(signature!==JSON.stringify([...chatRows].reverse())){chatRows=[...(data||[])].reverse();renderChat();}
+        if(joined)chatStatus.textContent='M4D members chat · not YouTube chat';
+      }catch(e){chatStatus.textContent='Chat unavailable: '+(e?.message||'check Supabase SQL setup');}
+      finally{chatRefreshBusy=false;}
+    }
+    async function initChat(){
+      if(chatSub){await sb.removeChannel(chatSub);chatSub=null;}
+      chatRows=[];renderChat();chatState();
+      if(!user)return;
+      await refreshChat();
+      // Realtime accelerates delivery; polling recovers missed events when Postgres changes are not enabled.
+      chatSub=sb.channel('m4d-theater-chat-changes').on('postgres_changes',{event:'INSERT',schema:'public',table:chatTable},()=>refreshChat()).subscribe();
+    }
+    function setChatOpen(open){chatPanel.classList.toggle('open',open);chatPanel.setAttribute('aria-hidden',String(!open));chatOpenBtn.setAttribute('aria-expanded',String(open));if(open){refreshChat();if(!chatInput.disabled)chatInput.focus();}}
+    chatOpenBtn.addEventListener('click',()=>setChatOpen(!chatPanel.classList.contains('open')));
+    chatCloseBtn.addEventListener('click',()=>setChatOpen(false));
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')setChatOpen(false)});
+    chatForm.addEventListener('submit',async e=>{
+      e.preventDefault();const body=chatInput.value.trim();if(!user||!joined||chatPending||!body)return;
+      if(body.length>500){chatStatus.textContent='Maximum 500 characters';return;}
+      chatPending=true;chatState();chatStatus.textContent='Sending…';
+      try{
+        const {error}=await sb.from(chatTable).insert({user_id:user.id,username:displayName,body});
+        if(error)throw error;
+        chatInput.value='';await refreshChat();chatStatus.textContent='Sent · M4D members chat';
+      }catch(err){chatStatus.textContent='Could not send: '+(err?.message||'unknown error');}
+      finally{chatPending=false;chatState();}
+    });
+    setInterval(()=>{if(user&&chatPanel.classList.contains('open')&&!document.hidden)refreshChat();},4000);
+
     async function startSession() {
       const ticket = ++bootToken;
       if (channel) { const old = channel; channel=null; await sb.removeChannel(old); }
-      joined=false; subscribed=false; occupants=[]; user=null; render();
+      joined=false; subscribed=false; occupants=[]; user=null; render();chatState();
       const {data:{user:currentUser},error} = await sb.auth.getUser();
       if (ticket!==bootToken) return;
       if (error || !currentUser) {
@@ -1009,6 +728,7 @@
       if (ticket!==bootToken) return;
       displayName=profile.name; avatarUrl=profile.avatar;
       memberIdentity.textContent='Signed in as '+displayName;
+      initChat();
       connection.textContent='Connecting audience…';
       const c = sb.channel(topic, {config:{private:true,presence:{key:user.id,enabled:true}}});
       channel=c;
@@ -1029,11 +749,11 @@
       if (!user || !channel || !subscribed) {connection.textContent='Sign in or reconnect to join';return;}
       const result=await channel.track({user_id:user.id,name:displayName,avatar:avatarUrl,joined_at:new Date().toISOString()});
       if (result!=='ok') {connection.textContent='Could not take seat: '+result;return;}
-      joined=true; connection.textContent='You are seated'; syncPresence();
+      joined=true; connection.textContent='You are seated'; syncPresence();chatState();
     }
     async function leaveRoom() {
       if (!channel) return;
-      await channel.untrack(); joined=false; connection.textContent='Seat released';syncPresence();
+      await channel.untrack(); joined=false; connection.textContent='Seat released';syncPresence();chatState();
     }
     seatMeBtn.addEventListener('click',joinRoom);
     joinSeatBtn.addEventListener('click',joinRoom);
@@ -1042,6 +762,7 @@
     sb.auth.onAuthStateChange(event=>{
       if (event==='SIGNED_IN'||event==='SIGNED_OUT') setTimeout(startSession,0);
     });
+    chatState();
     startSession();
   </script>
 </body>
