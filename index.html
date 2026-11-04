@@ -2515,6 +2515,7 @@ form.addEventListener('submit',async e=>{
 <button aria-controls="m4dAdminPaneSongqueue" aria-selected="false" data-pane="songqueue" id="m4dAdminTabSongqueue" role="tab" tabindex="-1" type="button">🎵 Song Queue</button>
 
 <button aria-controls="m4dAdminPaneAnnouncements" aria-selected="true" data-pane="announcements" id="m4dAdminTabAnnouncements" role="tab" tabindex="0" type="button">📣 Announcements</button>
+<button aria-controls="m4dAdminPaneNotifications" aria-selected="false" data-pane="notifications" id="m4dAdminTabNotifications" role="tab" tabindex="-1" type="button">🔔 Push Alerts</button>
 <button aria-controls="m4dAdminPaneModeration" aria-selected="false" data-pane="moderation" id="m4dAdminTabModeration" role="tab" tabindex="-1" type="button">🛡️ Moderation</button>
 <button aria-controls="m4dAdminPaneMilestones" aria-selected="false" data-pane="milestones" id="m4dAdminTabMilestones" role="tab" tabindex="-1" type="button">🎯 Milestones</button>
 </div>
@@ -2522,6 +2523,18 @@ form.addEventListener('submit',async e=>{
   <div class="m4d-song-heading"><div><h3>🎵 Payment Verification &amp; Song Queue</h3><p>Check the donation in your payment account before verifying a screenshot. Approved songs join the public queue.</p></div><button class="m4d-song-btn secondary" id="m4dSongAdminRefresh" type="button">↻ Refresh</button></div>
   <p class="m4d-song-note" id="m4dSongAdminNotice" role="status" aria-live="polite"></p>
   <div id="m4dSongAdminList" class="m4d-song-list"></div>
+</div>
+<div aria-labelledby="m4dAdminTabNotifications" class="m4d-admin-pane" hidden id="m4dAdminPaneNotifications" role="tabpanel" tabindex="0">
+<h3>🔔 Admin Notification Center</h3>
+<p class="m4d-admin-pane-note">Only authorized admins can send push alerts. Messages and friend requests are delivered privately; members can opt out of each category in App Settings.</p>
+<form id="m4dPushAdminForm" class="m4d-push-form">
+<label>Alert type<select id="m4dPushCategory"><option value="announcements">📣 Announcement</option><option value="live">🔴 Going Live</option><option value="vault">🔐 Vault Update</option><option value="requests">🎵 Song Request Update</option></select></label>
+<label>Title<input id="m4dPushTitle" maxlength="100" required placeholder="M4D is LIVE!" /></label>
+<label>Message<textarea id="m4dPushBody" maxlength="240" required rows="3" placeholder="Tap to join the community!"></textarea></label>
+<label>Link (optional)<input id="m4dPushLink" maxlength="500" placeholder="/#m4dLiveQueue" /></label>
+<button type="submit" id="m4dPushSend">🔔 Send Notification</button>
+<p role="status" aria-live="polite" id="m4dPushStatus"></p>
+</form><p class="m4d-admin-pane-note">Livestream status changing from OFFLINE to LIVE also queues an alert automatically. Push notifications can take around a minute to dispatch.</p>
 </div>
 <div aria-labelledby="m4dAdminTabAnnouncements" class="m4d-admin-pane" id="m4dAdminPaneAnnouncements" role="tabpanel" tabindex="0"><p class="m4d-admin-pane-note">Create and send updates to the community. Your announcement creator is here.</p><div id="m4dAnnouncementSlot"></div></div>
 <div aria-labelledby="m4dAdminTabModeration" class="m4d-admin-pane" hidden="" id="m4dAdminPaneModeration" role="tabpanel" tabindex="0"><div class="m4d-admin-pane-top"><h3>Member Reports</h3><button id="m4dModRefresh" type="button">↻ Refresh reports</button></div><div aria-label="Report statistics" class="mod-stats" id="m4dModStats"></div><div class="mod-controls"><label for="m4dModFilter">Show</label><select id="m4dModFilter"><option value="all">All reports</option><option value="open">Open</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div><p aria-live="polite" class="mod-status" id="m4dModStatus" role="status"></p><div class="mod-list" id="m4dModList"></div></div>
@@ -2560,7 +2573,7 @@ form.addEventListener('submit',async e=>{
 const section=document.getElementById('m4dModeration');
 const tablist=document.getElementById('m4dAdminTabs');
 if(!section||!tablist)return;
-const names=['announcements','moderation','milestones','livestream','songqueue'];
+const names=['announcements','notifications','moderation','milestones','livestream','songqueue'];
 function select(name,focus){
  if(!names.includes(name))name='announcements';
  for(const n of names){
@@ -5007,7 +5020,8 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
   <div class="m4d-feature-grid">
    <div class="m4d-feature-card"><h3>🔔 Push Notifications</h3>
     <p class="m4d-note">Notifications use OneSignal. On iPhone, open the installed M4D Home Screen app (iOS 16.4+) to subscribe.</p>
-    <button type="button" id="m4dEnablePush">Enable Notifications</button>
+    <button type="button" id="m4dEnablePush">Checking Notifications…</button>
+    <p id="m4dDevicePushState" role="status" aria-live="polite" class="m4d-note">Checking your device notification status…</p>
     <button type="button" id="m4dTestPush">How to Send Test Alert</button>
     <button type="button" id="m4dDisablePush">Disable on This Device</button>
     <div id="m4dPushCategories">
@@ -5042,6 +5056,35 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
  const $=id=>document.getElementById(id), status=m=>{$('m4dAppStatus').textContent=m};
  const client=()=>window.supabaseClient;
  const currentUser=async()=>{const sb=client();if(!sb)throw Error('Account connection unavailable');const {data:{user},error}=await sb.auth.getUser();if(error||!user)throw Error('Please sign in to M4D first');return user};
+ // Read OneSignal's actual device subscription state, not an HTML default.
+ let pushRefreshInProgress=false;
+ async function refreshPushStatus(){
+  if(pushRefreshInProgress)return;
+  pushRefreshInProgress=true;
+  const enable=$('m4dEnablePush'), disable=$('m4dDisablePush'), label=$('m4dDevicePushState');
+  try{
+   if(!('Notification' in window)||!('serviceWorker' in navigator)){
+    enable.disabled=true;disable.disabled=true;
+    enable.textContent='Push Not Supported';
+    label.textContent='On iPhone, use the installed M4D Home Screen app (iOS 16.4+).';
+    return;
+   }
+   const OneSignal=await window.m4dOneSignalReady;
+   // A stored subscription and opted-in permission are both required.
+   const sub=OneSignal.User.PushSubscription;
+   const active=Notification.permission==='granted' && !!sub.optedIn && !!sub.id;
+   enable.disabled=active||Notification.permission==='denied';
+   disable.disabled=!sub.optedIn;
+   enable.textContent=active?'✅ Notifications Enabled':(Notification.permission==='denied'?'Notifications Blocked':'Enable Notifications');
+   label.textContent=active?'Push notifications are enabled on this device and remain enabled after closing the app.':
+    (Notification.permission==='denied'?'Notifications are blocked in your phone settings. Allow them there to subscribe again.':
+    'Push notifications are not enabled on this device. Tap Enable Notifications to subscribe.');
+  }catch(err){
+   enable.disabled=false;enable.textContent='Enable Notifications';
+   label.textContent='Could not verify OneSignal status. Check your internet connection and reopen the app.';
+   console.warn('M4D push status refresh:',err);
+  }finally{pushRefreshInProgress=false;}
+ }
  const base64ToUint8=base64=>{const padding='='.repeat((4-base64.length%4)%4);const raw=atob((base64+padding).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(raw,c=>c.charCodeAt(0))};
  async function load(){
   try{
@@ -5071,13 +5114,18 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
    if(!('Notification' in window)||!('serviceWorker' in navigator))throw Error('Push is unsupported in this browser. On iPhone, use the installed M4D Home Screen app (iOS 16.4+).');
    if(Notification.permission==='denied')throw Error('Notifications are blocked in your phone or browser settings.');
    const OneSignal=await window.m4dOneSignalReady;
-   await OneSignal.User.PushSubscription.optIn();
-   if(!OneSignal.User.PushSubscription.optedIn)throw Error('Subscription not enabled yet. Make sure you allow the notification permission prompt.');
+   // Do not repeatedly request permission if the subscription already exists.
+   if(!(Notification.permission==='granted' && OneSignal.User.PushSubscription.optedIn && OneSignal.User.PushSubscription.id)){
+     await OneSignal.User.PushSubscription.optIn();
+   }
+   await refreshPushStatus();
+   if(!OneSignal.User.PushSubscription.optedIn || !OneSignal.User.PushSubscription.id)throw Error('Subscription is not ready. Check your device permission and internet connection.');
    status('OneSignal notifications are enabled on this device!');
  }));
  $('m4dDisablePush').addEventListener('click',()=>run(async()=>{
    const OneSignal=await window.m4dOneSignalReady;
    await OneSignal.User.PushSubscription.optOut();
+   await refreshPushStatus();
    status('OneSignal notifications disabled on this device.');
  }));
  $('m4dTestPush').addEventListener('click',()=>{
@@ -5086,9 +5134,76 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
  $('m4dAppInstallShortcut').addEventListener('click',()=>{const original=$('m4dPwaInstallArea');if(original){original.hidden=false;original.scrollIntoView({behavior:'smooth',block:'center'});}else status('iPhone: Share → Add to Home Screen. Android: browser menu → Install app.');});
  // Place a discoverable link in the existing member navigation without rewriting its handlers.
  function addNav(){const menu=document.querySelector('#m4dOrganizedNav [data-group="members"] .m4d-nav-menu')||document.querySelector('#m4dOrganizedNav [data-group="community"] .m4d-nav-menu');if(menu&&!menu.querySelector('a[href="#m4dAppCenter"]')){const a=document.createElement('a');a.href='#m4dAppCenter';a.textContent='🏆 App Settings & Rewards';menu.appendChild(a);}}
- addNav();window.addEventListener('hashchange',()=>{if(location.hash==='#m4dAppCenter')setTimeout(()=>{$('m4dAppCenter').scrollIntoView({behavior:'smooth'});load()},150)});
+ addNav();
+ // Re-check whenever the app is launched, reopened or resumed from background.
+ window.addEventListener('pageshow',refreshPushStatus);
+ window.addEventListener('focus',refreshPushStatus);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPushStatus()});
+ window.m4dOneSignalReady?.then(os=>{
+   os.User.PushSubscription.addEventListener('change',refreshPushStatus);
+   refreshPushStatus();
+ }).catch(()=>refreshPushStatus());
+ window.addEventListener('hashchange',()=>{if(location.hash==='#m4dAppCenter')setTimeout(()=>{$('m4dAppCenter').scrollIntoView({behavior:'smooth'});load()},150)});
  const sb=client();if(sb){sb.auth.onAuthStateChange(()=>setTimeout(load,100));}
  load();
+})();
+</script>
+
+<style id="m4d-push-center-css">
+.m4d-push-form{display:grid;gap:14px;max-width:700px}
+.m4d-push-form label{display:grid;gap:7px;font-weight:700;color:#edf0f6}
+.m4d-push-form input,.m4d-push-form textarea,.m4d-push-form select{background:#171a24;color:#fff;border:1px solid #575a69;border-radius:10px;padding:12px;width:100%;box-sizing:border-box}
+.m4d-push-form button{background:#c92743;color:#fff;border:0;border-radius:10px;padding:14px 18px;font-weight:850;cursor:pointer}
+.m4d-push-form button:disabled{opacity:.6;cursor:wait}
+#m4dPushStatus{min-height:20px;color:#ffd3db}
+</style>
+<script id="m4d-onesignal-member-identity">
+(()=>{
+ 'use strict';
+ const db=window.supabaseClient;
+ if(!db?.auth || !window.m4dOneSignalReady)return;
+ let current=null,sequence=0;
+ async function sync(user){
+   const next=user?.id||null;
+   if(next===current)return;
+   current=next;const rev=++sequence;
+   try{
+     const os=await window.m4dOneSignalReady;
+     if(rev!==sequence)return;
+     // Only logged-in users receive personally addressed push alerts.
+     if(next)await os.login(next);
+     else await os.logout();
+   }catch(err){console.warn('M4D push identity sync:',err)}
+ }
+ db.auth.getUser().then(({data})=>sync(data?.user)).catch(()=>{});
+ db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>sync(session?.user),0));
+})();
+</script>
+<script id="m4d-admin-push-composer">
+(()=>{
+ 'use strict';
+ const db=window.supabaseClient,form=document.getElementById('m4dPushAdminForm'),notice=document.getElementById('m4dPushStatus');
+ if(!db?.auth||!form)return;
+ const $=id=>document.getElementById(id);
+ const templates={live:['🔴 M4D IS LIVE!','Markis & Christian are live! Tap to watch.','/#m4dLiveQueue'],vault:['🔐 New M4D Vault Drop','Exclusive content has been added to the M4D Vault!','/#m4dExclusiveVault'],announcements:['📣 M4D Announcement','There is a new announcement from the M4D team.','/#m4dModeration'],requests:['🎵 M4D Song Requests','Check the latest song request updates.','/#m4dLiveQueue']};
+ $('m4dPushCategory').addEventListener('change',()=>{const t=templates[$('m4dPushCategory').value];if(t){$('m4dPushTitle').value=t[0];$('m4dPushBody').value=t[1];$('m4dPushLink').value=t[2]}});
+ $('m4dPushCategory').dispatchEvent(new Event('change'));
+ form.addEventListener('submit',async e=>{
+   e.preventDefault();const btn=$('m4dPushSend');
+   const data={category:$('m4dPushCategory').value,title:$('m4dPushTitle').value.trim(),body:$('m4dPushBody').value.trim(),target_url:$('m4dPushLink').value.trim()||'/'};
+   if(!data.title||!data.body)return;
+   if(!confirm('Queue this push notification for eligible subscribed M4D members?'))return;
+   btn.disabled=true;notice.textContent='Checking admin authorization…';
+   try{
+     const {data:session,error}=await db.auth.getSession();
+     if(error||!session?.session?.access_token)throw Error('Please sign in again.');
+     const resp=await fetch('/.netlify/functions/m4d-admin-notify',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.session.access_token},body:JSON.stringify(data)});
+     const result=await resp.json().catch(()=>({}));
+     if(!resp.ok)throw Error(result.error||'Push notification could not be queued.');
+     notice.textContent='✅ Alert queued! It should be processed by the scheduled sender.';
+   }catch(err){notice.textContent='❌ '+(err.message||String(err))}
+   finally{btn.disabled=false}
+ });
 })();
 </script>
 </body>

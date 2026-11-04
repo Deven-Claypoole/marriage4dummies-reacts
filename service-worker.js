@@ -2,7 +2,7 @@
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
 /* Marriage4Dummies PWA: cache only the public site shell, never personal data. */
-const CACHE_NAME='m4d-shell-v5-onesignal';
+const CACHE_NAME='m4d-shell-v7-push-state-sync';
 const SHELL=['/','/index.html','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/icon-512-maskable.png','/icons/apple-touch-icon.png','/apple-touch-icon.png','/favicon.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
