@@ -398,7 +398,13 @@
     @media(max-width:760px){#m4dRoomChatOpen{right:12px;bottom:12px}#m4dRoomChatPanel{right:12px;bottom:70px;height:min(530px,calc(100dvh - 92px))}}
 
   </style>
-</head>
+<style id="m4d-theater-watch-parties-v3">
+.m4d-party{margin:20px 20px 0;background:#15161d;border:1px solid #42434c;border-radius:18px;padding:20px;color:#f6f6f7;scroll-margin-top:95px}
+.m4d-party-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}.m4d-party-header strong{font-size:20px}.m4d-party-header p{margin:8px 0 18px;color:#b8bbca;font-size:13px}.m4d-party-header span{background:#35212b;border:1px solid #75414f;border-radius:30px;padding:8px 12px;font-size:12px}
+.m4d-party-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.m4d-party-grid>div{background:#20232d;border:1px solid #40434e;padding:15px;border-radius:12px}.m4d-party label{display:block;font-size:13px;font-weight:700;margin:0 0 8px}.m4d-party input:not([type=checkbox]){width:100%;padding:12px;border:1px solid #626672;background:#101218;border-radius:8px;color:#fff;margin-bottom:10px}.m4d-party .m4d-party-check{display:flex;gap:10px;align-items:center;margin:5px 0 14px}.m4d-party-list{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}.m4d-party-list button{padding:9px 12px;background:#303644;border:1px solid #5c6172;color:#fff;border-radius:8px;cursor:pointer}.m4d-party-buttons{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.m4d-party-buttons input{flex:1 1 220px;min-width:0}.m4d-party #m4dPartyActive{margin-top:17px;padding:17px;border:1px solid #5d3b4d;border-radius:12px;background:#25212b}.m4d-party #m4dPartyShare{overflow-wrap:anywhere;color:#cbd0de;font-size:12px}.m4d-party #m4dPartyStatus{margin-bottom:0;color:#d0d4de;font-size:13px}
+@media(max-width:700px){.m4d-party-grid{grid-template-columns:1fr}.m4d-party{padding:14px}}
+body.m4d-immersive-active .m4d-party{display:none}
+</style></head>
 <body>
   <div class="page">
     <div class="topbar">
@@ -416,6 +422,14 @@
       </div>
     </div>
 
+<section class="m4d-party" id="watch-parties" aria-label="M4D Theatre watch parties">
+ <div class="m4d-party-header"><div><strong>🎟️ Watch Parties 2.0</strong><p>Same theatre, shared playback. M4D TV is still available when you're not in a party.</p></div><span id="m4dPartyMode">M4D TV</span></div>
+ <div class="m4d-party-grid"><div><label for="m4dPartyTitle">Create watch party</label><input id="m4dPartyTitle" maxlength="80" placeholder="Friday Night Reactions"/><label class="m4d-party-check"><input id="m4dPartyPrivate" type="checkbox"/> Private — invite link required</label><button class="btn btn-red" id="m4dPartyCreate" type="button">Create party</button></div>
+ <div><label for="m4dPartyInvite">Join a party</label><input id="m4dPartyInvite" placeholder="Paste a room invite link or room ID"/><button class="btn" id="m4dPartyJoin" type="button">Join party</button><div id="m4dPartyPublic" class="m4d-party-list"></div></div></div>
+ <div id="m4dPartyActive" hidden><h3 id="m4dPartyHeading">Current party</h3><p id="m4dPartyShare"></p><div class="m4d-party-buttons"><button id="m4dPartyCopy" class="btn" type="button">Copy invite</button><button id="m4dPartyExit" class="btn" type="button">Leave party view</button></div>
+ <div id="m4dPartyHostTools" hidden><label for="m4dPartyVideo">Host controls — YouTube URL</label><div class="m4d-party-buttons"><input id="m4dPartyVideo" placeholder="Paste a YouTube video link"/><button id="m4dPartyLoad" class="btn btn-red" type="button">Load</button><button id="m4dPartyPlay" class="btn" type="button">Play</button><button id="m4dPartyPause" class="btn" type="button">Pause</button></div></div></div>
+ <p id="m4dPartyStatus" role="status" aria-live="polite">Sign in to create or join a watch party.</p>
+ </section>
     <div class="layout">
       <div class="theater-shell">
         <div class="camera-viewport">
@@ -907,6 +921,41 @@
     sb.auth.onAuthStateChange(event=>{
       if (event==='SIGNED_IN'||event==='SIGNED_OUT') setTimeout(startSession,0);
     });
+
+    // WATCH PARTIES 2.0 — integrated with the existing theatre's single YouTube player.
+    const p$=id=>document.getElementById('m4dParty'+id);
+    let partyRoom=null,partyHost=false,partyTimer=null,partyInvite='';
+    const partyStatus=(message,isError=false)=>{p$('Status').textContent=message;p$('Status').style.color=isError?'#ff9ea9':'#d0d4de'};
+    const partyUuid=s=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s||'');
+    function partyParseInvite(value){try{const u=new URL(value);return {id:u.searchParams.get('room'),code:u.searchParams.get('invite')}}catch{return {id:value.trim(),code:null}}}
+    function partyInviteUrl(r){const u=new URL(location.href);u.hash='watch-parties';u.searchParams.set('room',r.id);u.searchParams.delete('invite');if(r.private_room)u.searchParams.set('invite',r.invite_code);return u.toString()}
+    async function partyList(){try{const {data,error}=await sb.from('m4d_next_rooms').select('id,title').eq('private_room',false).order('created_at',{ascending:false}).limit(12);if(error)throw error;const box=p$('Public');box.replaceChildren();for(const r of data||[]){const b=document.createElement('button');b.type='button';b.textContent=r.title;b.addEventListener('click',()=>partyJoin(r.id,null));box.append(b)}if(!data?.length)box.textContent='No public parties yet.'}catch(e){partyStatus('Unable to list parties: '+e.message,true)}}
+    async function partyOpen(id){const {data,error}=await sb.from('m4d_next_rooms').select('*').eq('id',id).single();if(error)throw error;partyRoom=data;partyHost=!!user&&user.id===data.host_id;partyInvite=partyInviteUrl(data);p$('Active').hidden=false;p$('HostTools').hidden=!partyHost;p$('Heading').textContent=data.title;p$('Share').textContent=partyInvite;p$('Mode').textContent=partyHost?'Hosting party':'Watching party';partyStatus(partyHost?'You are host. Load a video to begin.':'Connected to shared playback.');
+      clearInterval(partyTimer);await partySync();partyTimer=setInterval(()=>{if(!document.hidden)partySync()},3500);
+      const u=new URL(location.href);u.searchParams.set('room',id);if(data.private_room)u.searchParams.set('invite',data.invite_code);u.hash='watch-parties';history.replaceState(null,'',u);
+    }
+    async function partyCreate(){try{const {data:{user:current}}=await sb.auth.getUser();if(!current)throw Error('Sign in on the main M4D site first.');user=current;const title=p$('Title').value.trim();if(title.length<3)throw Error('Choose a room title of at least 3 characters.');const {data,error}=await sb.rpc('m4d_next_create_room',{p_title:title,p_private:p$('Private').checked});if(error)throw error;await partyOpen(data);await partyList()}catch(e){partyStatus(e.message,true)}}
+    async function partyJoin(id,code){try{const {data:{user:current}}=await sb.auth.getUser();if(!current)throw Error('Sign in on M4D first.');user=current;if(!partyUuid(id)||code&&!partyUuid(code))throw Error('Invalid party invite.');const {error}=await sb.rpc('m4d_next_join_room',{p_id:id,p_code:code||null});if(error)throw error;await partyOpen(id)}catch(e){partyStatus(e.message,true)}}
+    async function partyPublish(id,seconds,playing){if(!partyRoom||!partyHost)return;const {error}=await sb.rpc('m4d_next_set_playback',{p_id:partyRoom.id,p_video:id,p_seconds:Math.max(0,Math.min(86400,seconds||0)),p_playing:playing});if(error){partyStatus('Host control failed: '+error.message,true);return}await partySync()}
+    async function partyControl(mode){if(!partyRoom||!partyHost)return;const id=mode==='load'?youtubeId(p$('Video').value):partyRoom.video_id;if(!id)return partyStatus('Enter a valid YouTube video link.',true);const seconds=mode==='load'?0:(ytPlayer?.getCurrentTime?.()||0);await partyPublish(id,seconds,mode!=='pause');}
+    async function partySync(){if(!partyRoom)return;try{const {data:r,error}=await sb.from('m4d_next_rooms').select('video_id,is_playing,video_seconds,synced_at').eq('id',partyRoom.id).single();if(error)throw error;if(!r.video_id){partyStatus('Waiting for the host to select a video.');return}
+      tvMode=false;showTvControls();const expected=Math.max(0,Number(r.video_seconds||0)+(r.is_playing?(Date.now()-new Date(r.synced_at).getTime())/1000:0));
+      const currentId=queuedVideo?.videoId;
+      if(currentId!==r.video_id){setPlayerVideo(r.video_id,expected)}else if(ytPlayer&&typeof ytPlayer.getCurrentTime==='function'&&Math.abs(ytPlayer.getCurrentTime()-expected)>3){ytPlayer.seekTo(expected,true)}
+      if(ytPlayer&&typeof ytPlayer.getPlayerState==='function'){const state=ytPlayer.getPlayerState();if(r.is_playing&&state!==1){try{ytPlayer.playVideo()}catch{}}if(!r.is_playing&&state===1)ytPlayer.pauseVideo()}
+      streamStatusChip.textContent='🎟️ '+partyRoom.title+' · shared screen';
+    }catch(e){partyStatus('Sync issue: '+e.message,true)}}
+    function partyExit(){clearInterval(partyTimer);partyTimer=null;partyRoom=null;partyHost=false;partyInvite='';p$('Active').hidden=true;p$('Mode').textContent='M4D TV';const u=new URL(location.href);u.searchParams.delete('room');u.searchParams.delete('invite');history.replaceState(null,'',u);startM4dTv();partyStatus('Back to M4D TV. You can rejoin any time.');}
+    // Prevent the regular local-only controls from overriding a guest's synchronized party view.
+    for(const id of ['loadStreamBtn','m4dTvBtn','m4dNextBtn'])document.getElementById(id)?.addEventListener('click',e=>{if(!partyRoom)return;e.stopImmediatePropagation();e.preventDefault();partyStatus(partyHost?'Use the Watch Party host controls below, or leave the party first.':'Only the host can change the shared screen.',true)},true);
+    streamInput.addEventListener('keydown',e=>{if(partyRoom&&e.key==='Enter'){e.stopImmediatePropagation();e.preventDefault();partyStatus('Use the party controls below.',true)}},true);
+    p$('Create').addEventListener('click',partyCreate);
+    p$('Join').addEventListener('click',()=>{const v=partyParseInvite(p$('Invite').value);partyJoin(v.id,v.code)});
+    p$('Load').addEventListener('click',()=>partyControl('load'));p$('Play').addEventListener('click',()=>partyControl('play'));p$('Pause').addEventListener('click',()=>partyControl('pause'));
+    p$('Copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(partyInvite);partyStatus('Invite link copied.')}catch{partyStatus('Copy the invite shown above.')}});
+    p$('Exit').addEventListener('click',partyExit);
+    sb.auth.getUser().then(async({data:{user:u}})=>{if(!u)return;user=u;await partyList();const url=new URL(location.href);if(partyUuid(url.searchParams.get('room')))await partyJoin(url.searchParams.get('room'),url.searchParams.get('invite'))}).catch(e=>partyStatus(e.message,true));
+
     chatState();
     startSession();
   </script>
