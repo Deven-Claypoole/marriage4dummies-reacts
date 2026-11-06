@@ -10,71 +10,10 @@
 .upgrade-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.upgrade-panel{background:linear-gradient(135deg,#1d1f2a,#121319);border:1px solid #343440;border-radius:20px;padding:26px}.upgrade-panel h3{font-size:24px;margin:8px 0}.upgrade-panel p{color:#a8a9b7;line-height:1.65}.upgrade-badge{display:inline-block;color:#ff8e9b;text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.upgrade-action{display:inline-flex;align-items:center;justify-content:center;background:#f04456;color:white!important;border-radius:10px;padding:13px 19px;text-decoration:none;font-weight:800;margin-top:14px}.upgrade-action.outline{background:#292b36;border:1px solid #494b5a}.upgrade-notice{font-size:13px;color:#b9bbc7;background:#242631;border-left:3px solid #f04456;padding:12px 15px;border-radius:6px}.upgrade-hero{display:flex;gap:20px;align-items:center}.upgrade-hero img{width:110px;height:110px;object-fit:cover;border-radius:18px;border:2px solid #f04456}.upgrade-search{width:100%;padding:15px;border:1px solid #454552;border-radius:11px;background:#111219;color:#fff;font:inherit;margin:14px 0}.upgrade-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.upgrade-result{display:block;background:#242631;border:1px solid #373946;border-radius:12px;padding:17px;text-decoration:none;color:#fff}.upgrade-result:hover{border-color:#f04456}.upgrade-result small{display:block;color:#aaa;margin-top:6px}.upgrade-schedule{display:grid;gap:12px;margin:18px 0}.upgrade-event{padding:16px;border:1px solid #393b47;border-radius:12px;background:#22242d}.upgrade-event strong{display:block;margin-bottom:5px}.upgrade-event small{color:#b8b9c3}.upgrade-hint{font-size:12px;color:#9d9eaa}.upgrade-result:focus-visible,.upgrade-action:focus-visible{outline:2px solid #fff;outline-offset:3px}
 @media(max-width:680px){.upgrade-grid,.upgrade-results{grid-template-columns:1fr}.upgrade-hero{align-items:flex-start}.upgrade-hero img{width:76px;height:76px}}
 </style><style>
-/* CINEMATIC STREAMING PLATFORM REDESIGN */
-:root{--bg:#08090b;--surface:#16171b;--border:#292b31;--text:#f7f7f8;--muted:#a7a8b0;--red:#e50914}
-html{scroll-padding-top:86px}body{background:#090a0c;color:#f6f6f7;font-family:Inter,Arial,Helvetica,sans-serif;overflow-x:hidden}
-.wrap{max-width:1460px;padding:0 5vw}
-header{background:linear-gradient(180deg,rgba(7,7,9,.98),rgba(7,7,9,.85));border:0;box-shadow:0 10px 35px #0003}
-header .wrap{min-height:76px;gap:32px}.brand{font-size:17px;white-space:nowrap;letter-spacing:-.8px}.brand b{color:#e50914}.brand small{font-size:9px;letter-spacing:2.5px}.brand-logo{width:43px;height:43px;border:1px solid #4b2629;border-radius:6px}
-nav{gap:24px;align-items:center}nav a{font-size:13px;color:#d1d1d4;font-weight:650;transition:color .2s}nav a:hover{color:white}nav a[href="#video-search"]{border:1px solid #5c5c64;border-radius:7px;padding:10px 16px;color:#fff}
-.hero{min-height:690px;display:flex;align-items:center;padding:100px 0 135px;background:linear-gradient(90deg,#08090b 0%,#09090be8 36%,#0b0b0bb5 65%,#0b0b0b88 100%),radial-gradient(ellipse at 84% 25%,#aa172b 0%,#3d111b 24%,transparent 58%),linear-gradient(125deg,#17191f,#09090b 65%);position:relative}
-.hero:before{content:'M4D';position:absolute;right:1vw;top:5%;font-weight:1000;font-size:clamp(190px,32vw,520px);letter-spacing:-.14em;color:#ffffff07;line-height:1;pointer-events:none}
-.hero:after{content:'';position:absolute;bottom:0;left:0;right:0;height:180px;background:linear-gradient(transparent,#090a0c)}
-.hero .wrap{position:relative;z-index:1;width:100%}.hero-kicker{display:inline-flex;border-left:4px solid #e50914;background:#ffffff12;padding:10px 14px;font-size:10px;letter-spacing:2px;font-weight:850;margin-bottom:24px;color:#eee}
-.hero .eyebrow{color:#e9e9ed;font-size:12px;letter-spacing:3px}.hero h1{font-size:clamp(52px,7.5vw,112px);font-weight:1000;letter-spacing:-.065em;line-height:.95;max-width:1000px;margin:20px 0 24px;text-shadow:0 4px 30px #0008}.hero h1 em{color:#f20a1c}.hero p{font-size:18px;line-height:1.65;color:#d4d4d9;max-width:610px}
-.actions{margin-top:32px}.btn{border-radius:5px;padding:15px 23px;font-size:14px;background:#e50914;box-shadow:0 8px 22px #0005}.btn.secondary{background:#ffffff25;border:1px solid #ffffff35;backdrop-filter:blur(8px)}.btn:hover{filter:brightness(1.15)}
-.stats{margin-top:56px;gap:40px}.stat{border-left:2px solid #e50914;padding-left:14px}.stat strong{font-size:27px}.stat span{font-size:11px;letter-spacing:.5px}
-section{padding:55px 0}.sectionhead{margin-bottom:22px}h2{font-size:clamp(25px,3vw,38px);font-weight:850;letter-spacing:-.04em}.eyebrow,.upgrade-badge{color:#f34b55!important;font-weight:850;letter-spacing:2px}.lead{font-size:14px}
-.featured{background:#111215}.featuregrid{grid-template-columns:1.35fr 1fr;gap:45px}.featurecopy h3{font-size:clamp(30px,3.5vw,52px);letter-spacing:-.05em}.video{border-radius:8px;border-color:#35353b;box-shadow:0 20px 55px #0008}
-.upgrade-grid{gap:18px}.upgrade-panel{background:#17181c;border:1px solid #303137;border-radius:9px;padding:28px;transition:transform .2s,border-color .2s}.upgrade-panel:hover{transform:translateY(-3px);border-color:#6b343a}.upgrade-panel h3{font-size:25px}.upgrade-hero img{border-radius:7px;border-color:#333}
-.cards{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.card{background:#17181c;border:1px solid #24252a;border-radius:6px;transition:transform .22s,border-color .22s,box-shadow .22s}.card:hover{transform:scale(1.045);border-color:#b52936;box-shadow:0 15px 40px #0009;z-index:1}.art{height:auto;aspect-ratio:16/10}.art .symbol{font-size:48px}.cardbody{padding:14px}.cardbody h3{font-size:15px;line-height:1.4}.cardbottom{margin-top:15px}.watch{border-radius:4px;background:#33343a}.watch:hover{background:#e50914}
-.filters{gap:7px}.filter{border-radius:4px;background:#1e1f24}.filter.active{background:#e50914;border-color:#e50914}.search,.upgrade-search{border-radius:6px;background:#1c1d22;border-color:#393a41;padding:17px}.search:focus,.upgrade-search:focus{outline:2px solid #e50914;outline-offset:1px}
-.upgrade-results{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.upgrade-result{background:#191a1f;border-radius:6px;border-color:#303137;min-height:110px}.upgrade-result:hover{border-color:#e50914}
-#video-search{background:linear-gradient(180deg,#0b0c0e,#14151a)}#video-search .upgrade-panel{background:#1b1c21}
-.contact-simple{background:#101115;border-top:1px solid #292b31}.contact-panel{background:#17181d;border-color:#313238;border-radius:8px}.contact-address{color:#ff5964}.footer{background:#090a0c;border-top:1px solid #222328}
-#m4d-live{background:#18191e!important;border:1px solid #383940!important;border-radius:7px!important}
-@media(max-width:1150px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}nav{gap:12px}nav a{font-size:12px}}
-@media(max-width:800px){.hero{min-height:570px;padding:90px 0}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.upgrade-results{grid-template-columns:repeat(2,minmax(0,1fr))}.featuregrid{grid-template-columns:1fr}.hero h1{font-size:clamp(48px,10vw,75px)}}
-@media(max-width:540px){header .wrap{gap:12px}nav{gap:11px}.hero{min-height:560px;padding:65px 0 90px}.hero h1{font-size:clamp(43px,11vw,64px)}.hero p{font-size:15px}.hero-kicker{font-size:9px;letter-spacing:1px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cardbody{padding:10px}.cardbody h3{font-size:13px}.cardbody p{font-size:11px}.art .symbol{font-size:34px}.watch{padding:8px;font-size:11px}.upgrade-results{grid-template-columns:1fr}.stats{gap:17px}.stat strong{font-size:22px}.stat span{font-size:10px}.sectionhead{gap:10px}}
-</style><style>
 /* Member accounts — isolated styles */
 .m4d-account-button{background:#e50914;color:#fff;border:0;border-radius:5px;padding:11px 16px;font-weight:800;white-space:nowrap}.m4d-account-button:hover{background:#f32631}.m4d-account-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.87);padding:22px;overflow-y:auto;align-items:center;justify-content:center}.m4d-account-overlay.open{display:flex}.m4d-account-panel{width:min(440px,100%);background:#191a20;border:1px solid #42424b;border-radius:12px;padding:30px;box-shadow:0 20px 80px #000b}.m4d-account-panel h2{margin:0 0 10px}.m4d-account-panel p{color:#b8b9c3;line-height:1.5}.m4d-account-panel label{display:block;margin:15px 0 6px;font-size:13px;font-weight:700}.m4d-account-panel input{width:100%;padding:13px;background:#101116;color:#fff;border:1px solid #494a52;border-radius:6px}.m4d-account-panel button{cursor:pointer}.m4d-account-primary{width:100%;background:#e50914;border:0;border-radius:6px;color:white;padding:14px;font-weight:800;margin-top:20px}.m4d-account-link{background:none;border:0;color:#ff7079;padding:8px 0}.m4d-account-message{min-height:20px;color:#ffb4ba;font-size:13px;margin-top:12px;overflow-wrap:anywhere}.m4d-account-close{float:right;background:#33343b;color:white;border:0;border-radius:6px;padding:8px 11px}.m4d-account-avatar{font-size:48px;margin:12px 0}.m4d-account-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center}.m4d-account-row button{margin:0}.m4d-account-panel [hidden]{display:none!important}@media(max-width:760px){.m4d-account-button{padding:9px 12px}.m4d-account-panel{padding:22px}}
 </style>
-<style>
-/* M4D visual system refresh — intentionally CSS-only; preserves existing functions. */
-:root{--bg:#090a0e;--surface:#17191f;--border:#31333d;--muted:#b0b3c0;--red:#e50914}
-body{background:#090a0e;line-height:1.5;-webkit-font-smoothing:antialiased}
-header{background:rgba(10,11,16,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.09);box-shadow:0 8px 28px #0005}
-header .wrap{min-height:82px;gap:18px;max-width:1550px}
-header nav{display:flex;gap:4px 6px;align-items:center;justify-content:flex-end;flex-wrap:wrap;row-gap:5px}
-header nav a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 11px;border:1px solid transparent;border-radius:8px;color:#cacbd2;font-size:12px;font-weight:650;transition:background .18s,border-color .18s,color .18s}
-header nav a:hover{background:#ffffff12;border-color:#ffffff16;color:#fff}
-header nav a[href="#video-search"]{border:1px solid #4d505a;padding:8px 12px;background:#22242b}
-header nav a[href="#m4dModeration"]{background:#401b23;border-color:#79353e;color:#ffcbd1}
-header nav a[hidden]{display:none!important}
-.brand-logo{width:44px;height:44px;border:1px solid #88404a;border-radius:10px}
-.brand-text{line-height:1.1}.brand small{margin-top:6px}
-.hero{min-height:620px;border-bottom:1px solid #252630}
-.hero h1{letter-spacing:-.058em}.hero p{max-width:680px}
-.hero-kicker{border-radius:0 8px 8px 0;letter-spacing:1.5px}
-section{scroll-margin-top:90px}
-.sectionhead{align-items:center}h2{line-height:1.17}
-.upgrade-panel,.card,.contact-panel{box-shadow:0 10px 30px #0002}
-.upgrade-panel{border-radius:13px;border-color:#33343c}.upgrade-panel:hover{border-color:#8f414c}
-.card{border-radius:10px;overflow:hidden}.card:hover{box-shadow:0 18px 42px #0009}
-.btn,.upgrade-action,.watch,.m4d-account-button{border-radius:8px}
-.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #ff737d;outline-offset:3px}
-.footer{border-top:1px solid #34343d}
-#m4dModeration{scroll-margin-top:95px}
-#m4dModeration .mod-stat{border-radius:12px;background:linear-gradient(135deg,#24232d,#181a20)}
-#m4dModeration .mod-report{border-radius:13px;box-shadow:0 12px 34px #0004}
-#m4dModeration .mod-report-head strong{font-size:17px}
-#m4dModeration .mod-controls label{font-weight:700;color:#d7d7de}
-@media(max-width:1150px){header .wrap{flex-wrap:wrap;padding-top:14px;padding-bottom:13px}header nav{flex:1 0 100%;justify-content:flex-start}header nav a{font-size:12px}}
-@media(max-width:760px){header .wrap{gap:11px}header nav{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:5px;scrollbar-width:thin;justify-content:flex-start}header nav a{white-space:nowrap;flex:0 0 auto}.hero{min-height:550px;padding:75px 0 94px}.hero h1{line-height:1.02}.stats{margin-top:32px}.upgrade-panel{padding:21px}section{scroll-margin-top:130px}#m4dModeration{scroll-margin-top:130px}}
-@media(max-width:540px){.brand{font-size:15px}.brand-logo{width:40px;height:40px}.hero h1{letter-spacing:-.045em}.btn{padding:12px 15px}.cards{gap:12px}.card{border-radius:9px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
-</style>
+
 <style id="m4d-one-line-navigation">
 /* Navigation polish: one continuous line with horizontal scrolling if needed. */
 header .wrap{display:flex;align-items:center;flex-wrap:nowrap!important;gap:14px;max-width:1550px;min-width:0;padding-top:10px;padding-bottom:10px}
@@ -186,42 +125,6 @@ header .m4d-account-button{flex:0 0 auto;white-space:nowrap;padding:10px 12px}
 .m4d-milestone-note{margin:10px 0 0;color:#cfafb9;font-size:11px;line-height:1.5}
 @media(max-width:620px){.m4d-milestone{padding:16px}.m4d-milestone-bottom{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.m4d-milestone-fill{transition:none}}
-</style><style id="m4d-professional-ui-2026">
-/* M4D visual polish. Styles only; no changes to login, database, or scripts. */
-:root{--bg:#0b0d12;--surface:#171a22;--border:#303440;--text:#f7f7f9;--muted:#a9afbd;--red:#e92943;--m4d-accent:#f04459;--m4d-raised:#1d2029;--m4d-stroke:rgba(255,255,255,.1)}
-html{scroll-padding-top:112px}body{background:#0b0d12;color:#f5f6f8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.006em}body::selection{background:#c92946;color:white}
-.wrap{width:min(100%,1300px);max-width:1300px;padding-inline:clamp(18px,4vw,48px)}
-header{background:rgba(12,14,20,.96)!important;box-shadow:0 10px 30px rgba(0,0,0,.22)!important;border-bottom:1px solid rgba(255,255,255,.085)!important}
-header .wrap{min-height:76px;gap:16px;max-width:1500px!important;padding-top:12px!important;padding-bottom:12px!important}
-header .brand{font-size:15px;letter-spacing:-.35px;gap:9px}header .brand-logo{border:1px solid #48414b;border-radius:10px;width:40px;height:40px}header .brand small{font-size:9px;color:#a6aab5;letter-spacing:1.5px}
-header nav{gap:4px!important;padding-block:4px!important}header nav a{padding:10px 12px!important;border-radius:9px!important;color:#bcc1cd!important;font-size:12px!important;font-weight:650;min-height:40px;transition:background .2s,color .2s}header nav a:hover,header nav a:focus-visible{background:#242733!important;color:white!important;border-color:transparent!important}
-header nav a[href="#video-search"],header nav a[href="#m4dFeed"]{background:#242631!important;border:1px solid #393d4b!important;color:#fff!important}header nav a[href="#m4dModeration"]{background:#35212a!important;border-color:#63313e!important;color:#ffb8c4!important}
-.m4d-account-button{background:#e92943!important;border:1px solid #ef4e65!important;border-radius:9px!important;box-shadow:none!important;padding:11px 15px!important;min-height:41px}
-.hero{min-height:0!important;padding:82px 0 83px!important;background:radial-gradient(ellipse 65% 85% at 95% 14%,rgba(146,34,61,.3),transparent 80%),linear-gradient(115deg,#131722,#10121a 60%,#15121b)!important;border-bottom:1px solid #292d36}
-.hero:before{color:rgba(255,255,255,.025)!important;right:5vw!important;top:12%!important;font-size:clamp(160px,26vw,370px)!important;letter-spacing:-.12em!important}.hero:after{height:90px!important;background:linear-gradient(transparent,#0b0d12)!important}
-.hero .wrap{max-width:1300px}.hero-kicker{font-size:10px!important;letter-spacing:1.4px!important;color:#f3c7cf!important;background:#2d1c28!important;border-left:3px solid #ed415c!important;padding:8px 12px!important;margin-bottom:18px!important}
-.hero .eyebrow{font-size:11px!important;color:#d0acb5!important;letter-spacing:2px!important}.hero h1{font-size:clamp(46px,6.4vw,83px)!important;line-height:1.02!important;letter-spacing:-.065em!important;margin:16px 0 17px!important;max-width:850px}.hero h1 em{color:#fa405a}.hero p{font-size:clamp(15px,1.45vw,17px)!important;line-height:1.75!important;max-width:600px;color:#c5c9d2!important}
-.actions{gap:10px!important;margin-top:25px!important}.btn,.upgrade-action{border-radius:10px!important;padding:12px 19px!important;font-size:13px!important;box-shadow:none!important;min-height:44px}.btn{background:#e92943!important}.btn.secondary{background:#272a34!important;border-color:#454957!important}.btn:hover,.upgrade-action:hover{transform:translateY(-1px)!important}
-.hero .stats{margin-top:34px!important;gap:27px!important}.stat{border-left:2px solid #d63b52;padding-left:12px}.stat strong{font-size:21px}.stat span{font-size:11px;color:#9da4b3}
-.m4d-subscriber-panel{max-width:650px!important;margin-top:29px!important;padding:15px 17px!important;background:rgba(27,29,41,.93)!important;border:1px solid #424150!important;border-radius:13px!important;box-shadow:0 10px 30px #0003!important}.m4d-sub-icon{background:#db2e49!important;border-radius:11px!important;width:44px!important;height:44px!important;flex-basis:44px!important}.m4d-sub-count-row strong{font-size:clamp(26px,3.2vw,35px)!important}.m4d-sub-overline{letter-spacing:1.1px;color:#d8bec6}.m4d-sub-link,.m4d-sub-refresh{border-radius:9px!important}
-.m4d-milestone{max-width:650px!important;background:#1b1d29!important;border:1px solid #3d3d50!important;border-radius:13px!important;padding:17px 19px!important;box-shadow:0 9px 25px #0002!important}.m4d-milestone h3{font-size:19px!important}.m4d-milestone-track{height:10px!important;margin:14px 0 10px!important;border:0!important;background:#303141!important}.m4d-milestone-fill{background:linear-gradient(90deg,#e63854,#ff7890)!important}.m4d-milestone-percent{font-size:20px!important}
-main>section,body>section{scroll-margin-top:112px}main>section{padding-top:67px!important;padding-bottom:67px!important}section .eyebrow,.upgrade-badge{font-size:10px!important;letter-spacing:1.9px!important;text-transform:uppercase}section h2{font-size:clamp(26px,2.8vw,35px)!important;letter-spacing:-.04em!important;line-height:1.18!important;margin:8px 0 9px!important}section .lead{color:#aeb4c0!important;font-size:14px!important;line-height:1.65!important}
-.featured,#video-search,.contact-simple{background:#11141b!important}.featuregrid{gap:35px!important}.featurecopy h3{font-size:clamp(25px,2.8vw,39px)!important;line-height:1.15!important}.video{border-radius:13px!important;border:1px solid #333744!important;box-shadow:0 14px 40px #0005!important}
-.upgrade-grid{gap:16px!important}.upgrade-panel{background:#191c25!important;border:1px solid #303541!important;border-radius:14px!important;padding:23px!important;box-shadow:none!important}.upgrade-panel:hover{transform:translateY(-2px)!important;border-color:#6c4250!important}.upgrade-panel h3{font-size:21px!important;line-height:1.3!important}.upgrade-panel p{font-size:14px;line-height:1.7!important}.upgrade-hero img{border-radius:12px!important}.upgrade-result{border-radius:11px!important;border-color:#363a46!important;background:#20232d!important;min-height:100px!important;padding:16px!important}.upgrade-action{background:#e92943!important}
-.cards{gap:15px!important}.card{border-radius:12px!important;border:1px solid #31343e!important;background:#191c24!important;box-shadow:none!important}.card:hover{transform:translateY(-3px)!important;border-color:#b8495d!important;box-shadow:0 12px 30px #0005!important}.cardbody{padding:16px!important}.cardbody h3{font-size:15px!important;font-weight:750}.cardbottom{margin-top:15px!important}.watch{border-radius:8px!important;padding:9px 12px!important}
-.search,.upgrade-search{background:#1b1e27!important;border-color:#3c414f!important;border-radius:10px!important;color:#fff!important;padding:13px 15px!important}.filter{border-radius:999px!important;padding:9px 14px!important}.filter.active{background:#e92943!important;border-color:#e92943!important}
-.m4d-meet{background:#101219!important}.m4d-meet-intro h2{font-size:clamp(32px,4vw,47px)!important}.m4d-meet-person,.m4d-meet-story{border-radius:16px!important}.m4d-merch-section{background:#10121a!important}.m4d-merch-feature{border-radius:13px!important}.m4d-merch-frame{border-radius:14px!important}
-#m4dFeed{background:#0f1219!important;border-top:1px solid #262a34;border-bottom:1px solid #262a34;padding-block:72px!important}#m4dFeed .m4d-feed-shell{max-width:960px;margin:0 auto}#m4dFeed .m4d-feed-head{gap:18px!important;margin-bottom:23px!important}#m4dFeed .m4d-feed-head h2{font-size:clamp(28px,3.2vw,38px)!important}#m4dFeed .m4d-feed-card{background:#1a1d26!important;border:1px solid #343945!important;border-radius:15px!important;box-shadow:0 10px 28px #0002!important}#m4dFeed textarea,#m4dFeed input{background:#11141b!important;border:1px solid #3e4350!important;border-radius:10px!important;color:white!important}#m4dFeed button{border-radius:9px!important}#m4dFeed .m4d-feed-primary{background:#e92943!important}
-#m4dModeration{background:#101219!important;padding-block:67px!important}#m4dModeration .wrap{max-width:1120px}#m4dModeration .m4d-admin-tabs{gap:8px!important}#m4dModeration .m4d-admin-tabs button{border-radius:10px!important}#m4dModeration .m4d-admin-pane{border-radius:14px!important}#m4dModeration .mod-report{background:#1b1e27!important;border:1px solid #323744!important;border-radius:12px!important}
-#m4dMyList .wrap,#m4dMembers .wrap,#m4dFriends .wrap,#m4dSafety .wrap{max-width:1170px}
-.contact-panel{background:#1a1d25!important;border:1px solid #363945!important;border-radius:14px!important}.footer{background:#090b10!important;border-top:1px solid #292d36!important;padding-block:34px!important}
-.m4d-account-panel{border-radius:17px!important;background:#1a1d26!important;border-color:#424653!important}.m4d-dash-card{border-radius:13px!important}
-:where(button,a,input,textarea,select):focus-visible{outline:2px solid #ff788d!important;outline-offset:3px}
-@media(min-width:1300px){.hero .wrap{padding-right:90px}}
-@media(max-width:900px){.hero{padding:68px 0 72px!important}.featuregrid{gap:24px!important}.upgrade-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
-@media(max-width:700px){header .wrap{gap:9px 12px!important}header nav a{min-height:37px!important;padding:9px 11px!important}.hero{padding:58px 0 62px!important}.hero h1{font-size:clamp(40px,10.7vw,60px)!important;letter-spacing:-.05em!important}.hero:before{opacity:.5}.hero p{font-size:15px!important}.hero .stats{margin-top:26px!important;gap:18px!important}.m4d-subscriber-panel{margin-top:26px!important}main>section{padding-block:50px!important}.upgrade-grid{grid-template-columns:1fr!important}.cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.cardbody{padding:12px!important}.upgrade-panel{padding:19px!important}#m4dFeed{padding-block:50px!important}#m4dModeration{padding-block:50px!important}}
-@media(max-width:420px){.hero h1{font-size:40px!important}.hero .actions a{width:100%;justify-content:center}.m4d-sub-actions{justify-content:flex-start!important}.m4d-milestone{padding:15px!important}.stat strong{font-size:19px!important}.cardbody h3{font-size:13px!important}}
-@media(prefers-reduced-motion:reduce){.card,.upgrade-panel,.btn{transition:none!important}}
 </style>
 
 <style id="m4d-live-home-fix">
@@ -959,234 +862,110 @@ body[data-m4d-plus-theme="midnight"] #m4dProfileArea,body[data-m4d-plus-theme="s
 body[data-m4d-plus-theme="midnight"]{--m4d-profile-theme:#5ba8ff}body[data-m4d-plus-theme="sunset"]{--m4d-profile-theme:#ff9a5c}body[data-m4d-plus-theme="electric"]{--m4d-profile-theme:#b485ff}
 body[data-m4d-plus-theme]:not([data-m4d-plus-theme="classic"]) #m4dProfileArea .m4d-photo-circle{border-color:var(--m4d-profile-theme)!important}
 @media(max-width:650px){#m4dCommunityPlus{padding:42px 0;scroll-margin-top:152px}#m4dCommunityPlus .grid{grid-template-columns:1fr}#m4dCommunityPlus .card{padding:15px!important}}
-</style><style id="m4d3-real-ultimate-hybrid">
-/* M4D 3.0 structure overhaul: existing scripts, ids and sections are preserved. */
-:root{--m4d3-ink:#080911;--m4d3-fg:#f6f4ff;--m4d3-purple:#9259fc;--m4d3-red:#ff355e}
-html{scroll-padding-top:95px}body{background:#080911!important;color:#f7f7fc!important;overflow-x:clip}body:before{background:radial-gradient(ellipse at 65% -20%,#5d257e33,transparent 60%);pointer-events:none}
-body>header{position:sticky!important;top:0!important;z-index:99!important;border-radius:0!important;margin:0!important;background:rgba(12,13,24,.81)!important;backdrop-filter:blur(24px) saturate(170%)!important;-webkit-backdrop-filter:blur(24px) saturate(170%)!important;border-bottom:1px solid #ffffff17!important;box-shadow:0 15px 60px #0006!important}
-body>header>.wrap{max-width:none!important;display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;align-items:center!important;min-height:76px!important;padding:12px 30px!important;gap:22px!important}
-body>header .brand{flex:0 0 245px!important;min-width:0!important;max-width:245px!important;white-space:normal!important;display:flex!important;align-items:center!important;gap:11px!important}
-body>header .brand-logo{width:44px!important;height:44px!important;flex:none!important;border:1px solid #ffffff60!important;border-radius:13px!important;box-shadow:0 0 25px #a052ef43}
-body>header .brand-text{font-size:15px!important;line-height:1.15!important;white-space:normal!important;overflow-wrap:anywhere!important}body>header .brand small{font-size:8px!important;letter-spacing:1.8px!important;white-space:normal!important}
-body>header nav{min-width:0!important;flex:1 1 auto!important;width:auto!important;max-width:none!important;display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;gap:7px!important;justify-content:flex-start!important;padding:5px!important;border:1px solid #ffffff19!important;border-radius:14px!important;background:#ffffff08!important;scrollbar-width:none!important}
-body>header nav a{white-space:nowrap!important;flex:0 0 auto!important;font-size:12px!important;min-height:36px!important;padding:8px 12px!important;border-radius:10px!important}
-body>header .m4d-account-button{flex:0 0 auto!important;border-radius:12px!important;padding:10px 14px!important;background:linear-gradient(125deg,#e73565,#902fec)!important;box-shadow:0 8px 24px #8d32eb35!important}
-.m4d3-sidebar{position:fixed;z-index:80;top:76px;left:0;bottom:0;width:258px;overflow-y:auto;padding:30px 16px 18px;background:linear-gradient(180deg,#10101e 0%,#0b0c16 82%);border-right:1px solid #ffffff12;scrollbar-width:thin;display:flex;flex-direction:column;gap:5px;color:#b8b7cc}
-.m4d3-side-heading{font-size:10px;letter-spacing:2px;font-weight:850;color:#777b94;padding:16px 12px 9px;display:flex;justify-content:space-between}.m4d3-side-heading span{color:#a867fb}
-.m4d3-side-link{display:flex;gap:15px;align-items:center;padding:12px 15px;border-radius:12px;font-size:17px;color:#9da1b9;text-decoration:none;transition:background .2s,color .2s}
-.m4d3-side-link span{font-size:13px;font-weight:700;color:#a8a9bf}.m4d3-side-link:hover,.m4d3-side-link.active{color:#fff;background:linear-gradient(90deg,#853bcb50,#7226b212);box-shadow:inset 3px 0 #9b61ff}.m4d3-side-link:hover span,.m4d3-side-link.active span{color:#fff}
-.m4d3-side-bottom{margin-top:auto;min-height:132px;position:relative;padding:23px 16px;overflow:hidden;border:1px solid #b769ff36;background:linear-gradient(125deg,#48256a88,#211632);border-radius:16px}.m4d3-side-bottom strong{font-size:21px;color:#fff;display:block;z-index:2;position:relative}.m4d3-side-bottom small{font-size:9px;letter-spacing:1.2px;position:relative;z-index:2}.m4d3-side-glow{position:absolute;width:150px;height:150px;background:#b656fb88;filter:blur(40px);right:-50px;bottom:-90px}
-body>main{margin-left:258px!important;min-width:0!important;width:calc(100% - 258px)!important;background:#090a14!important}body>main .wrap{max-width:1450px!important;padding-inline:clamp(18px,3vw,52px)!important}
-.m4d3-dashboard{padding:42px clamp(18px,3vw,52px) 60px!important;max-width:1600px;margin:auto;color:var(--m4d3-fg);background:transparent!important}
-.m4d3-dash-top{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);min-height:390px;align-items:center;gap:32px;padding:45px clamp(25px,4vw,70px);position:relative;overflow:hidden;border-radius:26px;border:1px solid #c5adff24;background:radial-gradient(ellipse at 80% 40%,#6725a76e,transparent 42%),radial-gradient(ellipse at 45% 100%,#e61c6c18,transparent 70%),linear-gradient(120deg,#1d1b32,#0f1221 72%);box-shadow:inset 0 1px #ffffff19,0 25px 90px #0006}
-.m4d3-dash-top:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(140deg,#ffffff0b,transparent 42%)}.m4d3-dash-top>div{position:relative;z-index:1;min-width:0}
-.m4d3-overline{font-size:10px;letter-spacing:2.25px;font-weight:900;color:#caabff}.m4d3-dot{display:inline-block;height:7px;width:7px;border-radius:50%;background:#d965fe;box-shadow:0 0 17px #b770fa;margin-right:8px}
-.m4d3-dash-top h1{font-size:clamp(40px,5.35vw,85px);letter-spacing:-.075em;line-height:1.02;margin:22px 0;font-weight:950;color:#fff}.m4d3-dash-top h1 em{font-style:normal;background:linear-gradient(90deg,#fa70c1,#af79ff,#87a1ff);background-clip:text;-webkit-background-clip:text;color:transparent}.m4d3-dash-top p{max-width:545px;color:#bebdd5;font-size:15px;line-height:1.8;margin:0}
-.m4d3-dash-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.m4d3-dash-cta a{font-size:12px;font-weight:850;padding:14px 19px;border-radius:12px;text-decoration:none}.m4d3-solid{background:linear-gradient(110deg,#e73a89,#884cff);color:white;box-shadow:0 10px 25px #9e3bf544}.m4d3-outline{border:1px solid #ffffff46;color:#fff;background:#ffffff0d}
-.m4d3-feature-art{min-height:310px;border:1px solid #ffffff32;border-radius:21px;background:radial-gradient(circle at 55% 35%,#ad59f477,#3c20647a 36%,transparent 65%),linear-gradient(130deg,#151628,#291739);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 1px #ffffff2c,0 28px 50px #0008;transform:perspective(900px) rotateY(-6deg) rotateX(3deg)}
-.m4d3-halo{position:absolute;width:75%;aspect-ratio:1;border-radius:50%;border:1px solid #ffb8ff66;box-shadow:0 0 30px #944dff66,inset 0 0 45px #924cfb50;transform:rotate(-30deg) scaleY(.66)}.m4d3-halo:after{content:"";position:absolute;inset:15%;border-radius:50%;border:1px solid #ffffff34}.m4d3-art-m{font-size:clamp(68px,11vw,170px);font-weight:1000;letter-spacing:-.14em;color:#fff;text-shadow:0 0 70px #d581ff,0 15px 30px #000b;transform:translateX(-.08em)}.m4d3-art-m span{color:#ec83ff}.m4d3-art-caption{position:absolute;bottom:15px;left:15px;right:15px;padding:12px 15px;border-radius:12px;border:1px solid #ffffff35;background:#1010228c;backdrop-filter:blur(15px);display:grid;gap:3px}.m4d3-art-caption span{color:#d4a9ff;font-size:8px;letter-spacing:1.7px;font-weight:900}.m4d3-art-caption strong{font-size:13px;letter-spacing:.5px}.m4d3-art-caption small{color:#bfc1d9}
-.m4d3-dash-label{margin:37px 0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}.m4d3-dash-label span{font-size:13px;font-weight:900;letter-spacing:1.25px}.m4d3-dash-label a{font-size:12px;color:#baa1ff}
-.m4d3-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.m4d3-tile{display:flex;flex-direction:column;align-items:flex-start;position:relative;isolation:isolate;gap:9px;min-width:0;min-height:240px;padding:25px 23px;overflow:hidden;text-decoration:none;border-radius:20px;border:1px solid #ffffff23;box-shadow:inset 0 1px #ffffff27,0 16px 35px #0005;transition:transform .2s,border .2s}.m4d3-tile:hover{transform:translateY(-5px);border-color:#ffffff6a}.m4d3-tile:after{content:"";position:absolute;border:1px solid #ffffff37;width:210px;height:210px;border-radius:50%;right:-98px;top:-80px;box-shadow:0 0 60px #ffffff13;z-index:-1}.m4d3-tile-purple{background:radial-gradient(circle at 95% 12%,#8b52ed77,transparent 55%),linear-gradient(135deg,#3b215b,#161528)}.m4d3-tile-blue{background:radial-gradient(circle at 95% 10%,#5288f77c,transparent 55%),linear-gradient(135deg,#172e5b,#111a32)}.m4d3-tile-rose{background:radial-gradient(circle at 95% 10%,#e75c9c77,transparent 55%),linear-gradient(135deg,#4c2049,#251629)}.m4d3-tile-gold{background:radial-gradient(circle at 95% 10%,#f1b45a70,transparent 55%),linear-gradient(135deg,#4c3228,#251d23)}
-.m4d3-tile-icon{display:grid;place-items:center;width:42px;height:42px;font-size:22px;border:1px solid #ffffff40;border-radius:12px;background:#ffffff24;backdrop-filter:blur(15px)}.m4d3-tile-category{font-size:9px;color:#e7ddfa;font-weight:850;letter-spacing:1.5px;margin-top:12px}.m4d3-tile strong{font-size:clamp(21px,2.4vw,34px);letter-spacing:-.055em;line-height:1.1;color:white}.m4d3-tile small{color:#d0cfe1;font-size:11px;margin-top:auto}
-.m4d3-secondary{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-top:24px}.m4d3-activity,.m4d3-rightpanel{min-height:250px;border:1px solid #ffffff1e;border-radius:22px;padding:29px;background:linear-gradient(140deg,#1b1b30,#101320);box-shadow:inset 0 1px #ffffff12}.m4d3-activity h2{font-size:clamp(23px,3vw,39px);line-height:1.12;margin:14px 0;font-weight:900;letter-spacing:-.05em}.m4d3-activity h2 em{font-style:normal;color:#aa80ff}.m4d3-activity p,.m4d3-rightpanel p{color:#b5b6ca;font-size:13px;max-width:520px}.m4d3-minilinks{display:flex;gap:9px;flex-wrap:wrap;margin-top:25px}.m4d3-minilinks a{border:1px solid #ffffff21;background:#ffffff0a;padding:10px 13px;border-radius:11px;font-size:11px;color:#d8ccff}.m4d3-rightpanel{background:radial-gradient(circle at 60% 45%,#6939ae7a,transparent 52%),linear-gradient(135deg,#211a3b,#14172c);position:relative}.m4d3-glass-orb{font-size:46px;text-shadow:0 0 30px #c9a5ff;margin:13px 0 0}.m4d3-rightpanel h3{font-size:19px;letter-spacing:1px;margin:8px 0}.m4d3-rightpanel>a{font-size:12px;color:#d9adff}
-/* Existing homepage kept, with its own feature modules below the new dashboard. */
-body>main #home.hero{min-height:340px!important;padding:58px 0!important;background:radial-gradient(circle at 87% 50%,#56236855,transparent 50%),linear-gradient(110deg,#171425,#0b0e18)!important;border-block:1px solid #ffffff12!important}body>main #home.hero h1{font-size:clamp(32px,4.5vw,60px)!important;max-width:800px!important}body>main #home.hero .m4d-hero-motion{opacity:.3}
-body>main .upgrade-panel,body>main .card,body>main .upgrade-result{border-radius:17px!important;background:linear-gradient(145deg,#1b1c2d,#111322)!important;border-color:#ffffff20!important;box-shadow:inset 0 1px #ffffff10,0 15px 35px #0004!important}
-body>main .cards{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important}body>main .featuregrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}body>main .video{border-radius:18px!important}body>main .btn,body>main .watch{border-radius:11px!important}
-@media(max-width:1280px){.m4d3-features{grid-template-columns:repeat(2,minmax(0,1fr))}.m4d3-dash-top{grid-template-columns:1fr 280px}.m4d3-feature-art{min-height:290px}}
-@media(max-width:980px){.m4d3-sidebar{display:none}body>main{margin-left:0!important;width:100%!important}body>header>.wrap{padding:12px 18px!important}body>header .brand{flex:0 0 215px!important;max-width:215px!important}.m4d3-dash-top{grid-template-columns:1fr 260px}.m4d3-dashboard{padding:25px 18px 50px!important}}
-@media(max-width:720px){body>header>.wrap{flex-wrap:wrap!important;gap:8px 12px!important;min-height:0!important;padding:9px 13px!important}body>header .brand{flex:1 1 auto!important;max-width:calc(100% - 120px)!important}body>header .brand-text{font-size:13px!important}body>header .brand-logo{width:37px!important;height:37px!important}body>header nav{flex:1 0 100%!important;order:3!important;max-width:100%!important;width:100%!important;max-height:54px!important}body>header nav a{font-size:11px!important;min-height:34px!important;padding:7px 10px!important}body>header .m4d-account-button{padding:9px 11px!important;max-width:110px!important;font-size:11px!important}.m4d3-dash-top{grid-template-columns:1fr;gap:20px;padding:34px 24px}.m4d3-dash-top h1{font-size:clamp(40px,9vw,66px)}.m4d3-feature-art{min-height:240px;transform:none}.m4d3-art-m{font-size:100px}.m4d3-secondary{grid-template-columns:1fr}body>main .featuregrid{grid-template-columns:1fr!important}}
-@media(max-width:430px){.m4d3-dashboard{padding:16px 12px 40px!important}.m4d3-dash-top{padding:27px 20px;border-radius:19px}.m4d3-dash-top h1{font-size:38px}.m4d3-dash-top p{font-size:13px}.m4d3-features{gap:9px}.m4d3-tile{padding:17px 14px;min-height:210px;border-radius:15px}.m4d3-tile strong{font-size:22px}.m4d3-tile-category{font-size:8px}.m4d3-dash-label{margin-top:25px}.m4d3-dash-label span{font-size:11px}.m4d3-dash-label a{font-size:10px}.m4d3-activity,.m4d3-rightpanel{padding:20px}.m4d3-feature-art{min-height:220px}body>main .wrap{padding-inline:15px!important}}
-@media(prefers-reduced-motion:reduce){.m4d3-tile{transition:none}}
-</style><style id="m4d3-sidebar-only-nav">
-/* All primary navigation now lives in the sidebar. Leave original nav in DOM
-   so feature initialization, permissions, and existing click handlers survive. */
-body>header{z-index:120!important}
-body>header>.wrap{justify-content:space-between!important;min-height:72px!important;gap:12px!important}
-body>header .brand{flex:0 1 auto!important;max-width:min(380px,calc(100% - 175px))!important}
-body>header nav,body>header nav#m4dOrganizedNav{display:none!important}
-body>header .m4d-theater-permanent-tab{display:none!important}
-body>header .m4d3-header-actions{display:flex;gap:10px;align-items:center;margin-left:auto;min-width:0}
-body>header .m4d3-header-actions .m4d-account-button,body>header .m4d3-header-actions .m4d-account-button{margin:0!important;position:static!important}
-.m4d3-menu-toggle{display:none;align-items:center;justify-content:center;gap:7px;border-radius:12px;padding:10px 12px;color:white;border:1px solid #ffffff45;background:#ffffff18;backdrop-filter:blur(14px);font-weight:700;min-height:42px}
-.m4d3-menu-toggle svg{width:18px;height:18px;flex:none}
-.m4d3-sidebar{top:72px;z-index:105!important;padding-top:17px;gap:3px}
-.m4d3-nav-subgroup{border-top:1px solid #ffffff12;margin-top:8px;padding-top:8px}
-.m4d3-nav-subgroup>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:11px;font-weight:760;color:#dedbec;font-size:12px;background:#ffffff08}
-.m4d3-nav-subgroup>summary::-webkit-details-marker{display:none}
-.m4d3-nav-subgroup>summary::after{content:'⌄';font-size:16px;opacity:.8}
-.m4d3-nav-subgroup[open]>summary::after{transform:rotate(180deg)}
-.m4d3-nav-subgroup .m4d3-side-link{padding:10px 13px 10px 24px;font-size:13px;gap:8px}
-.m4d3-nav-subgroup .m4d3-side-link span{font-size:12px}
-.m4d3-side-link[hidden],.m4d3-nav-subgroup[hidden]{display:none!important}
-.m4d3-sidebar .m4d3-side-bottom{flex-shrink:0;margin-top:25px}
-.m4d3-menu-shade{display:none;position:fixed;inset:72px 0 0;background:#050510ba;z-index:103;backdrop-filter:blur(4px)}
-@media(max-width:980px){
- .m4d3-menu-toggle{display:inline-flex}
- .m4d3-sidebar{display:flex!important;transform:translateX(-105%);top:72px;width:min(310px,88vw)!important;transition:transform .22s ease;box-shadow:18px 0 70px #0009}
- body.m4d3-sidebar-open .m4d3-sidebar{transform:translateX(0)}
- body.m4d3-sidebar-open .m4d3-menu-shade{display:block}
- body.m4d3-sidebar-open{overflow:hidden}
- body>header>.wrap{flex-direction:row!important;flex-wrap:nowrap!important;padding:10px 16px!important;min-height:72px!important}
- body>header .brand{max-width:calc(100% - 135px)!important}
- body>main{margin-left:0!important;width:100%!important}
-}
-@media(max-width:550px){body>header .brand{max-width:calc(100% - 85px)!important}body>header .brand-logo{width:36px!important;height:36px!important}body>header .brand-text{font-size:clamp(10px,2.8vw,14px)!important}body>header .brand small{font-size:7px!important;letter-spacing:.6px!important}.m4d3-menu-toggle{font-size:0;padding:10px}.m4d3-menu-toggle svg{width:21px;height:21px}body>header .m4d3-header-actions .m4d-account-button{font-size:10px!important;max-width:90px!important;padding:8px!important}}
-@media(prefers-reduced-motion:reduce){.m4d3-sidebar{transition:none}}
-</style><style id="m4d3-sidebar-v2-style">
-/* UI shell v2: independent, hideable nav & friends rail. Scrollbars hidden, scrolling preserved. */
-:root{--m4d3-nav-width:258px;--m4d3-friends-width:78px}
-html{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
-.m4d3-sidebar,#m4dFriendsRail .m4d-rail-list,#m4d3SidebarSections,#m4d3Sidebar .m4d3-nav-subgroup{scrollbar-width:none!important;-ms-overflow-style:none!important}
-.m4d3-sidebar::-webkit-scrollbar,#m4dFriendsRail .m4d-rail-list::-webkit-scrollbar,#m4d3SidebarSections::-webkit-scrollbar{display:none!important;width:0!important}
-body>header{left:0!important;width:100%!important;padding-left:0!important;z-index:125!important}
-body>header>.wrap{justify-content:flex-start!important;gap:12px!important;padding:10px clamp(12px,2vw,28px)!important}
-body>header .brand{flex:0 1 auto!important;max-width:260px!important;margin:0!important}
-body>header .m4d-theater-permanent-tab{display:inline-flex!important;position:static!important;flex:0 0 auto!important;white-space:nowrap!important;align-items:center!important;justify-content:center!important;padding:10px 14px!important;min-height:40px!important;border:1px solid #ffffff45!important;border-radius:12px!important;background:linear-gradient(120deg,#8334d975,#db35824f)!important;color:#fff!important;font-size:12px!important;font-weight:850!important;box-shadow:inset 0 1px #ffffff35!important}
-body>header .m4d3-header-actions{margin-left:auto!important}
-#m4d3Sidebar{left:0!important;top:72px!important;width:var(--m4d3-nav-width)!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;scrollbar-width:none!important;padding-top:8px!important;transition:transform .24s ease,visibility .24s ease!important}
-#m4d3Sidebar::-webkit-scrollbar{display:none!important}
-.m4d3-side-collapse{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-8px;z-index:3;padding:12px 11px;background:#10101ee8;backdrop-filter:blur(15px);border-bottom:1px solid #ffffff1d;margin:0 -4px 8px}
-.m4d3-side-collapse>span{font-size:10px;letter-spacing:1.7px;font-weight:850;color:#bbb6d6}
-#m4d3SidebarCollapse{border:1px solid #ffffff30;border-radius:10px;background:#ffffff14;color:#fff;font-weight:900;min-width:38px;min-height:38px;cursor:pointer}
-#m4d3SidebarCollapse:hover{background:#8849bd80}
-#m4d3SidebarRestore{display:none;position:fixed;top:87px;left:12px;z-index:113;min-width:43px;min-height:43px;border:1px solid #ffffff45;border-radius:12px;color:#fff;background:#25223bdc;backdrop-filter:blur(12px);font-size:20px;cursor:pointer;box-shadow:0 8px 25px #0008}
-body.m4d3-nav-collapsed #m4d3Sidebar{transform:translateX(-110%)!important;visibility:hidden!important;pointer-events:none!important}
-body.m4d3-nav-collapsed #m4d3SidebarRestore{display:block}
-/* Desktop: friends rail sits beside navigation, never underneath it. */
-@media(min-width:981px){
- body{padding-left:0!important}
- #m4dFriendsRail.m4d-rail-visible{left:var(--m4d3-nav-width)!important;top:72px!important;bottom:0!important;width:var(--m4d3-friends-width)!important;padding-top:15px!important;z-index:112!important;box-shadow:7px 0 26px #0007!important;background:#121421f2!important}
- #m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed{width:52px!important}
- body>main{margin-left:var(--m4d3-nav-width)!important;width:calc(100% - var(--m4d3-nav-width))!important;transition:margin-left .24s ease,width .24s ease!important}
- body:has(#m4dFriendsRail.m4d-rail-visible)>main{margin-left:calc(var(--m4d3-nav-width) + var(--m4d3-friends-width))!important;width:calc(100% - var(--m4d3-nav-width) - var(--m4d3-friends-width))!important}
- body:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed)>main{margin-left:calc(var(--m4d3-nav-width) + 52px)!important;width:calc(100% - var(--m4d3-nav-width) - 52px)!important}
- body.m4d3-nav-collapsed>main{margin-left:0!important;width:100%!important}
- body.m4d3-nav-collapsed:has(#m4dFriendsRail.m4d-rail-visible)>main{margin-left:var(--m4d3-friends-width)!important;width:calc(100% - var(--m4d3-friends-width))!important}
- body.m4d3-nav-collapsed:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed)>main{margin-left:52px!important;width:calc(100% - 52px)!important}
- body.m4d3-nav-collapsed #m4dFriendsRail.m4d-rail-visible{left:0!important}
- body.m4d3-nav-collapsed:has(#m4dFriendsRail.m4d-rail-visible) #m4d3SidebarRestore{left:86px!important}
- body.m4d3-nav-collapsed:has(#m4dFriendsRail.m4d-rail-visible.m4d-rail-collapsed) #m4d3SidebarRestore{left:60px!important}
-}
-@media(max-width:980px){
- #m4d3SidebarRestore{display:none!important}
- #m4d3Sidebar{width:min(310px,88vw)!important;transform:translateX(-105%)!important;visibility:visible!important;pointer-events:auto!important}
- body.m4d3-sidebar-open #m4d3Sidebar{transform:translateX(0)!important}
- body.m4d3-nav-collapsed #m4d3Sidebar{visibility:visible!important;pointer-events:auto!important}
- body>main{margin-left:0!important;width:100%!important}
- body>header .m4d-theater-permanent-tab{padding:9px 10px!important;font-size:11px!important}
-}
-@media(max-width:600px){
- body>header .brand{max-width:calc(100% - 165px)!important}
- body>header .brand-text{font-size:clamp(10px,2.5vw,13px)!important}
- body>header .m4d-theater-permanent-tab{font-size:0!important;min-width:40px!important;padding:10px!important}
- body>header .m4d-theater-permanent-tab::before{content:'🎬';font-size:18px}
- body>header .m4d3-header-actions{gap:5px!important}
-}
-@media(prefers-reduced-motion:reduce){#m4d3Sidebar,body>main{transition:none!important}}
 </style>
-<style id="m4d3-premium-home-hero-v3">
-/* V3: Restyle the redundant old hero into a compact, usable secondary feature banner. */
-body>main #home.hero {
-  position:relative!important;
-  isolation:isolate;
-  display:block!important;
-  min-height:0!important;
-  margin:22px clamp(14px,3vw,48px) 30px!important;
-  padding:clamp(30px,4vw,56px) 0!important;
-  border:1px solid rgba(196,159,255,.25)!important;
-  border-radius:26px!important;
-  overflow:hidden!important;
-  background:
-    radial-gradient(ellipse 55% 100% at 100% 15%,rgba(154,74,241,.23),transparent 85%),
-    radial-gradient(ellipse 65% 90% at 0% 100%,rgba(226,43,112,.14),transparent 82%),
-    linear-gradient(112deg,#141425 0%,#161222 55%,#111526 100%)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 22px 60px rgba(0,0,0,.25)!important;
+<style id="m4d-original-classic-restored-2026">
+/* Original black/red identity: remove cinematic redesign typography and visual overrides. */
+:root{--bg:#0b0c11;--surface:#171923;--border:#2c2e3b;--text:#f7f7fb;--muted:#a8a9b7;--red:#f04456;--m4d-accent:#f04456}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body>header{background:rgba(12,13,18,.96)!important;border-bottom:1px solid #36333e!important;box-shadow:0 4px 18px #0004!important}
+body .hero{min-height:0;display:block;padding:72px 0 80px;background:radial-gradient(ellipse at 85% 30%,#66202d 0,transparent 42%),linear-gradient(125deg,#17131b,#0b0c11 72%);border-bottom:1px solid #34303a}
+body .hero:before{content:none!important;display:none!important}
+body .hero:after{content:none!important;display:none!important}
+body .hero h1{font-size:clamp(38px,6.2vw,76px);font-weight:850;letter-spacing:-.045em;line-height:1.05;text-shadow:none;max-width:820px}
+body .hero h1 em{color:var(--red)}
+body .hero p{color:#c3c1cc;font-size:16px;line-height:1.65}
+body .hero-kicker{border-left:3px solid var(--red);background:#ffffff0d;border-radius:6px;font-size:11px}
+body .btn,body .upgrade-action{border-radius:11px;background:var(--red);box-shadow:none}
+body .btn.secondary,body .upgrade-action.outline{background:#292a34;border:1px solid #474550}
+body .featured{background:#12131b}
+body .card{border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:none}
+body .card:hover{transform:translateY(-3px);border-color:#b84a59;box-shadow:0 10px 28px #0004}
+body .upgrade-panel{border-radius:15px;background:linear-gradient(135deg,#1d1f2a,#121319);border:1px solid #343440;box-shadow:none}
+body .watch{border-radius:9px;background:#34303a}
+body .filter.active{background:var(--red);border-color:var(--red)}
+body .wrap{max-width:1200px}
+/* Header only: true far-left logo, centered nav, equal Theatre/account buttons */
+@media(min-width:1101px){
+ body header>.wrap{max-width:none!important;width:100%!important;display:grid!important;grid-template-columns:minmax(205px,1fr) minmax(0,3fr) minmax(145px,1fr)!important;align-items:center!important;gap:12px!important;padding:10px 18px!important}
+ body header>.wrap>.brand{grid-column:1!important;justify-self:start!important}
+ body header>.wrap>.m4d-nav-carousel{grid-column:2!important;justify-content:center!important;min-width:0!important}
+ body header>.wrap>.m4d-header-actions{grid-column:3!important;grid-row:1!important;justify-self:end!important}
 }
-/* Remove the giant, dull watermark and old generic hero flare. */
-body>main #home.hero::before {content:none!important;display:none!important}
-body>main #home.hero::after {content:""!important;position:absolute!important;inset:auto -15% -90px 25%!important;height:150px!important;z-index:0!important;pointer-events:none!important;background:radial-gradient(ellipse,rgba(127,77,252,.24),transparent 68%)!important;filter:blur(25px)!important}
-body>main #home.hero .m4d-hero-motion{opacity:.42!important;pointer-events:none!important}
-body>main #home.hero .wrap{position:relative!important;z-index:1!important;max-width:1160px!important;padding-inline:clamp(23px,4vw,60px)!important;margin-left:0!important}
-body>main #home.hero .hero-kicker{display:inline-flex!important;align-items:center!important;border:1px solid rgba(200,164,255,.3)!important;border-radius:99px!important;padding:8px 14px!important;background:rgba(139,79,218,.15)!important;backdrop-filter:blur(12px);color:#e4d4ff!important;font-size:10px!important;letter-spacing:1.3px!important;max-width:100%!important}
-body>main #home.hero .eyebrow{margin-top:18px!important;font-size:10px!important;letter-spacing:2.5px!important;color:#c0a7eb!important}
-body>main #home.hero h1,body>main #home.hero h1.m4d-custom-hero-title{font-size:clamp(26px,3.3vw,49px)!important;line-height:1.1!important;letter-spacing:-.055em!important;max-width:900px!important;margin:15px 0!important;overflow-wrap:anywhere!important;text-shadow:none!important}
-body>main #home.hero h1 em{background:linear-gradient(90deg,#ff729e,#bf94ff);-webkit-background-clip:text;background-clip:text;color:transparent!important}
-body>main #home.hero p{font-size:clamp(13px,1.4vw,16px)!important;line-height:1.65!important;max-width:690px!important;color:#c9c4d8!important}
-body>main #home.hero .actions{margin-top:24px!important;display:flex!important;flex-wrap:wrap!important;gap:10px!important}
-body>main #home.hero .btn{min-height:43px!important;border-radius:12px!important;font-size:12px!important;padding:12px 18px!important;background:linear-gradient(115deg,#e9407c,#8b4df1)!important;box-shadow:0 9px 25px #6d2ecb36!important}
-body>main #home.hero .btn.secondary{background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.21)!important;box-shadow:none!important;backdrop-filter:blur(12px)}
-body>main #home.hero .stats{margin-top:25px!important;gap:20px!important}
-body>main #home.hero .stat strong{font-size:19px!important}
-@media(max-width:640px){
- body>main #home.hero{margin:14px 12px 24px!important;padding:20px 0!important;border-radius:18px!important}
- body>main #home.hero .wrap{padding-inline:18px!important}
- body>main #home.hero .hero-kicker{font-size:9px!important;line-height:1.5!important;white-space:normal!important}
- body>main #home.hero .eyebrow{letter-spacing:1.7px!important}
- body>main #home.hero h1{font-size:clamp(24px,7.4vw,38px)!important}
- body>main #home.hero .stats{gap:13px!important}
-}
-@media(prefers-reduced-motion:reduce){body>main #home.hero .m4d-hero-motion{display:none!important}}
+body header>.wrap>.m4d-header-actions{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important}
+body header .m4d-header-actions>a.m4d-theater-permanent-tab,
+body header .m4d-header-actions>button.m4d-account-button{width:100%!important;min-height:41px!important;margin:0!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+@media(max-width:1100px){body header>.wrap{max-width:none!important;width:100%!important}}
+@media(max-width:850px){body header>.wrap>.m4d-nav-carousel{flex:0 0 100%!important;order:3!important;max-width:100%!important}body .hero{padding:48px 0 60px}}
+@media(max-width:540px){body .hero h1{font-size:clamp(35px,10vw,48px)}body .hero{padding:42px 0 50px}}
 </style>
-
-<style id="m4d3-brand-default-theme-bridge-v4">
-/* M4D 3.0 brand-first visual layer. Keep existing account theme handlers and scripts. */
-body {
-  --m4d3-theme-accent:#ed243b;
-  --m4d3-theme-rgb:237,36,59;
-  --m4d3-theme-soft:#ff6d79;
-  --m4d3-theme-label:#ffdce0;
-  --m4d3-theme-panel:#17191e;
-  --m4d3-theme-deep:#0a0b0e;
-  --m4d3-theme-glow:rgba(237,36,59,.22);
-  --m4d3-fg:#f6f6f8;
-  --m4d3-ink:#090a0d;
-  --m4d3-purple:var(--m4d3-theme-accent);
-  --m4d3-red:var(--m4d3-theme-accent);
+<style id="m4d-settings-rewards-page-style">
+/* Settings & Rewards: original M4D red/black styling; no feature logic replaced. */
+#m4dOrganizedNav .m4d-main-settings{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-weight:750;color:#fff;background:rgba(228,35,58,.14);border:1px solid rgba(240,72,93,.40);border-radius:9px;padding:9px 12px;min-height:40px}
+#m4dOrganizedNav .m4d-main-settings:hover,#m4dOrganizedNav .m4d-main-settings:focus-visible{background:rgba(228,35,58,.26)}
+#m4dAppCenter{background:linear-gradient(145deg,#111116,#0b0c10 65%)!important;border-top:1px solid #3c2930;color:#fff}
+#m4dAppCenter .m4d-feature-wrap{max-width:1200px}
+#m4dAppCenter .m4d-feature-card{background:#19191f;border:1px solid #383039;box-shadow:0 8px 24px rgba(0,0,0,.20)}
+#m4dAppCenter .m4d-feature-card button{background:#d9233c}
+#m4dAppCenter .m4d-xpfill{background:linear-gradient(90deg,#e92c46,#ff7180)}
+.m4d-settings-jump{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0 8px}
+.m4d-settings-jump a{display:inline-flex;align-items:center;min-height:42px;padding:10px 14px;border-radius:9px;background:#211d23;border:1px solid #44303a;font-size:13px;font-weight:700;color:#f4e6e9}
+.m4d-settings-jump a:hover{background:#3a222b;border-color:#ec4257}
+.m4d-settings-subpanel{margin-top:30px;padding:25px;border:1px solid #39313a;border-radius:16px;background:#17171d;min-width:0}
+.m4d-settings-subpanel .m4d-settings-heading h2{font-size:clamp(24px,3vw,32px)}
+.m4d-setting-themes{display:block!important;margin-top:20px;min-width:0}
+#m4dPlusthemeList{display:flex;gap:12px;flex-wrap:wrap}
+#m4dPlusthemeList .theme-card{min-height:58px;min-width:130px;flex:1 1 160px;border-radius:11px}
+#m4dRewards{padding:12px 0 0;background:none;border:0;scroll-margin-top:125px}
+#m4dRewards .wrap{max-width:none;padding:0}
+#m4dAppCenter [id]{scroll-margin-top:135px}
+#m4dCommunityPlus .m4d-theme-link{display:inline-flex;align-items:center;padding:10px 15px;color:#fff;text-decoration:none;font-weight:700}
+@media(max-width:850px){#m4dOrganizedNav .m4d-main-settings{width:100%;min-width:0;padding:9px 5px;font-size:11px;white-space:normal;text-align:center}header nav#m4dOrganizedNav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.m4d-settings-subpanel{padding:16px}.m4d-settings-jump{gap:7px}}
+@media(max-width:420px){#m4dOrganizedNav .m4d-main-settings{font-size:10px}}
+</style>
+<style id="m4d-original-header-safe-final-2026">
+/* Original black/red top rail. No new sidebar and no changes to feature JavaScript. */
+body { --m4d-classic-red:#f04456; }
+body > header { position:sticky!important; top:0; z-index:90!important; background:rgba(12,13,18,.97)!important; border-bottom:1px solid #37313b!important; }
+body > header > .wrap { box-sizing:border-box!important; max-width:none!important; width:100%!important; min-width:0!important; padding:10px clamp(12px,2vw,26px)!important; gap:12px!important; }
+body > header .brand { min-width:0!important; margin:0!important; flex-shrink:1!important; }
+body > header .brand-logo { flex:0 0 auto!important; }
+body > header .m4d-header-actions { display:flex!important; flex-direction:column!important; gap:6px!important; align-items:stretch!important; width:154px!important; min-width:120px!important; flex-shrink:0!important; }
+body > header .m4d-header-actions > .m4d-theater-permanent-tab,
+body > header .m4d-header-actions > .m4d-account-button { box-sizing:border-box!important; width:100%!important; min-height:40px!important; margin:0!important; display:flex!important; justify-content:center!important; align-items:center!important; position:static!important; transform:none!important; font-size:12px!important; text-align:center!important; }
+body > header nav#m4dOrganizedNav .m4d-main-settings { display:inline-flex!important; align-items:center!important; justify-content:center!important; white-space:nowrap!important; color:#fff!important; }
+body > header nav#m4dOrganizedNav .m4d-main-settings:hover { border-color:#f04456!important; }
+/* Preserve a real horizontal top navigation, including dynamic account links. */
+@media (min-width:1101px) {
+ body > header > .wrap { display:grid!important; grid-template-columns:minmax(205px,1fr) minmax(0,3fr) minmax(154px,1fr)!important; align-items:center!important; }
+ body > header > .wrap > .brand { grid-column:1!important; grid-row:1!important; justify-self:start!important; }
+ body > header > .wrap > .m4d-nav-carousel { grid-column:2!important; grid-row:1!important; justify-self:stretch!important; width:100%!important; min-width:0!important; display:flex!important; justify-content:center!important; }
+ body > header > .wrap > .m4d-header-actions { grid-column:3!important; grid-row:1!important; justify-self:end!important; }
+ body > header .m4d-nav-viewport { min-width:0!important; width:100%!important; max-width:100%!important; overflow-x:auto!important; scrollbar-width:none!important; }
+ body > header .m4d-nav-viewport::-webkit-scrollbar { display:none!important; }
+ body > header nav#m4dOrganizedNav { justify-content:center!important; }
 }
-/* Existing member themes: reflect the saved selection on the new dashboard too. */
-body[data-m4d-plus-theme="midnight"]{--m4d3-theme-accent:#5ba8ff;--m4d3-theme-rgb:91,168,255;--m4d3-theme-soft:#a3cdff;--m4d3-theme-label:#d7eaff;--m4d3-theme-glow:rgba(91,168,255,.24)}
-body[data-m4d-plus-theme="sunset"]{--m4d3-theme-accent:#ff965b;--m4d3-theme-rgb:255,150,91;--m4d3-theme-soft:#ffc19a;--m4d3-theme-label:#ffe5d3;--m4d3-theme-glow:rgba(255,150,91,.23)}
-body[data-m4d-plus-theme="electric"]{--m4d3-theme-accent:#b485ff;--m4d3-theme-rgb:180,133,255;--m4d3-theme-soft:#d5baff;--m4d3-theme-label:#edddff;--m4d3-theme-glow:rgba(180,133,255,.25)}
-/* The color token is also exposed so future custom/Unlocked themes can override it.
-   Custom Vault styling is not replaced or simulated by this CSS. */
-body,body>main{background:#090a0d!important;color:#f6f6f8!important}
-body:before{background:radial-gradient(ellipse at 70% -20%,var(--m4d3-theme-glow),transparent 63%)!important}
-body>header{background:rgba(10,11,14,.87)!important;border-bottom:1px solid rgba(255,255,255,.12)!important;box-shadow:0 14px 40px rgba(0,0,0,.42)!important}
-body>header .brand-logo{border-color:rgba(var(--m4d3-theme-rgb),.48)!important}
-.m4d3-sidebar,#m4d3Sidebar{background:linear-gradient(180deg,#141519,#0b0c0f 88%)!important;border-right:1px solid rgba(255,255,255,.09)!important;color:#b9bec8!important}
-.m4d3-side-link,.m4d3-side-link span{color:#b9bec8!important}
-.m4d3-side-link:hover,.m4d3-side-link.active{color:#fff!important;background:linear-gradient(90deg,rgba(var(--m4d3-theme-rgb),.22),rgba(var(--m4d3-theme-rgb),.045))!important;box-shadow:inset 3px 0 var(--m4d3-theme-accent)!important}
-.m4d3-side-link:hover span,.m4d3-side-link.active span{color:white!important}
-.m4d3-dashboard{color:#f6f6f8!important}
-.m4d3-dash-top{border-color:rgba(var(--m4d3-theme-rgb),.24)!important;background:radial-gradient(ellipse at 82% 34%,rgba(var(--m4d3-theme-rgb),.24),transparent 45%),radial-gradient(ellipse at 22% 110%,rgba(var(--m4d3-theme-rgb),.095),transparent 66%),linear-gradient(120deg,#1b1c21,#0e1014 76%)!important}
-.m4d3-dash-top h1 em{background:linear-gradient(90deg,var(--m4d3-theme-soft),var(--m4d3-theme-accent))!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
-.m4d3-overline,.m4d3-dash-label span,.m4d3-activity h2 em{color:var(--m4d3-theme-soft)!important}
-.m4d3-dot{background:var(--m4d3-theme-accent)!important;box-shadow:0 0 16px var(--m4d3-theme-glow)!important}
-.m4d3-dash-top p,.m4d3-activity p,.m4d3-rightpanel p{color:#c2c4cd!important}
-.m4d3-tile{border-color:rgba(255,255,255,.12)!important}
-.m4d3-tile-purple{background:radial-gradient(circle at 90% 10%,rgba(var(--m4d3-theme-rgb),.30),transparent 58%),linear-gradient(135deg,#292025,#131519)!important}
-.m4d3-tile-blue{background:radial-gradient(circle at 92% 12%,rgba(var(--m4d3-theme-rgb),.22),transparent 58%),linear-gradient(135deg,#20242b,#121418)!important}
-.m4d3-tile-rose{background:radial-gradient(circle at 94% 12%,rgba(var(--m4d3-theme-rgb),.26),transparent 57%),linear-gradient(135deg,#2a1c21,#131417)!important}
-.m4d3-tile-gold{background:radial-gradient(circle at 94% 12%,rgba(var(--m4d3-theme-rgb),.20),transparent 57%),linear-gradient(135deg,#252122,#121417)!important}
-.m4d3-tile-category{color:var(--m4d3-theme-label)!important}
-.m4d3-tile small{color:#cbcdd3!important}
-.m4d3-tile:hover{border-color:rgba(var(--m4d3-theme-rgb),.52)!important}
-.m4d3-activity,.m4d3-rightpanel{background:linear-gradient(145deg,#1d1e23,#111317)!important;border-color:rgba(255,255,255,.11)!important}
-.m4d3-menu-toggle{border-color:rgba(var(--m4d3-theme-rgb),.35)!important}
-/* Restyle the secondary original hero without restoring its giant background watermark. */
-body>main #home.hero{border-color:rgba(var(--m4d3-theme-rgb),.26)!important;background:radial-gradient(ellipse 55% 95% at 100% 10%,rgba(var(--m4d3-theme-rgb),.19),transparent 85%),linear-gradient(112deg,#1a1b1f,#111317 62%,#17171b)!important}
-body>main #home.hero:before{display:none!important;content:none!important}
-body>main #home.hero:after{background:radial-gradient(ellipse,rgba(var(--m4d3-theme-rgb),.20),transparent 68%)!important}
-body>main #home.hero .hero-kicker{border-color:rgba(var(--m4d3-theme-rgb),.28)!important;background:rgba(var(--m4d3-theme-rgb),.11)!important;color:var(--m4d3-theme-label)!important}
-body>main #home.hero .eyebrow{color:var(--m4d3-theme-soft)!important}
-body>main #home.hero h1 em{background:linear-gradient(90deg,var(--m4d3-theme-soft),var(--m4d3-theme-accent))!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
-body>main #home.hero p{color:#c5c6ce!important}
-body>main #home.hero .btn:not(.secondary){background:linear-gradient(115deg,var(--m4d3-theme-accent),var(--m4d3-theme-soft))!important;box-shadow:0 9px 26px var(--m4d3-theme-glow)!important}
-@media(prefers-reduced-motion:reduce){.m4d3-tile{transition:none!important}}
+@media (max-width:1100px) {
+ body > header > .wrap { display:flex!important; flex-wrap:wrap!important; align-items:center!important; justify-content:space-between!important; }
+ body > header > .wrap > .brand { order:0!important; flex:1 1 180px!important; }
+ body > header > .wrap > .m4d-header-actions { order:1!important; margin-left:auto!important; }
+ body > header > .wrap > .m4d-nav-carousel { order:2!important; flex:0 0 100%!important; width:100%!important; min-width:0!important; }
+}
+@media (max-width:600px) {
+ body > header > .wrap { padding:8px 12px!important; gap:8px!important; }
+ body > header .brand { font-size:clamp(11px,3vw,14px)!important; }
+ body > header .brand-logo { width:36px!important; height:36px!important; }
+ body > header .brand-text { white-space:normal!important; overflow-wrap:anywhere!important; }
+ body > header .m4d-header-actions { width:120px!important; min-width:112px!important; }
+ body > header .m4d-header-actions > .m4d-theater-permanent-tab,
+ body > header .m4d-header-actions > .m4d-account-button { min-height:36px!important; padding:7px 5px!important; font-size:10px!important; }
+}
+/* Keep Settings & Rewards as a dedicated regular page section in the original theme. */
+#m4dAppCenter { scroll-margin-top:140px; }
+#m4dAppCenter .m4d-settings-subpanel { background:#17171d!important; border-color:#39313a!important; }
+@media (prefers-reduced-motion:reduce) { body > header * { scroll-behavior:auto!important; } }
 </style>
 </head><body>
-<header><div class="wrap"><a class="brand" href="#home"><img alt="Marriage4Dummies-Reacts logo" class="brand-logo" src="data:image/jpeg;base64,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"/><span class="brand-text">MARRIAGE<b>4</b>DUMMIES<small>REACTION FAN HUB</small></span></a><nav><a href="#home">Home</a><a href="#latest">New &amp; Popular</a><a href="#weekly">Top Picks</a><a href="#featured">Featured</a><a href="#library">Collections</a><a href="#contact">Contact</a><a href="#video-search">Search</a><a href="#meet-the-couple">Meet the Couple</a><a href="#merch">Merch</a></nav><a class="m4d-theater-permanent-tab" href="/theater-watch-room.html" aria-label="Enter M4D Live Theater">🎬 Live Theater</a></div></header><section id="m4dPwaInstallArea" aria-label="Install the Marriage4Dummies app" hidden>
+<header><div class="wrap"><a class="brand" href="#home"><img alt="Marriage4Dummies-Reacts logo" class="brand-logo" src="data:image/jpeg;base64,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"/><span class="brand-text">MARRIAGE<b>4</b>DUMMIES<small>REACTION FAN HUB</small></span></a><nav><a href="#home">Home</a><a href="#latest">New &amp; Popular</a><a href="#weekly">Top Picks</a><a href="#featured">Featured</a><a href="#library">Collections</a><a href="#contact">Contact</a><a href="#video-search">Search</a><a href="#meet-the-couple">Meet the Couple</a><a href="#merch">Merch</a></nav><div class="m4d-header-actions" aria-label="Theatre and account controls"><a class="m4d-theater-permanent-tab" href="/theater-watch-room.html" aria-label="Enter M4D Live Theater">🎬 Live Theater</a></div></div></header><section id="m4dPwaInstallArea" aria-label="Install the Marriage4Dummies app" hidden>
 <div id="m4dPwaInstallCard">
 <img src="/icons/icon-192.png" alt="M4D app icon" width="52" height="52"/>
 <div class="m4d-pwa-install-copy"><strong>Take M4D with you</strong><p>Add the Marriage4Dummies community to your Home Screen. No app store needed.</p></div>
@@ -1251,10 +1030,15 @@ header nav#m4dOrganizedNav{flex:1 1 auto!important;min-width:0;display:flex!impo
   christian.textContent='Christian’s Channel';
   christian.className='m4d-main-christian';
   christian.setAttribute('aria-label','Christian’s other YouTube channel');
-  nav.replaceChildren(home,juice,christian,...Object.keys(names).map(k=>menus[k].parentElement));
+  const settings=document.createElement('a');
+  settings.href='#m4dAppCenter';
+  settings.textContent='Settings & Rewards';
+  settings.className='m4d-main-settings';
+  settings.setAttribute('aria-label','App Settings and Member Rewards');
+  nav.replaceChildren(home,juice,christian,...Object.keys(names).map(k=>menus[k].parentElement),settings);
   const known=new Set(['#home','#m4dJuiceArchive','#m4dChristianChannel']);
   function arrange(link){
-    if(!link||link.tagName!=='A'||link===home||link===juice||link===christian)return;
+    if(!link||link.tagName!=='A'||link===home||link===juice||link===christian||link===settings)return;
     const href=link.getAttribute('href')||'';
     if(href==='#home'){link.remove();return;}
     const key=routes[href]||'community';
@@ -1278,7 +1062,7 @@ header nav#m4dOrganizedNav{flex:1 1 auto!important;min-width:0;display:flex!impo
 })();
 </script>
 
-<aside id="m4d3Sidebar" class="m4d3-sidebar" aria-label="Main navigation"><div class="m4d3-side-heading">YOUR SPACE <span>✦</span></div><a class="m4d3-side-link active" href="#m4d3Dashboard">⌂ <span>Overview</span></a><a class="m4d3-side-link" href="#library">▣ <span>Discover</span></a><a class="m4d3-side-link" href="#m4dJuiceArchive">♫ <span>Juice WRLD</span></a><a class="m4d3-side-link" href="#m4dCommunityPlus">♧ <span>Community</span></a><div class="m4d3-side-heading">EXPERIENCES</div><a class="m4d3-side-link" href="#m4d3TheatreCard">▶ <span>Theatre &amp; Watch Parties</span></a><a class="m4d3-side-link" href="#m4dExclusiveVault">◇ <span>Exclusive Vault</span></a><a class="m4d3-side-link" href="#m4dSongRequests">☷ <span>Song Requests</span></a><a class="m4d3-side-link" href="#m4dFeed">✧ <span>Community Feed</span></a><div class="m4d3-side-heading">ACCOUNT</div><a class="m4d3-side-link" href="#m4dDashboard">◉ <span>My Dashboard</span></a><a class="m4d3-side-link" href="#m4dFriends">♧ <span>Friends</span></a><a class="m4d3-side-link" href="#m4dModeration">⚙ <span>Admin Center</span></a><div class="m4d3-side-bottom"><strong>M4D 3.0</strong><small>THE ULTIMATE HYBRID EXPERIENCE</small><div class="m4d3-side-glow"></div></div></aside><main><section id="m4d3Dashboard" class="m4d3-dashboard" aria-label="Discover M4D"><div class="m4d3-dash-top"><div><span class="m4d3-overline"><span class="m4d3-dot"></span> WELCOME TO THE NEXT ERA</span><h1>YOUR WORLD.<br><em>YOUR REACTIONS.</em></h1><p>One place for the videos you love, the creators you follow, and the community that brings it all together.</p><div class="m4d3-dash-cta"><a href="#library" class="m4d3-solid">▶ Explore Reactions</a><a href="#m4dCommunityPlus" class="m4d3-outline">Explore Community ↗</a></div></div><div class="m4d3-feature-art" aria-hidden="true"><div class="m4d3-halo"></div><span class="m4d3-art-m">M<span>4</span>D</span><div class="m4d3-art-caption"><span>FEATURED EXPERIENCE</span><strong>THE REACTION UNIVERSE</strong><small>Music. Moments. Community.</small></div></div></div><div class="m4d3-dash-label"><span>EXPLORE THE EXPERIENCE</span><a href="#library">View all collections ↗</a></div><div class="m4d3-features"><a href="#library" class="m4d3-tile m4d3-tile-purple"><span class="m4d3-tile-icon">▦</span><span class="m4d3-tile-category">STREAMING LIBRARY</span><strong>Discover<br>Reactions</strong><small>Find your next favorite moment →</small></a><a href="#m4d3TheatreCard" id="m4d3TheatreCard" class="m4d3-tile m4d3-tile-blue"><span class="m4d3-tile-icon">▶</span><span class="m4d3-tile-category">WATCH TOGETHER</span><strong>The<br>Theatre</strong><small>Immersive watch parties →</small></a><a href="#m4dCommunityPlus" class="m4d3-tile m4d3-tile-rose"><span class="m4d3-tile-icon">✧</span><span class="m4d3-tile-category">THE SOCIAL HUB</span><strong>Your<br>Community</strong><small>Meet people. Share reactions →</small></a><a href="#m4dExclusiveVault" class="m4d3-tile m4d3-tile-gold"><span class="m4d3-tile-icon">◇</span><span class="m4d3-tile-category">MEMBERS ONLY</span><strong>Exclusive<br>Vault</strong><small>Unlock hidden experiences →</small></a></div><div class="m4d3-secondary"><div class="m4d3-activity"><span class="m4d3-overline">YOUR COMMUNITY</span><h2>MORE THAN A STREAM.<br><em>IT'S A PLACE TO BELONG.</em></h2><p>Jump into discussions, connect with friends, submit song requests, and be part of what's happening.</p><div class="m4d3-minilinks"><a href="#m4dFeed">↗ Community Feed</a><a href="#m4dSongRequests">♫ Song Requests</a><a href="#m4dFriends">♧ Your Friends</a></div></div><div class="m4d3-rightpanel"><span class="m4d3-overline">PERSONALIZE YOUR EXPERIENCE</span><div class="m4d3-glass-orb">✦</div><h3>MAKE IT YOURS</h3><p>Profiles, custom themes, and exclusive unlocks.</p><a href="#m4dDashboard">Open My Dashboard ↗</a></div></div></section><div class="hero" id="home"><div aria-hidden="true" class="m4d-hero-motion"><span class="m4d-glow m4d-glow-one"></span><span class="m4d-glow m4d-glow-two"></span><span class="m4d-glow m4d-glow-three"></span><span class="m4d-lightline m4d-lightline-one"></span><span class="m4d-lightline m4d-lightline-two"></span></div><div class="wrap"><div class="hero-kicker">▶  FEATURED EXPERIENCE  •  MUSIC  •  REACTIONS  •  COMMUNITY</div><div class="eyebrow">THE UNOFFICIAL REACTION STREAMING HUB</div><h1 class="m4d-custom-hero-title">MARRIAGE<span class="m4d-brand-four">4</span>DUMMIES-REACTS<br/><em>“Marriage Minestry”</em></h1><p>Your front-row seat to Markis &amp; Christian. Explore the reaction vault, discover playlists, and find the songs everyone is talking about.</p><div class="actions"><a class="btn" href="#video-search">▶ Browse Reactions</a><a class="btn secondary" href="#library">Browse Collections</a><a class="btn secondary" href="https://www.youtube.com/@marriage4dummiesreacts" rel="noopener" target="_blank">Visit YouTube ↗</a></div><div class="m4d-subscriber-panel" aria-label="Marriage4Dummies Reacts YouTube subscriber counter">
+<main><div class="hero" id="home"><div aria-hidden="true" class="m4d-hero-motion"><span class="m4d-glow m4d-glow-one"></span><span class="m4d-glow m4d-glow-two"></span><span class="m4d-glow m4d-glow-three"></span><span class="m4d-lightline m4d-lightline-one"></span><span class="m4d-lightline m4d-lightline-two"></span></div><div class="wrap"><div class="hero-kicker">▶  FEATURED EXPERIENCE  •  MUSIC  •  REACTIONS  •  COMMUNITY</div><div class="eyebrow">THE UNOFFICIAL REACTION STREAMING HUB</div><h1 class="m4d-custom-hero-title">MARRIAGE<span class="m4d-brand-four">4</span>DUMMIES-REACTS<br/><em>“Marriage Minestry”</em></h1><p>Your front-row seat to Markis &amp; Christian. Explore the reaction vault, discover playlists, and find the songs everyone is talking about.</p><div class="actions"><a class="btn" href="#video-search">▶ Browse Reactions</a><a class="btn secondary" href="#library">Browse Collections</a><a class="btn secondary" href="https://www.youtube.com/@marriage4dummiesreacts" rel="noopener" target="_blank">Visit YouTube ↗</a></div><div class="m4d-subscriber-panel" aria-label="Marriage4Dummies Reacts YouTube subscriber counter">
   <div class="m4d-sub-icon" aria-hidden="true">▶</div>
   <div class="m4d-sub-content">
     <span class="m4d-sub-overline">MARRIAGE4DUMMIES - REACTS · YOUTUBE</span>
@@ -1428,11 +1212,11 @@ header nav#m4dOrganizedNav{flex:1 1 auto!important;min-width:0;display:flex!impo
 </div>
 <div class="m4d-meet-story"><h3>About Marriage4Dummies</h3><p>Marriage4Dummies-Reacts is a fan community built around the channel's reaction content and the conversations it inspires. Explore reactions, connect with other fans, and discover what the community is watching.</p><div class="m4d-meet-actions"><a href="#latest">Explore reactions</a><a href="#merch">Visit the merch store</a></div><p class="m4d-meet-editnote">Want to share their story? The biographies can be expanded with details provided by Markis and Christian.</p></div>
 </div></section><section aria-labelledby="m4dMerchTitle" class="m4d-merch-section" id="merch"><div class="wrap"><div class="m4d-merch-banner"><div><span class="eyebrow">THE M4D STORE</span><h2 id="m4dMerchTitle">REP THE COMMUNITY.</h2><p>Explore the Marriage4Dummies-Reacts merch collection. Browse real products and shop securely through Spreadshop.</p></div><a class="btn secondary" href="https://marriage4dummies-reacts.myspreadshop.com/" rel="noopener noreferrer" target="_blank">Open Official Store ↗</a></div><div class="m4d-merch-feature"><div aria-hidden="true" class="m4d-merch-feature-icon">✦</div><div><strong>Love each other collection</strong><p>Check out tees, hoodies, hats and more. Available items and prices are displayed by Spreadshop.</p></div></div><div class="m4d-merch-frame"><div id="m4dSpreadshop"><div class="m4d-merch-loading" id="m4dMerchFallback"><p>Discover the official M4D merchandise collection.</p><button class="btn" id="m4dLoadMerch" type="button">Load merch products</button><p class="m4d-merch-note">The store is provided by Spreadshop. Loading it may share browser data with Spreadshop.</p></div></div></div><p class="m4d-merch-help">Having trouble viewing products? <a href="https://marriage4dummies-reacts.myspreadshop.com/" rel="noopener noreferrer" target="_blank">Shop directly on Spreadshop ↗</a></p></div></section><section class="contact-simple" id="contact"><div class="wrap"><div class="contact-panel"><div class="eyebrow">Questions or feedback?</div><h2>CONTACT US</h2><p>Want to get in touch? Send an email to the address below.</p><a class="contact-address" href="mailto:reachmarriage4dummiesreacts@gmail.com">reachmarriage4dummiesreacts@gmail.com</a><div><a class="btn" href="mailto:reachmarriage4dummiesreacts@gmail.com?subject=Marriage4Dummies-Reacts%20Website%20Inquiry">✉ Send an Email</a></div></div></div></section><section id="m4dCommunityPlus" class="m4d-community-plus" aria-label="M4D Community Plus features"><div class="wrap m4d-plus-container"><div class="eyebrow">M4D COMMUNITY · NEW FEATURES</div><h1>Your community, your way.</h1><div id="m4dPlusaccount" class="message" role="status">Connecting to your existing M4D account…</div><div id="m4dPlusfeedback" role="status" aria-live="polite"></div>
-<nav class="tabs" aria-label="Features"><button data-tab="discover" class="active">For You</button><button data-tab="rooms">Watch Parties</button><button data-tab="events">Live Countdown</button><button data-tab="themes">Profile Themes</button></nav>
+<nav class="tabs" aria-label="Features"><button data-tab="discover" class="active">For You</button><button data-tab="rooms">Watch Parties</button><button data-tab="events">Live Countdown</button><a class="m4d-theme-link" href="#m4dPlusthemes">Profile Themes</a></nav>
 <section id="m4dPlusdiscover"><h2>Recommended for you</h2><p class="sub">Choose favorite genres and we'll prioritize reactions from the existing M4D library. No tracking or AI subscription needed.</p><div id="m4dPluscategories" class="stack"></div><h3>Reactions you may like</h3><div id="m4dPlusrecs" class="grid"></div></section>
 <section id="m4dPlusrooms" hidden><h2>Watch Parties 2.0</h2><p class="sub">Create a public party or invite friends using a private room link. The host controls playback; everyone watches the same YouTube video.</p><div class="grid"><div class="card"><h3>Create a room</h3><label>Room name<input id="m4dPlusroomTitle" maxlength="80" placeholder="Friday night reactions"></label><label><input id="m4dPlusroomPrivate" type="checkbox" style="width:auto"> Private — invitation required</label><button class="primary" id="m4dPluscreateRoom">Create Watch Party</button></div><div class="card"><h3>Join a room</h3><label>Room invite URL or room UUID<input id="m4dPlusjoinInput" placeholder="Paste room invitation link"></label><button id="m4dPlusjoinRoom">Join party</button></div></div><h3>Public parties</h3><div id="m4dPlusroomsList" class="grid"></div><div id="m4dPlusactiveRoom" class="card" hidden><h3 id="m4dPlusactiveRoomTitle">Watch party</h3><p id="m4dPlusroomInfo" class="meta room-details"></p><div class="player" id="m4dPlusyoutubePlayer"></div><div id="m4dPlushostTools" hidden><label>YouTube URL or video ID<input id="m4dPlusvideoInput" placeholder="https://www.youtube.com/watch?v=..."></label><div class="stack"><button id="m4dPlussetVideo" class="primary">Load Video</button><button id="m4dPlusplayVideo">Play</button><button id="m4dPluspauseVideo">Pause</button></div></div><p class="note">A host can change videos, play, and pause. Browser autoplay may require each guest to click Play once. Some YouTube videos do not allow embedding.</p></div></section>
 <section id="m4dPlusevents" hidden><h2>Upcoming M4D livestreams</h2><p class="sub">Times are shown in your local timezone. Only published events appear here.</p><div id="m4dPluseventList" class="grid"></div></section>
-<section id="m4dPlusthemes" hidden><h2>Make M4D yours</h2><p class="sub">Choose an account theme. Your theme is saved to your account and updates the member experience.</p><div id="m4dPlusthemeList" class="grid"></div></section>
+
 </div></section></main>
 <footer class="footer"><div class="wrap"><div><img alt="Channel logo" class="footlogo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAgGBhAQEA0QEA0NDRAWDSAOEg0XFxkZEA4gHSAfHh0aHBwgJCsnIBcrIxwcKDUpIzA1NDQ0HydFPTU1PDo1NCsBCQkJDQsNFw4OFyghHCEoMjIyMigoKCcoMjIyKDIoKigoKCgmMiYpKSgoKSkpKCYmMiYnMikoJjIyMiYyMicyJv/AABEIAKAAoAMBEQACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAAEBQIDBgcBAP/EADwQAAIBAgQDBgMGBQMFAQAAAAECEQMhAAQSMQVBUQYTImFxgTKRoUJSscHR8BQjYuHxcoKSBxYzQ1Nj/8QAGgEAAgMBAQAAAAAAAAAAAAAAAwQAAQIFBv/EADMRAAICAQQBAwMBBgYDAAAAAAABAhEDBBIhMUETIlEyYbFxFCNygaHwBUJSwdHhM5Hx/9oADAMBAAIRAxEAPwDJPl3F1CsPu47+xro4qkn2LeJ1pXSFKGbjCmpy0qGtPjt2BooRbhTab9P0xzZ5Pg6UMYflMq1UoKSMWZwO7vYExq2+Ec8C9SuwixW/aUdoez+aoMjI2umxEmINMmfiBvpPJjA3EAiMDhlUgmTDKBXwziRELUDRtqO2NMHQ2egDcFSN8bUgco0K845W2CxQNi1jN8EMEcQgPXy/MfLGWi7CMtTijVqFtInR+uATfNBYdWbLhHD1FOlKKKhXUW6dAMCm6HsGO6NNl6MAAY5WSVs7uLGkhnl3IiCZwANQu7XkNlWBUSaigefiBPtAwxpW/UE9Yl6Tsw2YoAVAsEzVao566BpM3uOU9cdFSbRxZw2smarCqQwsKJqTtqLWHkftTieAYtpZczUpHV3bUy9NrakJEsPlePLG78mQrhpKtoOqoFrGizdQNmI9LH0xTIhsVHLUMepPPAVdVPeOfEFAAHImccXW5LnR2NHj9tgYyoLljLHbz6fXz2HXCCHmOMtw5lpk05otuHgSt56fu2+I2vJcU/B9UzDT49VU9LBBG1gIwP8AQLy+yQpggA06JH3ZhvljO6ivTPqvDkKkKBlzHw3KH35e+LUzMsYgzNIqStRSjcvuv5g4ax5BXJjAHXDQsyI6HFkPojFEDMzQinRo3/mVVp6B5nUfkLfuyv1TsY6jRu8jS5gYX1M6Oxo8fkdUF679ccqZ1ojCjS9DjCJJme7T1A1bLUTZRNap5DafYasO6dUnI5uslbjAy6P3tSoSsEuYVtyCdRFp6wf9OG+kc2ct82RqIKqZ2oysL6QNVhDKiD/TA/HGE9u1BHDc5P4X/SB6YUVaQMjxrT+atfzP6H3KLHlGqA2oyCKimed2gT5XP64vsyNarQCS2wnHpZZKV2cKMLdC2s5NNTFo1xykmB+Ax57LLdKzv4Y7YhnD6IJnbSCpHU8+e2AydINFWzTZLK94ADzExyXC05bRzHjscUuEU1ABRW9sLObHYYUFLwikRekh9sY3y+QmyIJmuz6we78Bj4PsH8x7fLGo5WuwWTBGRlOKcMBRlZSpBhk54dxzvlHLy49rpmPz+UKQRJGxPQ4fw5L4OfmhXKF5fDAAIyylmUDecYySqJqCthVNy2apkIXCqaoSdyTo/AThZcIZgm5cG54dxRJC1Eag+2lhAPocc/NBy5Ts7OnzKD2zVGhoqLEYRZ00w6mtrSMQyzm/GM4XrZuoZIZu5U81VWgxHIlSf9xx1MUKgkcXVz/eP9Cig5UFtIYIhqaeRa7RJ82jG5i2Je4kyBctlqAJmrmA7cpWmAT0kaiuML3ZL+F+Q7e3D/E/wLcw01KjAKSoNbpqJCrT5c4J+XuddCL7KslWAfMII0o6U5810jkdpB+nvb8ERvOJcEVlIFpw1lyygqF4QjJ2JOIUe7o1QQoIplR5Tt9ROEpdpnQx/TQVwSmKhcjSZYX5Afr+uKfC5NQ74NfwpQQSBYeEHr1wjmlbOnhjSGioMAGIh1BAbDFA5tohXpwYjFNGoStGf41w01FYrAfTAPJh0OC4puJjNiWRHK+KMRrJR1ZW01E5D18j/jqOljmcfJj8CQpBMEMOvXHRi7VnNlHa6CsmpAZhpJAiPPb8/pgGZ+AuNeSXB0qHM1mUqD3wohzOkBRHKeQFpwHI0o8jWmUnO4m8TL1nNamyJURF1pmAYUxfZpM+hne2EKj2jq3kftkhtwfWyqAfbC+WPI7hfsKu0/Fny9ElWCVC3d01t4mO2L08FKVA9RNxjwYIoQaSM4fwGq7m2sC/1j646hwJNtl/eTTQGD3lQIGGwklt/RYxh9m4cJsnxF1bNuAbUsutOPsAmWa56yPlisf038v/AOBNQ/corwl/ywDLE6TVIkl9bf1CmIG3n9cGfwKIhw2mA2YILEGqs89LMVP0/XEfgiOlZ+sEZUViXKa9AEx67YvUTtl6fHfZzjjOddnqamLEkeVhMWwKHuGZpQ6NF2Yd+60gaWdiP6uX6/TEzOiYOWdDyeXFNFUXtv1PPHMk7Z1Vwffx1yFSo4B+IDw4mw2pBuU4kJgUnX+o4z0ZlFy7Ls5WZhaxxlskI7BBnMvpM1tR5hWbSvymcF9y4ozvhLyZbtJkKRK1nUhQQjMhOrTv7weR674YwSb9ovqVFUzH9o8mlGvVWkjU6VmVJ1AeEaoPqdvPHR0+TwzlanH/AJiqmAFXeNWtuo0iTPTfFZHbMwVIddh8qr5UkqCWrGofMzH5YS1UmpnY/wAOgnjv7mnfwggEyREyZwvHkenxwNeG09CybHp0wDLK2HxwpUYrjObFfN1J1aKMUkHIsb1G9QBGHtNDbBff+0cnX5Lk18cCN/EKtSBLv3SdCNvK1j8sNnMCGraAKrAd3SBAWRpqGwJtO8aefPGOG6QZcRVr7gNCqVpM7tNWtV7wmD4pv8uWCVzSASbbthBo6aaUYZmtSbqQPE55c4/zir8lF/DQWCT4i2ZLSNiJt/bFS4Lig3tbVqU82KiqXXQH/pBFj8t/fF2pdm8fC4FzUmqjLsVb4tZEf+W+onfmLDyHvjWNUysjtD3hebVK9UC1OnfyBJ/vjGqim3tN6VtL3G3y3GKVQNDyADbYsInUOq8vbCCw1yzovJfRZ/HsAqsDHwqiwCcYS3MLJ7Va7LaC6oJQC8bnUPPljGSCj5JjyOXii9mcq6hiYuOpwNBdtkVo6oqKTqN9XPBFlaVAfRi3bQq4pwkfw9RVUkgago3JBmBi8WT32yZsdw4ML2joE1WYKTR1ii1WPArgRvtNvxw/hutwjmr6RDWKlWJYxoYnpBJIj2GDiTNB/wBPzGUWfvt+OE9X9Z2P8N/8Ro8lWSuVKm4PjT7VM9COvP3wLJF41Qxifq5Lfgc8RbuUZiVASmXnlYThVRuSQ9v9rZyvLgmkrGTUqsTPVnv8v747B5jLLdIvWgutaaS2hIVZ3+XP++I5cWzMY26IdqUhKVAEF3qhPUUxBPub/PGMPPP98h89K/8A0v5FS0x3llXTSoiBzLHf6D64L4EwbOeBaxLwUp91P9bnU373xa5IxxwwEVMuvMLqPUT6YHMJjRpu1ea7ukCpUlm0FftOIuIxrZZnHKjNcDKFHqlrU10IuwWRE/6oMekYc06ilJy7A6jc2lEv4LWSoyKdCrUr6Tq2e5gH1NsIZr8HR0qi5Ld5OiUsitPUAioDcGBYHl7YQ3vse2KPAZSoK1iokWjmMClwED6WWABMBRzY8sZZTkgNUIcgSZM/piIImW5WlDMk6TvESD/fFsw3RTnacBiXsBPQYqPZvwccapUZKoVnFEVDX0fYJiAfUY6ylUaORKHvv4QFn0003UCCQE9QP2ZwWPYpLoJ7F55hQCSqg5g01J2MifyOBaiFyv7DmjyNQpfJsqHCn74VgyoxGlmT/wBg815+UXwrLItu06McU92/8CztbxBmajlKbVld5esDABSLj3xrT4l9YHWaiS9tsXZbSNbHSq0hpnkTE8to5+mGZfBzo/6ifC6Z7wufCQDXI5qfsiefiK+W+MZHxt/kFwxt7n45/wCBHJq55wIKoNIboAL+8nBkqiAlK3QZlWs1RiFD1NYHVQJFvP8ATFP4MIX5lNf8LSJOqpVNZl+5JkX6cv3GNryV9hvw9y65hksTU7kN9lRIE+gGr3GAzpNWHhzGVGj4xTJp1mZVChtIW+veBJ898E22wcZ0hXn6aUqCIFKkjxeZIv64dzRUIJeRXFJyk/gXtkjSo5ZmBU97rZenhbT9SThC7bHVwdI7NcTfM5eKgAdGNLvLfzCADy2N4vE7jCOWGx2joY83qRp9jKm8mCL4BLgaxytDOgyQBpE/e5jA2yNc2V1cuC06mH44iLspfTTMlrxBJ3xra2Wk30DcSaaFUnY0j67YqK9xhs5xUrqBVpCAsgzzPwk/T88dCCumIZHTYgzh8I1NpAQ1GPNbGfq30w1EQkR7HVSqgFQ6aw2k3sDJt88VmD6Ke2Sv5OoPmMvSoPUCjSElCrQB6C4OE9u50eknjUlvhKl/T/o59xisaZrVy7NUcA+KJBN4AjYD88NQXFHC1Uf3rVkspkoy9FCefeub3vJnzm/pjO73AnBKIZVzCU6bA6dZQ13G6gCdM+pkiOmM05Sv+RtNRx15fP8AIz/DvDSesFIao0A85J/vhh90JhT0wq06IBUl+7jmALsfTl5SMZ75LqgGnUmpXrglgiFFTl0A5xMT7++NeKIu7HvCOFNTo5dHbR/NFVx9piCCo998LTyXO0O48dQpmm47VV61KlYeLvmPptjo6TFvmcfPk2wMH2wzjtVVA0gEehJw1qn7qB6b6bF2a41UCohY1FQWJNzpsMJSxJMcWTga8T7U1KbdwkrSoqAhSUdn03ckGSbn2jApYUbhlZqeGdr6hp0gyKKncrUOqdTA/C3uBOA5NIuxrDqn0MU7XVeSJ+/fC/7LEY/aJHj9pqxtIjp/jBFp4I3DU14G/A6j11clFWG0hr6vmcAzVDocx6hyiR7VcQNGgyqNTsO7VenU+w+sYHhjcrYpll4MNQy5hQ1yaWphzuSI9dP0OG7oWkrdsRcfrEpmIsfCnzGo/TDWMSyEez+Y7taJHigyR+/2bYmSO4mKW12Mu9bM12KlloIbrJ0VX3EjY+fQDzwJLZGn2Neo27jwhdxbMiq5g6iKndU72Zplj53ge53i+0qB3Y9rlkfQWYU6WWWoV+8TqVbdNINup9MDjTV/JrI39PgSd1UeiDY1czU8Tc0QCIB+XzwXhS+y/IF3t/X8B1DLAPTpqZWlS72OpJIWR8/pjLlxZaiU5zMk16+4FGgUB+9qi/4W8sXHr9SpdnnDcoppUqbBv5jlj94KBAHyH7tOZyp38G8ULNPRoGpWy9OWIaqqqvQBrnb1A5R74Vsdp0CUuJTWrVD4gf5YP3Yx6HTP01dHm8y38GO7QEd8SDPPAMsrlaGMUajyJHabe2Bm7CQ4q1EDBtZIpaps/IE9PP0xllpmnymWCOzBSoYgAdAAAPwxmVeA0E1yxujx6YBKI5FhVGDtjG6jXp30azgWd7mhXdlYgNMDc2wpm98hnH7ImW4rxd8w6qhcF510wJWmsWv1n8cGxwURbJKUnQArkCoxmdbafKAFF/8Ad+98aSKk6Qt4jRim2ohrVK0ne8qntBjB4u2KyXBlaaVUamgJGtQy3uNW3pM/UYN2BqmaRqv8LlGK3Zm7tDyJO59h+WBVcgt1AD7HcPL11Y/DTIvyJNzHoAST6YmeVRL08bkOOLZtno6TE1s13SwfsrYGR1g+k4HjilL9EEyyuP6uj6qVRqlSFCoooUhylbH0vP54uPVGJ9jPL0wn8Q5Cj+Zb70AWHnsvz+Ym7pB1GrYiyWUatRqVKh8VWrrdv6Re39PTzODSlXAGMG+R7k8miVaNMtpUMtAdSFEt9RPt8l5Sck2MxiotGiqVKS5jK1lZYGZfWegBAp87cxgEbpodzL6F4M1kuElkCzciSNpnHp90Yxo8jTcrE3aPs61OkCFaNQAG5YkxaLnCs3F9DEL8iDLdnKzBZVaV92Pi+Qkz5EDGaNrno0mR4OlESBraINTn/bA5MYxwDGWRH7GA2G2hVClqHQ4y2Fgj1EdW6jGXyFRuOAIv8NXZ7KJLHoIvhLJ9Yz1CzO53h7anJKOFVVpsP/aGk7C0wp231YImAfSZn85QcUSBIOtWjmfFqa146e2DxfIvPoGz+UWrUUMwWnqUMv2qnjYL6KS3r4cbTpGJRt/YS0aH8RW7xwq071nMiaa7qCOgUCOW+CfSqQKrdscdqqKr/D6abOe7Ci1ldiLEzEgetz5SJhXDbM5JchlHJmhl2pqR3rEUyRZ5MagvmBz69IwFvfK/A1GOyNeQKpXC1n0iVyeTItsztePScb7j/E/6A2/d/Cv6llGm/dZVGbUzLDNPiXUCsj0DM3+04qXbZUVwky+spelRpjUr16jVydu7QksZjbw2nz64wvqb+OAz+lL5Kc+dVfK0aYXRoFVj91dQI22nSMXHptmX2khpWenry5YE6HL72bWe7ItPNh+u+MqP7v7v/YJd5V9v9+B926oUaeRRRTCO2bpqi7k6TJ9o1H3wHSX6gxrq9PkSEPAnSoj4ufyx6Sc4Ls8vjxzl0D1sshidTnqdvO22EsmZHQxaf5AjwegdqFL/AICfwws8o5HAvgOpcAqjxqGUaY0sx0n25YA9QrCfs5peHdmqVWkKweoR8NSnbXRPOeq/v0FkyyXRvHFXUhllezmWBgs/zGAPPJjUcUUGZjs1lwuoBiYnfGfWkaWNMOr5SnSyzhV8LgAjcGbHGVJ3ZT93DObp3mXfMxUKqjs1J2Msg0gACeYMx7Yc4nQnTgmvh8A+dQmiwDBW0CDBMQZHn1+QwSPYKfRn887Cmogx3+nUdgtOdM25kzbeMGiuf78gm+P78EeColOc1UIB06FQxpACj1npy2+RkgDZouH0FYLUqhgaeYqVtU2qaz8R6ABbDoxPTC+SW2NLyHxQuVvwU5zNrRVK9QMzICETmzvJa/8ASPwPQYxCO57UFnLatzBlyMU6KBVV69UZire9MfEBcnYx5WNuunPlv44RiOP2peXyyrij+GpXSBK91Tb7X8w6FI9F1kH/APTfEj/pJPrchrmsnJswBamlGY/8Sga3PXy/LAoMNNCzLA1M4aqkBO77tF6gFSduXwjpLCOuCtbcdAV7slhtSCWYLIWv3kgGxQyJ5fGZPLbngkMbr3fBieRJ+3u/x0E8TqtmyprsGKsQjj4EuBtb6f43DFHGqiYyZpZHchinDatQ+Gm58+WMZtTHywuHTv4GGX7Iubu6p5bnCMtUvA5HBXY3yfZ+lSuBrb7x5YXlllIOopEs3RF8ZRGKuF59stmx/wDKqugr9nUNvmLf7Rhit0L8oA0t21+fyazM5ZCqsgDIdjzXyP7/AFIWg+GfOyfYH3cCASB05YyMni5g6e7a4DAg+R3xCq5sxPEcu5qMdII/itJE3iGIHmTCjynDkGqEMqd0fcURGYGjDU9Cxa7eEEk+8++GIQlsQrKcdzMNxyjenTBb+Uukk31E8/f8/QYPFV2Aly+BqoqDImj/AA7o2iJ+/eTsef5+hJAQ5GYRRTpgSugS1tOwA/3H06+WEuWx5VFA/E8uooKrKKpR1dhp1uRPiZhBgkar23xuC7lYOfiIu4tmWoaqzKFr1iEVNzQQKFMctZtPIE84xWOKlx4X5LyT28+X+CFKqa8U1psKbMtXXPhUA+FZM3tefun1xPp5J9fCGVbO0SrGoHYMTQpppLd4BMwADYm+0HF44e4mWfH9C7JZZ0Oru6jeDu1EBNAEFt9mJMeQQe+tjkzO7ag6hkDpQeFT8RAjwbkiwPpI6fJoWPanDFGkAMLBWv4iCZNidvSPY4oh0I1hyx5w71HgqjEIeswONFAlenOLIIOL5DUrAWb40b7rC4+uDYp7WCyw3RHfZvjKVqSsbow01F5I3OP3t7YrJH05UUn6sFOPYZnqBUkb856jlgbQ1iyb42AFp9cUbFvDx3lQNBu7V/ayJ84J+WDT9saAdyM1m6dRatakjhCrkiRKkG4tI2BA9sdPFPdBM5GSO2biSpZJSrSWJMk1D8TkiJ+Vh0A9saXJOgXNZn+FprJ1ADQo6kD/ADP4Y2YA8hlNITUzNUIjUTagttUcgfPc2wpKVvgajGkMKGepM6qrPJaYBYosASOk/WBzwTJBRxg8c92QQ9s8sCKDBlDadIT7gJLMegElcVp3w0TUR6YX2eTu6GlvC2kVe75qCWjzm+JkXuReJ+xjH+CqTRIdVKP3hWLtzieQIJG3PlGDYY8WCyvmgupWcQGEXgyoZfiM3EHp7HlBxuPkzJ9Hq8QaFLUw4keNNRALHnO1h0v0O+NGC6hxJGgpIO8XG5jkI/L8MQhqe+PPHnqO9ZBs1HPF7TNl2VzOowLnEaoiGJpEjGLNUKuIlUV3chVVC5Y7AC5xuKbdIqftVswHZ/jjZerMN3LmWp8x5j+ofW/ljpZsXqL7nMwZvTf2Or5Outeiulg/g103Gzr+/wAsc6q9rH9yjLeumZ/jVYUlI1aS7d2DzE7n2En2GLxxth8kqQx4Nw7Sr1GEM4Hg5U1A8K+2KySvgzBeTO9pMjpzFKoAAGU0yeci6/n8sPaKfDiIa2FSUhfrG+ofr+/PDwoAcQyyMAWIt4Z+6DYz5ATvNgb7zTfBFVl/AOLZc1WarlxmqHfGjoMFKoKyDcRpsd/LoMLxxO/vQXJktOvk9p8OQPUqLRVBDFIMsimfCGNgoJWALWNpnE1E6qJenh5Pa+XpuWVqav8AZgidtt58sHwxqALK7mwf+DbUXAWWUK55BR8I9BPW0ec4G8cmuTanFPgOAtY29LHcxyHS1/LphhAGRXWCAtz06x5iOZHmPljRkrrZSCWAVKgFyunxQLzvz+f4Qh5RygcodK6tQaL+LSOlrfgPrRDTvUtjgncAM1mIAvA39MbSMNmi4LlNKBmB1MNUcx0wvklyGjGhsYIgDGLNGS7bZ4UqJp21VfD6AfF+nvhzSw3S3fArqp1Hb8nOiDDbAwYHLckH88dKzmGx7CcbIBpyNSk1UHv419JP1OEtVj/zj2lkpJ42azjHDEqVcvVuUjUqdZg3PtthZSoPHmNPtDJ6yoDqKr1E2+eBuPPAaD9qZzj/AKgce/ljuxq01AxPlsfoTjoaTE4u2JazInGkY5eL6hO46/v92x0KOfZTms3rVkA3IXy3H79zi6IA5XMLRrsytqXSVDD4iDYc94+pjpglAr5s6q9Q0MmSWVmFLUT9jVGo3PKAAJ8scS/Vz8/J169LD96MB/3E5Essnrz2vvzkxEdL88dv06OT6l9l3/cpF7kT7iPWSNgAYHni9hW49btMRYi/wzytA53PpFvwmwm8k/aiZIU7yG5/F95vTcD154mwm8jW7WuwjQSNPsvi9gPw257TYV6gK/aF2YGFnWW1zeSwGwmG53MX+c2FeodGzeY0gnHBUTuykS4Nw5szUUlf5SnU55N0X35+Xriskti+5cF5N13GEg+8Uca7R0Mop1MHqR4aIjW36DB8WCWRgsmZY1ycpzWcqVqne1WLseXJRcgDyH5460YKCpHMlNzds+CcgRE7/WcaMAOWdqbalZlKtZuQO+37nbEaUlTJGTi7R0jKdohUyTs0LUQ61WfnHlcH38sIvDU9o96treLTnXqCWYnnHLDMcSQJ5mzK9rCBQcmNo+uGILkWyStGLy1Yi19ve31/HBxdMvZyQSL+D8R6fp+eIi2R72GBILeLVpm7QdvUwouPkRjTXBlPke5jtATTriZNRpIPwhdvCG6gdOnphbHhqa+wzkz3F/cTKAABcCYnkeXl/VE9IOHhQ8B6WtJA+H3iOoG9vliijxTBEWMgRNhcn7MkxbzHyxZRBYBWPCZUz8J2J3MnpcW2ttMIfA2WbiVE8l3O7WB+hv5zCjzLklkO91B3gS8+QHXpfrtGQ6pQpNmsylBTA+J25IOZ/fOMcJ+yO47d7nRusxnsrw+kqk6REqn23/U4TUJ5XYeU1HszfE/+obAlaNJFI8MMdV+fw2I5b7zbDUNIvLF56iujE1sy9ao9SoWYlpnkOkDpyw7GKiqQpKTk7YbSyuom1heentiNkK3oAWImw95GIShHmnRS+owVM32NuYxtGGxdke0EVHUnTTYRHKdvaxPyGNbDKyeDdZeuCqkbaZxVG9xke1WfFUmkpkIpquelvCPz9sFxwsBkmZhLT+/38sEMlpaSREnl5HfnI/D8jCy1wyNodWQixV7H7PIkTt7+fKyjwAyOY0xbl12iZAP1xSXJbfBZMm0SbTzJPoCT8XvHURghg9LyZNr6r3ib/aNzAA6EfWyrIqeQJnTMSYsvkNx9OdpxdFHhMWjSY9DZfIEiZ9D5coUR1QROmfCZtI8M85ge0HysMUWfUD4qU38ax1EXtMkCW6QZ5YpsujqnFuzBo5XvWTvKw/mM4fwDr5eHa1zYi1scuM+aOjOPFmUNTWVlmB06YP4A9MFqgVku4kgEDbfrOJZY1oZedMqqjpO+MtlpBpdEFwAI2vvjPZZmeIdoUUOFudXLY9f84JGDBvIY7OZt2ckn25YMlQFuwQnFmTT/APcBXLIqT3hXRPSLEj1NhjNG93BXlMqKVFwyj4C7ddtsNxW2IpJ7pCmnsOkfvcH9zgVDBOmxBUgwQZVvunlztB/fLEIG8Qz1TMVO8qMHbSEmIsPIA/evfc+kbZkAI6mDG5idh1PmT+5ERCYr3vf3852kWk/Qm18WQktQEGOn9IJsB59ffyM4syTqT4jJIuR8Xko3I/CbXB2FkIuZDE7eI2FrwAQFsPUEja3WEohU3aDpGo9IAJ0/6dp2jnfGSyOXMvTEL/5FMX5kenX6Yplnd+N5BqyNl1Ze8VAagtFQhjC2sbLeRyXblyouuToyW72o51Xpd3K1EYeL4SJFvxGGOxd8ANbiWknSjm/3Wj64vaVvBm49XiFR999J/TGvTRXqMX5rO5ioIYVI2jSZ/DGlFIy5NgSU3B+B/wDgb41ZgqqUXJk03/4n9MUQr/hn/wDnU/4n9MQgzpcOenUlkaVVTpjYlQfpJxuBmfQRmWqFSCr3tEH9MElLgHFci7L0XiCj/wDE/wBv2T0xhMKXCi8zoed5gz+B6R8sWiFhoPzpvHTSfpqJ5KBt5dJ2UQFBx9hzHk0GPReenr+eKIfDLvySofEOTDmvUjp9OVohLIDLvA8LxHQ9FPXy/wAWC2QtXLMTJRgfS58X19yD5xvZRE0nJUlH31bHw3JPXp5b+d6bJRWKLwJpvtvpJG3ob369bDbFWXQTlcpULJ4HUawbiwv0Y+Uew571ZD//2Q=="/><strong style="color:white">MARRIAGE<span class="m4d-brand-four">4</span>DUMMIES-REACTS</strong><p>Made by fans, for fans. Unofficial fan site; not endorsed by the channel owners.</p></div><div>© <span id="year"></span> Reaction Fan Hub</div></div></footer>
 <div aria-labelledby="modalTitle" aria-modal="true" class="modal" id="modal" role="dialog"><div class="modalbox"><div class="modalhead"><h3 id="modalTitle">Playlist</h3><button aria-label="Close video" class="close" id="close">✕ Close</button></div><div class="video" id="modalPlayer"></div><div class="modalfoot"><a class="btn secondary" id="modalLink" rel="noopener" target="_blank">Open on YouTube ↗</a></div></div></div>
@@ -1721,7 +1505,7 @@ $('videoQuery').addEventListener('input',renderAdvanced);renderAdvanced();
  const $=id=>document.getElementById(id);
  const overlay=$('m4dAccountOverlay');
  const nav=document.querySelector('header .wrap');
- const accountButton=document.createElement('button');accountButton.className='m4d-account-button';accountButton.type='button';accountButton.textContent='Sign In';accountButton.setAttribute('aria-label','Open member account');nav.appendChild(accountButton);
+ const accountButton=document.createElement('button');accountButton.className='m4d-account-button';accountButton.type='button';accountButton.textContent='Sign In';accountButton.setAttribute('aria-label','Open member account');(document.querySelector('header .m4d-header-actions') || nav).appendChild(accountButton);
  let mode='signin',user=null;
  function message(text){$('m4dAccountMessage').textContent=text||''}
  function showMode(next){mode=next;message('');$('m4dAccountForm').hidden=next==='profile';$('m4dProfileArea').hidden=next!=='profile';$('m4dNameGroup').hidden=next!=='signup';$('m4dEmailGroup').hidden=next==='profile'||next==='newpassword';$('m4dPasswordGroup').hidden=next==='profile';$('m4dSwitchMode').hidden=next==='profile'||next==='newpassword';$('m4dForgotPassword').hidden=next==='profile'||next==='signup'||next==='newpassword';$('m4dAccountTitle').textContent=next==='signup'?'Create Account':next==='profile'?'Your Profile':next==='reset'?'Reset Password':next==='newpassword'?'Choose New Password':'Sign In';$('m4dAccountIntro').textContent=next==='signup'?'Join the reaction family.':next==='profile'?'Manage your member profile.':next==='reset'?'Enter your email to receive a reset link.':next==='newpassword'?'Enter a new password for your account.':'Welcome back to the reaction family.';$('m4dAccountSubmit').textContent=next==='signup'?'Create Account':next==='reset'?'Send Reset Link':next==='newpassword'?'Update Password':'Sign In';$('m4dSwitchMode').textContent=next==='signin'?'Create an account':'Back to Sign In';$('m4dPassword').required=next!=='reset'&&next!=='profile';$('m4dPassword').autocomplete=next==='signup'?'new-password':'current-password';}
@@ -2792,32 +2576,7 @@ form.addEventListener('submit',async e=>{
  </div>
 </section>
 
-<section id="m4dRewards" class="m4d-secondary-page m4d-rewards" aria-labelledby="m4dRewardsTitle">
- <div class="wrap">
-  <div class="eyebrow">M4D MEMBER REWARDS</div><h2 id="m4dRewardsTitle">Rewards &amp; Levels</h2>
-  <p class="lead">Join the conversation, earn XP, and climb through the official M4D community ranks.</p>
-  <div class="m4d-rewards-hero">
-   <div class="m4d-rewards-icon" aria-hidden="true">🏆</div>
-   <div class="m4d-rewards-member">
-    <span class="m4d-rewards-kicker">YOUR CURRENT RANK</span>
-    <h3 id="m4dRewardRank">Sign in to see your level</h3>
-    <div class="m4d-rewards-xprow"><strong id="m4dRewardXP">— XP</strong><span id="m4dRewardNext">Log in to track progress</span></div>
-    <div class="m4d-rewards-track" role="progressbar" aria-label="Progress toward next M4D rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="m4dRewardsProgress"><div id="m4dRewardsFill"></div></div>
-    <p id="m4dRewardsStatus" class="m4d-rewards-status" role="status" aria-live="polite">Sign in to see the XP you've earned.</p>
-   </div>
-   <button type="button" class="m4d-rewards-refresh" id="m4dRewardsRefresh">↻ Refresh XP</button>
-  </div>
-  <h3 class="m4d-rewards-subhead">Official M4D ranks</h3>
-  <div class="m4d-rewards-grid">
-   <div class="m4d-reward-rank" data-min-xp="0"><span>⭐</span><small>LEVEL 1 · 0 XP</small><strong>Fresh Dummy</strong></div>
-   <div class="m4d-reward-rank" data-min-xp="500"><span>🔥</span><small>LEVEL 2 · 500 XP</small><strong>Certified Dummy</strong></div>
-   <div class="m4d-reward-rank" data-min-xp="1500"><span>🎤</span><small>LEVEL 3 · 1,500 XP</small><strong>Unc Status</strong></div>
-   <div class="m4d-reward-rank" data-min-xp="3500"><span>⚡</span><small>LEVEL 4 · 3,500 XP</small><strong>M4D Veteran</strong></div>
-   <div class="m4d-reward-rank" data-min-xp="7500"><span>🏆</span><small>LEVEL 5 · 7,500 XP</small><strong>M4D Hall of Fame</strong></div>
-  </div>
-  <div class="m4d-rewards-info"><strong>How to earn XP</strong><p>Publish a community post: +20 XP (up to 3 rewarded posts a day). Comment: +10 XP (up to 10 rewarded comments a day). Have a song request approved: +25 XP. XP is recorded by Supabase when the Rewards database triggers are installed; earlier activity is not backfilled.</p></div>
- </div>
-</section>
+
 <section id="m4dSongRequests" class="m4d-secondary-page m4d-song-page" aria-labelledby="m4dSongTitle">
  <div class="wrap"><div class="m4d-song-heading"><div><div class="eyebrow">M4D COMMUNITY</div><h2 id="m4dSongTitle">Live Song Request Queue</h2><p class="lead">Submit a YouTube link and a donation screenshot. The request enters the queue only after an admin confirms the donation.</p></div></div>
  <div class="m4d-song-grid">
@@ -4504,13 +4263,6 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
  const ranks=[{name:'Fresh Dummy',xp:0},{name:'Certified Dummy',xp:500},{name:'Unc Status',xp:1500},{name:'M4D Veteran',xp:3500},{name:'M4D Hall of Fame',xp:7500}];
  const $=id=>document.getElementById(id);
  const db=window.supabaseClient;
- const nav=document.getElementById('m4dOrganizedNav');
- if(nav){
-   const menu=nav.querySelector('[data-group="community"] .m4d-nav-menu');
-   if(menu&&!menu.querySelector('a[href="#m4dRewards"]')){
-     const link=document.createElement('a');link.href='#m4dRewards';link.textContent='🏆 Rewards & Levels';menu.append(link);
-   }
- }
  function display(xp){
    const i=ranks.reduce((acc,r,j)=>xp>=r.xp?j:acc,0),r=ranks[i],next=ranks[i+1];
    $('m4dRewardRank').textContent='Level '+(i+1)+' · '+r.name;
@@ -5358,9 +5110,12 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
  <div class="m4d-feature-wrap">
   <span style="color:#fb7493;font-size:12px;font-weight:850;letter-spacing:2px">THE M4D COMMUNITY APP</span>
   <h2 id="m4dAppCenterTitle">App Settings & Member Rewards</h2>
-  <p>Make this app yours. Choose which notifications you receive, install M4D, and earn badges for checking in.</p>
+  <p>Control your notifications, install the M4D app, customize your profile, and explore member rewards—all in one place.</p>
   <p id="m4dAppStatus" role="status" aria-live="polite">Sign in to customize your settings.</p>
-  <div class="m4d-feature-grid">
+  <nav class="m4d-settings-jump" aria-label="Settings and rewards sections">
+<a href="#m4dPushCategories">App Settings</a><a href="#m4dAppInstallShortcut">Install M4D</a><a href="#m4dBadgeList">Badges</a><a href="#m4dPlusthemes">Profile Themes</a><a href="#m4dRewards">Rewards &amp; Levels</a>
+</nav>
+<div class="m4d-feature-grid">
    <div class="m4d-feature-card"><h3>🔔 Push Notifications</h3>
     <p class="m4d-note">Notifications use OneSignal. On iPhone, open the installed M4D Home Screen app (iOS 16.4+) to subscribe.</p>
     <button type="button" id="m4dEnablePush">Checking Notifications…</button>
@@ -5395,6 +5150,33 @@ body.m4d-secondary-view .m4d-secondary-page:not(.m4d-page-hidden){min-height:55v
    </div>
   </div>
  </div>
+<div class="m4d-settings-subpanel" aria-labelledby="m4dProfileThemesTitle"><div class="m4d-settings-heading"><span class="eyebrow">PERSONALIZE M4D</span><h2 id="m4dProfileThemesTitle">Profile Themes</h2><p>Pick your existing account theme. Your choices still use the original account settings.</p></div><div id="m4dPlusthemes" class="m4d-setting-themes"><h2>Make M4D yours</h2><p class="sub">Choose an account theme. Your theme is saved to your account and updates the member experience.</p><div id="m4dPlusthemeList" class="grid"></div></div></div>
+<div class="m4d-settings-subpanel m4d-settings-rewards-panel"><div id="m4dRewards" class="m4d-secondary-page m4d-rewards" aria-labelledby="m4dRewardsTitle">
+ <div class="wrap">
+  <div class="eyebrow">M4D MEMBER REWARDS</div><h2 id="m4dRewardsTitle">Rewards &amp; Levels</h2>
+  <p class="lead">Join the conversation, earn XP, and climb through the official M4D community ranks.</p>
+  <div class="m4d-rewards-hero">
+   <div class="m4d-rewards-icon" aria-hidden="true">🏆</div>
+   <div class="m4d-rewards-member">
+    <span class="m4d-rewards-kicker">YOUR CURRENT RANK</span>
+    <h3 id="m4dRewardRank">Sign in to see your level</h3>
+    <div class="m4d-rewards-xprow"><strong id="m4dRewardXP">— XP</strong><span id="m4dRewardNext">Log in to track progress</span></div>
+    <div class="m4d-rewards-track" role="progressbar" aria-label="Progress toward next M4D rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="m4dRewardsProgress"><div id="m4dRewardsFill"></div></div>
+    <p id="m4dRewardsStatus" class="m4d-rewards-status" role="status" aria-live="polite">Sign in to see the XP you've earned.</p>
+   </div>
+   <button type="button" class="m4d-rewards-refresh" id="m4dRewardsRefresh">↻ Refresh XP</button>
+  </div>
+  <h3 class="m4d-rewards-subhead">Official M4D ranks</h3>
+  <div class="m4d-rewards-grid">
+   <div class="m4d-reward-rank" data-min-xp="0"><span>⭐</span><small>LEVEL 1 · 0 XP</small><strong>Fresh Dummy</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="500"><span>🔥</span><small>LEVEL 2 · 500 XP</small><strong>Certified Dummy</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="1500"><span>🎤</span><small>LEVEL 3 · 1,500 XP</small><strong>Unc Status</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="3500"><span>⚡</span><small>LEVEL 4 · 3,500 XP</small><strong>M4D Veteran</strong></div>
+   <div class="m4d-reward-rank" data-min-xp="7500"><span>🏆</span><small>LEVEL 5 · 7,500 XP</small><strong>M4D Hall of Fame</strong></div>
+  </div>
+  <div class="m4d-rewards-info"><strong>How to earn XP</strong><p>Publish a community post: +20 XP (up to 3 rewarded posts a day). Comment: +10 XP (up to 10 rewarded comments a day). Have a song request approved: +25 XP. XP is recorded by Supabase when the Rewards database triggers are installed; earlier activity is not backfilled.</p></div>
+ </div>
+</div></div>
 </section>
 <script id="m4d-app-center-client">
 (function(){
@@ -5585,95 +5367,162 @@ async function syncPlayback(){if(!room||!db)return;try{room=await loadRoom(room.
 async function control(mode){if(!room||!host)return;const id=mode==='load'?parseVideo($('videoInput').value):room.video_id;if(!id)return feedback('Enter a valid YouTube link or video ID.',true);let seconds=mode==='load'?0:(player?.getCurrentTime?.()||0);const isPlaying=mode==='play';ignoreUntil=Date.now()+1000;const {error}=await db.rpc('m4d_next_set_playback',{p_id:room.id,p_video:id,p_seconds:seconds,p_playing:isPlaying});if(error)return feedback(error.message,true);await syncPlayback()}
 const previousReady=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{if(typeof previousReady==='function')previousReady();if(room?.video_id)ensurePlayer(room.video_id)};
 async function boot(){if(!db){$('account').textContent='Supabase client is not available. Please load the existing M4D account connection first.';return}try{const {data:{user:u},error}=await db.auth.getUser();if(error)throw error;user=u;$('account').textContent=user?'Signed in with your existing M4D account.':'Sign in using the account button above to use member-only features.';if(user){const {data}=await db.from('m4d_next_preferences').select('favorite_categories,theme').eq('user_id',user.id).maybeSingle();if(data)prefs={favorite_categories:data.favorite_categories||[],theme:data.theme||'classic'};await loadRooms()}setTheme(prefs.theme);renderThemes();renderCategories();renderRecs();await loadEvents();const params=new URLSearchParams(location.search);if(user&&validUuid(params.get('room'))){root.querySelector('[data-tab=rooms]').click();await joinRoom(params.get('room'),params.get('invite'));}}catch(e){$('account').textContent='Could not connect to existing account: '+e.message}}
-root.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['discover','rooms','events','themes'].forEach(id=>$(id).hidden=id!==b.dataset.tab)});
+root.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{root.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['discover','rooms','events'].forEach(id=>$(id).hidden=id!==b.dataset.tab)});
 $('createRoom').onclick=createRoom;$('joinRoom').onclick=()=>{const v=parseInvite($('joinInput').value);joinRoom(v.id,v.code)};$('setVideo').onclick=()=>control('load');$('playVideo').onclick=()=>control('play');$('pauseVideo').onclick=()=>control('pause');
 setInterval(showCountdowns,1000);setInterval(loadEvents,300000);
 if(!window.YT?.Player){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.append(script);}boot();
 })();
 
 </script>
-<script id="m4d3-sidebar-only-nav-script">
-(function(){
- 'use strict';
- function init(){
-  const header=document.querySelector('body>header'),bar=header&&header.querySelector('.wrap'), sidebar=document.getElementById('m4d3Sidebar'),nav=header&&header.querySelector('nav');
-  if(!bar||!sidebar||!nav||document.getElementById('m4d3MenuToggle'))return;
-  const actions=document.createElement('div');actions.className='m4d3-header-actions';
-  const account=nav.querySelector('.m4d-account-button')||header.querySelector('.m4d-account-button');
-  if(account) actions.appendChild(account); // Move the real button; preserve attached event listeners.
-  const toggle=document.createElement('button');toggle.type='button';toggle.id='m4d3MenuToggle';toggle.className='m4d3-menu-toggle';toggle.setAttribute('aria-controls','m4d3Sidebar');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu');
-  toggle.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menu';
-  actions.appendChild(toggle);bar.appendChild(actions);
-  const shade=document.createElement('div');shade.className='m4d3-menu-shade';shade.setAttribute('aria-hidden','true');header.insertAdjacentElement('afterend',shade);
-  const close=()=>{document.body.classList.remove('m4d3-sidebar-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu')};
-  const open=()=>{document.body.classList.add('m4d3-sidebar-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close navigation menu')};
-  toggle.addEventListener('click',()=>document.body.classList.contains('m4d3-sidebar-open')?close():open());
-  shade.addEventListener('click',close);
-  sidebar.addEventListener('click',e=>{if(e.target.closest('a'))close()});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
-  window.addEventListener('resize',()=>{if(innerWidth>980)close()});
-  const heading=document.createElement('div');heading.className='m4d3-side-heading';heading.textContent='ALL SITE SECTIONS';
-  const groups=document.createElement('div');groups.id='m4d3SidebarSections';
-  const bottom=sidebar.querySelector('.m4d3-side-bottom');sidebar.insertBefore(heading,bottom);sidebar.insertBefore(groups,bottom);
-  let syncing=false;
-  function build(){
-    if(syncing)return;syncing=true;
-    const buckets=new Map();
-    function addGroup(name,items){
-      if(!items.length)return;
-      const detail=document.createElement('details');detail.className='m4d3-nav-subgroup';detail.open=(name==='Reactions');
-      const summary=document.createElement('summary');summary.textContent=name;detail.appendChild(summary);
-      items.forEach(origin=>{
-        const href=origin.getAttribute('href');if(!href||href==='#' || origin.classList.contains('m4d-account-button'))return;
-        const link=document.createElement('a');link.className='m4d3-side-link';link.href=href;
-        const label=document.createElement('span');label.textContent=origin.textContent.trim();link.append('↗',label);
-        link.hidden=origin.hidden||origin.getAttribute('aria-hidden')==='true'||getComputedStyle(origin).display==='none';
-        link.addEventListener('click',e=>{if(origin.isConnected){e.preventDefault();origin.click();if(href[0]==='#' && location.hash!==href){location.hash=href}}close()});
-        detail.appendChild(link);
-      });
-      if(detail.querySelector('a'))groups.appendChild(detail);
-    }
-    const organized=nav.querySelectorAll('.m4d-nav-group');
-    groups.replaceChildren();
-    if(organized.length){
-      const mains=Array.from(nav.querySelectorAll(':scope > a'));
-      addGroup('Quick links',mains);
-      organized.forEach(group=>addGroup(group.querySelector('summary')?.textContent.trim()||'More',Array.from(group.querySelectorAll('.m4d-nav-menu a'))));
-    }else addGroup('All links',Array.from(nav.querySelectorAll('a')));
-    const extra=header.querySelector('.m4d-theater-permanent-tab');
-    if(extra&&!sidebar.querySelector('[href="'+extra.getAttribute('href')+'"]'))addGroup('Theatre',[extra]);
-    syncing=false;
+
+<style id="m4d-original-centered-header-2026">
+/* Original M4D styling, centered header navigation only. */
+@media (min-width:1101px) {
+  body header > .wrap {
+    max-width:none!important;
+    width:100%!important;
+    padding:10px 20px!important;
+    display:grid!important;
+    grid-template-columns:minmax(190px,1fr) minmax(0,3.4fr) minmax(135px,1fr)!important;
+    align-items:center!important;
+    gap:14px!important;
+    flex-wrap:nowrap!important;
+    min-height:78px!important;
   }
-  build();
-  // The original website injects and permission-gates nav links after auth finishes.
-  // Rebuild from the live navigation DOM rather than hardcoding a stale list.
-  let scheduled=false;
-  const queue=()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;build()})};
-  new MutationObserver(queue).observe(nav,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','style','aria-hidden']});
-  const headTab=header.querySelector('.m4d-theater-permanent-tab');if(headTab)new MutationObserver(queue).observe(headTab,{attributes:true,attributeFilter:['hidden','style']});
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script><script id="m4d3-sidebar-v2-script">
-(function(){
- 'use strict';
- function init(){
-  const sidebar=document.getElementById('m4d3Sidebar');
-  if(!sidebar||document.getElementById('m4d3SidebarCollapse'))return;
-  const bar=document.createElement('div');bar.className='m4d3-side-collapse';
-  const title=document.createElement('span');title.textContent='NAVIGATION';
-  const collapse=document.createElement('button');collapse.id='m4d3SidebarCollapse';collapse.type='button';collapse.textContent='❮';collapse.title='Hide navigation';collapse.setAttribute('aria-label','Hide navigation sidebar');collapse.setAttribute('aria-expanded','true');collapse.setAttribute('aria-controls','m4d3Sidebar');
-  bar.append(title,collapse);sidebar.prepend(bar);
-  const restore=document.createElement('button');restore.id='m4d3SidebarRestore';restore.type='button';restore.textContent='☰';restore.title='Show navigation';restore.setAttribute('aria-label','Show navigation sidebar');restore.setAttribute('aria-controls','m4d3Sidebar');restore.setAttribute('aria-expanded','false');sidebar.insertAdjacentElement('afterend',restore);
-  const setCollapsed=(yes)=>{document.body.classList.toggle('m4d3-nav-collapsed',yes);collapse.setAttribute('aria-expanded',String(!yes));restore.setAttribute('aria-expanded',String(yes));try{localStorage.setItem('m4d3NavCollapsed',yes?'1':'0')}catch(e){}};
-  collapse.addEventListener('click',()=>{if(window.innerWidth<=980){document.body.classList.remove('m4d3-sidebar-open');document.getElementById('m4d3MenuToggle')?.setAttribute('aria-expanded','false')}else setCollapsed(true)});
-  restore.addEventListener('click',()=>setCollapsed(false));
-  try{setCollapsed(localStorage.getItem('m4d3NavCollapsed')==='1')}catch(e){setCollapsed(false)}
-  // Preserve original Live Theater link and any event listeners, only change positioning.
-  const header=document.querySelector('body>header .wrap');const theater=header?.querySelector('.m4d-theater-permanent-tab');const brand=header?.querySelector('.brand');
-  if(theater&&brand)brand.insertAdjacentElement('afterend',theater);
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script></body>
+  body header > .wrap > .brand {
+    grid-column:1!important;
+    justify-self:start!important;
+    margin:0!important;
+    min-width:0!important;
+    max-width:100%!important;
+    flex:none!important;
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+  }
+  body header > .wrap > .m4d-nav-carousel {
+    grid-column:2!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    flex:none!important;
+    order:initial!important;
+  }
+  body header .m4d-nav-carousel > .m4d-nav-viewport {
+    display:flex!important;
+    justify-content:safe center!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    min-width:0!important;
+    width:100%!important;
+    scrollbar-width:none!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  body header .m4d-nav-carousel > .m4d-nav-viewport::-webkit-scrollbar {display:none!important}
+  body header .m4d-nav-carousel > .m4d-nav-scroll-control {display:none!important}
+  body header > .wrap > nav,
+  body header .m4d-nav-carousel nav#m4dOrganizedNav {
+    flex:0 0 auto!important;
+    position:relative!important;
+    margin-inline:auto!important;
+    min-width:max-content!important;
+    width:max-content!important;
+    max-width:none!important;
+    transform:none!important;
+    left:auto!important;
+  }
+  body header > .wrap > nav {grid-column:2!important;justify-self:center!important;max-width:100%!important;overflow-x:auto!important}
+  body header > .wrap > a.m4d-theater-permanent-tab {
+    grid-column:3!important;
+    justify-self:end!important;
+    margin:0!important;
+    flex:none!important;
+    width:auto!important;
+  }
+}
+@media (max-width:1100px) {
+  body header > .wrap {
+    width:100%!important;
+    max-width:none!important;
+    padding-inline:clamp(12px,3vw,22px)!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px 12px!important;
+  }
+  body header > .wrap > .brand {
+    order:0!important;
+    flex:0 1 auto!important;
+    min-width:0!important;
+    margin-right:auto!important;
+  }
+  body header > .wrap > a.m4d-theater-permanent-tab {
+    order:1!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    margin:0!important;
+  }
+  body header > .wrap > .m4d-nav-carousel,
+  body header > .wrap > nav {
+    order:3!important;
+    flex:1 0 100%!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  body header > .wrap > .m4d-nav-carousel {display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important}
+  body header .m4d-nav-carousel > .m4d-nav-viewport {display:block!important;min-width:0!important;width:0!important;flex:1 1 0!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important}
+  body header .m4d-nav-carousel > .m4d-nav-viewport::-webkit-scrollbar {display:none!important}
+}
+@media (max-width:600px) {
+  body header > .wrap > .brand {font-size:clamp(11px,3vw,14px)!important}
+  body header > .wrap > .brand .brand-logo {width:36px!important;height:36px!important}
+  body header > .wrap > .brand .brand-text {min-width:0!important;white-space:normal!important}
+  body header > .wrap > a.m4d-theater-permanent-tab {font-size:11px!important;min-height:36px!important;padding:7px 9px!important}
+}
+</style>
+<style id="m4d-theatre-account-stack">
+/* Header action stack: Live Theatre above equal-width Sign In / My Profile. */
+body header > .wrap > .m4d-header-actions {
+  display:flex!important;flex-direction:column!important;
+  justify-content:center!important;align-items:stretch!important;
+  gap:6px!important;min-width:144px;width:160px;max-width:100%;
+  flex:0 0 auto!important;position:relative!important;
+}
+body header .m4d-header-actions > a.m4d-theater-permanent-tab,
+body header .m4d-header-actions > button.m4d-account-button {
+  display:flex!important;position:static!important;
+  inset:auto!important;transform:none!important;
+  flex:0 0 auto!important;order:initial!important;align-self:stretch!important;
+  box-sizing:border-box!important;width:100%!important;max-width:none!important;
+  min-height:41px!important;margin:0!important;padding:10px 12px!important;
+  align-items:center!important;justify-content:center!important;
+  text-align:center!important;white-space:nowrap!important;
+  font-size:12px!important;line-height:1.2!important;
+  border-radius:9px!important;
+}
+@media(min-width:1101px){
+  body header > .wrap > .m4d-header-actions {
+    grid-column:3!important;grid-row:1!important;justify-self:end!important;
+    width:160px!important;order:initial!important;
+  }
+}
+@media(max-width:1100px){
+  body header > .wrap > .m4d-header-actions {
+    order:1!important;margin-left:auto!important;width:145px!important;min-width:135px!important;
+  }
+}
+@media(max-width:600px){
+  body header > .wrap > .m4d-header-actions {width:118px!important;min-width:112px!important;gap:5px!important}
+  body header .m4d-header-actions > a.m4d-theater-permanent-tab,
+  body header .m4d-header-actions > button.m4d-account-button {
+    min-height:36px!important;padding:7px 5px!important;font-size:10px!important;
+  }
+}
+</style></body>
 </html>
